@@ -1,0 +1,24 @@
+<div class="dashboard-container">
+  <header class="dashboard-header">
+    <h1>Welcome to {{ companyData.name }}</h1>
+    <p>{{ companyData.description }}</p>
+  </header>
+
+  <section class="dashboard-summary">
+    <div class="summary-card">
+      <h2>Revenue</h2>
+      <p>{{ companyData.revenue }}</p>
+    </div>
+    <div class="summary-card">
+      <h2>Employees</h2>
+      <p>{{ companyData.employees }}</p>
+    </div>
+  </section>
+
+  <section class="dashboard-actions">
+    <button (click)="navigateTo('/create-company')">Create New Company</button>
+    <button (click)="navigateTo('/users')">Manage Users</button>
+    <button (click)="navigateTo('/permissions')">Manage Permissions</button>
+  </section>
+</div>
+
