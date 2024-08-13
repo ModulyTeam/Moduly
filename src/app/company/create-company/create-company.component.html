@@ -1,1 +1,19 @@
-<p>create-company works!</p>
+<div class="create-company-container">
+  <h2>Create Company</h2>
+  <form [formGroup]="createCompanyForm" (ngSubmit)="onSubmit()">
+    <mat-form-field appearance="fill">
+      <mat-label>Company Name</mat-label>
+      <input matInput formControlName="name">
+      <mat-error *ngIf="createCompanyForm.get('name')?.hasError('required')">
+        Company Name is required
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Description</mat-label>
+      <textarea matInput formControlName="description"></textarea>
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" type="submit">Create</button>
+  </form>
+</div>
