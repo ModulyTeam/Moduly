@@ -1,24 +1,24 @@
 import { Component } from '@angular/core';
-import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
-import {MatFormField} from "@angular/material/form-field";
-import {NgIf} from "@angular/common";
-import {MatInput} from "@angular/material/input";
-import {MatButton} from "@angular/material/button";
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-register',
   standalone: true,
   templateUrl: './register.component.html',
+  styleUrls: ['./register.component.scss'],
   imports: [
     ReactiveFormsModule,
-    MatFormField,
-    NgIf,
-    MatInput,
-    MatButton
-  ],
-  styleUrls: ['./register.component.scss']
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    NgIf
+  ]
 })
 export class RegisterComponent {
   registerForm: FormGroup;
