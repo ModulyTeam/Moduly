@@ -1,19 +1,19 @@
 <div class="create-company-container">
   <h2>Create Company</h2>
   <form [formGroup]="createCompanyForm" (ngSubmit)="onSubmit()">
-    <mat-form-field appearance="fill">
-      <mat-label>Company Name</mat-label>
-      <input matInput formControlName="name">
-      <mat-error *ngIf="createCompanyForm.get('name')?.hasError('required')">
+    <div class="form-field">
+      <label for="companyName">Company Name</label>
+      <input id="companyName" type="text" formControlName="name">
+      <div class="error" *ngIf="createCompanyForm.get('name')?.hasError('required') && createCompanyForm.get('name')?.touched">
         Company Name is required
-      </mat-error>
-    </mat-form-field>
+      </div>
+    </div>
 
-    <mat-form-field appearance="fill">
-      <mat-label>Description</mat-label>
-      <textarea matInput formControlName="description"></textarea>
-    </mat-form-field>
+    <div class="form-field">
+      <label for="description">Description</label>
+      <textarea id="description" formControlName="description"></textarea>
+    </div>
 
-    <button mat-raised-button color="primary" type="submit">Create</button>
+    <button type="submit">Create</button>
   </form>
 </div>

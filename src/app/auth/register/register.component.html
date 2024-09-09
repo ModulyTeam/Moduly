@@ -1,41 +1,41 @@
 <div class="register-container">
   <h2>Register</h2>
   <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-    <mat-form-field appearance="fill">
-      <mat-label>Company Name</mat-label>
-      <input matInput formControlName="companyName">
-      <mat-error *ngIf="registerForm.get('companyName')?.hasError('required')">
+    <div class="form-field">
+      <label for="companyName">Company Name</label>
+      <input id="companyName" type="text" formControlName="companyName">
+      <div class="error" *ngIf="registerForm.get('companyName')?.hasError('required') && registerForm.get('companyName')?.touched">
         Company Name is required
-      </mat-error>
-    </mat-form-field>
+      </div>
+    </div>
 
-    <mat-form-field appearance="fill">
-      <mat-label>User Name</mat-label>
-      <input matInput formControlName="userName">
-      <mat-error *ngIf="registerForm.get('userName')?.hasError('required')">
+    <div class="form-field">
+      <label for="userName">User Name</label>
+      <input id="userName" type="text" formControlName="userName">
+      <div class="error" *ngIf="registerForm.get('userName')?.hasError('required') && registerForm.get('userName')?.touched">
         User Name is required
-      </mat-error>
-    </mat-form-field>
+      </div>
+    </div>
 
-    <mat-form-field appearance="fill">
-      <mat-label>Email</mat-label>
-      <input matInput formControlName="email">
-      <mat-error *ngIf="registerForm.get('email')?.hasError('required')">
+    <div class="form-field">
+      <label for="email">Email</label>
+      <input id="email" type="email" formControlName="email">
+      <div class="error" *ngIf="registerForm.get('email')?.hasError('required') && registerForm.get('email')?.touched">
         Email is required
-      </mat-error>
-      <mat-error *ngIf="registerForm.get('email')?.hasError('email')">
+      </div>
+      <div class="error" *ngIf="registerForm.get('email')?.hasError('email') && registerForm.get('email')?.touched">
         Invalid email format
-      </mat-error>
-    </mat-form-field>
+      </div>
+    </div>
 
-    <mat-form-field appearance="fill">
-      <mat-label>Password</mat-label>
-      <input matInput type="password" formControlName="password">
-      <mat-error *ngIf="registerForm.get('password')?.hasError('required')">
+    <div class="form-field">
+      <label for="password">Password</label>
+      <input id="password" type="password" formControlName="password">
+      <div class="error" *ngIf="registerForm.get('password')?.hasError('required') && registerForm.get('password')?.touched">
         Password is required
-      </mat-error>
-    </mat-form-field>
+      </div>
+    </div>
 
-    <button mat-raised-button color="primary" type="submit">Register</button>
+    <button type="submit">Register</button>
   </form>
 </div>

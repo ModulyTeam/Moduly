@@ -1,21 +1,87 @@
 .login-container {
-  max-width: 500px;
+  max-width: 400px;
   margin: 0 auto;
   padding: 20px;
   font-family: Arial, sans-serif;
+}
 
-  h2 {
-    text-align: center;
-    margin-bottom: 20px;
+.login-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+}
+
+.form-field {
+  margin-bottom: 20px;
+}
+
+.form-field label {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 1rem;
+}
+
+.form-field input {
+  width: 100%;
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.error {
+  color: #d32f2f;
+  font-size: 0.85rem;
+  margin-top: 5px;
+}
+
+button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  font-size: 1rem;
+  color: white;
+  background-color: #1976d2;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #1565c0;
+}
+
+.register-option {
+  margin-top: 20px;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.register-option a {
+  color: #1976d2;
+  text-decoration: none;
+}
+
+.register-option a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+  .login-container {
+    padding: 15px;
   }
 
-  mat-form-field {
-    width: 100%;
-    margin-bottom: 20px;
+  .login-container h2 {
+    font-size: 1.3rem;
   }
 
+  .form-field label,
+  .form-field input,
   button {
-    display: block;
-    width: 100%;
+    font-size: 0.9rem;
+  }
+
+  .error {
+    font-size: 0.75rem;
   }
 }

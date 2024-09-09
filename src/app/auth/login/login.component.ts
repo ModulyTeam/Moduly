@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../services/auth.service';
-import { Router } from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
@@ -17,7 +17,8 @@ import { NgIf } from '@angular/common';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    NgIf
+    NgIf,
+    RouterLink
   ]
 })
 export class LoginComponent {
