@@ -6,15 +6,17 @@ import {CreateCompanyComponent} from "./company/create-company/create-company.co
 import {MainComponent} from "./dashboard/main/main.component";
 import {UserListComponent} from "./users/user-list/user-list.component";
 import {ManagePermissionsComponent} from "./permissions/manage-permissions/manage-permissions.component";
+import {AuthGuard} from "./auth/services/auth.guard";
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
-  { path: 'create-company', component: CreateCompanyComponent },
-  { path: 'dashboard', component: MainComponent },
-  { path: 'users', component: UserListComponent },
-  { path: 'permissions', component: ManagePermissionsComponent },
-  { path: '**', redirectTo: '/login' }
+  { path: 'create-company', component: CreateCompanyComponent,canActivate: [AuthGuard] },
+  { path: 'dashboard', component: MainComponent,canActivate: [AuthGuard] },
+  { path: 'users', component: UserListComponent,canActivate: [AuthGuard] },
+  { path: 'permissions', component: ManagePermissionsComponent,canActivate: [AuthGuard] },
+  { path: '**', redirectTo: '/login' },
+
 ];
 
 @NgModule({

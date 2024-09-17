@@ -2,13 +2,10 @@
   <h2>Login</h2>
   <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
     <div class="form-field">
-      <label for="email">Email</label>
-      <input id="email" type="email" formControlName="email">
-      <div class="error" *ngIf="loginForm.get('email')?.hasError('required') && loginForm.get('email')?.touched">
-        Email is required
-      </div>
-      <div class="error" *ngIf="loginForm.get('email')?.hasError('email') && loginForm.get('email')?.touched">
-        Invalid email format
+      <label for="username">Username</label>
+      <input id="username" type="text" formControlName="username">
+      <div class="error" *ngIf="loginForm.get('username')?.hasError('required') && loginForm.get('username')?.touched">
+        Username is required
       </div>
     </div>
 
@@ -22,8 +19,9 @@
 
     <button type="submit">Login</button>
   </form>
-
   <div class="register-option">
     <p>No tienes una cuenta? <a [routerLink]="['/register']">Regístrate aquí</a></p>
   </div>
+
 </div>
+

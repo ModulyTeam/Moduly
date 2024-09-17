@@ -25,17 +25,27 @@ export class RegisterComponent {
 
   constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {
     this.registerForm = this.fb.group({
-      companyName: ['', Validators.required],
-      userName: ['', Validators.required],
+      username: ['', Validators.required],
+      fullName: ['', Validators.required],
+      age: [null, Validators.required],
+      dni: ['', Validators.required],
+      phoneNumber: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', Validators.required],
+      password: ['', Validators.required]
     });
+
   }
 
   onSubmit() {
     if (this.registerForm.valid) {
-      this.authService.register(this.registerForm.value).subscribe(() => {
-        this.router.navigate(['/login']);
+      this.authService.register(this.registerForm.value).subscribe({
+        next: () => {
+          this.router.navigate(['/login']);
+        },
+        error: (error) => {
+          console.error('Registration failed', error);
+          // Handle error (e.g., display error message to user)
+        }
       });
     }
   }

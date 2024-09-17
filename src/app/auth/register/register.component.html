@@ -1,19 +1,44 @@
 <div class="register-container">
   <h2>Register</h2>
   <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+
     <div class="form-field">
-      <label for="companyName">Company Name</label>
-      <input id="companyName" type="text" formControlName="companyName">
-      <div class="error" *ngIf="registerForm.get('companyName')?.hasError('required') && registerForm.get('companyName')?.touched">
-        Company Name is required
+      <label for="username">User Name</label>
+      <input id="username" type="text" formControlName="username">
+      <div class="error" *ngIf="registerForm.get('username')?.hasError('required') && registerForm.get('username')?.touched">
+        User Name is required
       </div>
     </div>
 
     <div class="form-field">
-      <label for="userName">User Name</label>
-      <input id="userName" type="text" formControlName="userName">
-      <div class="error" *ngIf="registerForm.get('userName')?.hasError('required') && registerForm.get('userName')?.touched">
-        User Name is required
+      <label for="fullName">Full Name</label>
+      <input id="fullName" type="text" formControlName="fullName">
+      <div class="error" *ngIf="registerForm.get('fullName')?.hasError('required') && registerForm.get('fullName')?.touched">
+        Full Name is required
+      </div>
+    </div>
+
+    <div class="form-field">
+      <label for="age">Financial Age</label>
+      <input id="age" type="number" formControlName="age">
+      <div class="error" *ngIf="registerForm.get('age')?.hasError('required') && registerForm.get('age')?.touched">
+        Age is required
+      </div>
+    </div>
+
+    <div class="form-field">
+      <label for="dni">DNI</label>
+      <input id="dni" type="text" formControlName="dni">
+      <div class="error" *ngIf="registerForm.get('dni')?.hasError('required') && registerForm.get('dni')?.touched">
+        DNI is required
+      </div>
+    </div>
+
+    <div class="form-field">
+      <label for="phoneNumber">Phone Number</label>
+      <input id="phoneNumber" type="text" formControlName="phoneNumber">
+      <div class="error" *ngIf="registerForm.get('phoneNumber')?.hasError('required') && registerForm.get('phoneNumber')?.touched">
+        Phone Number is required
       </div>
     </div>
 
