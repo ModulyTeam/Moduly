@@ -3,15 +3,47 @@
   <form [formGroup]="createCompanyForm" (ngSubmit)="onSubmit()">
     <div class="form-field">
       <label for="companyName">Company Name</label>
-      <input id="companyName" type="text" formControlName="name">
-      <div class="error" *ngIf="createCompanyForm.get('name')?.hasError('required') && createCompanyForm.get('name')?.touched">
+      <input id="companyName" type="text" formControlName="companyName">
+      <div class="error" *ngIf="createCompanyForm.get('companyName')?.hasError('required') && createCompanyForm.get('companyName')?.touched">
         Company Name is required
       </div>
     </div>
 
     <div class="form-field">
-      <label for="description">Description</label>
-      <textarea id="description" formControlName="description"></textarea>
+      <label for="legalName">Legal Name</label>
+      <input id="legalName" type="text" formControlName="legalName">
+      <div class="error" *ngIf="createCompanyForm.get('legalName')?.hasError('required') && createCompanyForm.get('legalName')?.touched">
+        Legal Name is required
+      </div>
+    </div>
+
+    <div class="form-field">
+      <label for="ruc">RUC</label>
+      <input id="ruc" type="text" formControlName="ruc">
+      <div class="error" *ngIf="createCompanyForm.get('ruc')?.hasError('required') && createCompanyForm.get('ruc')?.touched">
+        RUC is required
+      </div>
+    </div>
+
+    <div class="form-field">
+      <label for="address">Address</label>
+      <input id="address" type="text" formControlName="address">
+    </div>
+
+    <div class="form-field">
+      <label for="email">Email</label>
+      <input id="email" type="email" formControlName="email">
+      <div class="error" *ngIf="createCompanyForm.get('email')?.hasError('required') && createCompanyForm.get('email')?.touched">
+        Email is required
+      </div>
+    </div>
+
+    <div class="form-field">
+      <label for="password">Password (For the company, extra lite security)</label>
+      <input id="password" type="password" formControlName="password">
+      <div class="error" *ngIf="createCompanyForm.get('password')?.hasError('required') && createCompanyForm.get('password')?.touched">
+        Password is required
+      </div>
     </div>
 
     <button type="submit">Create</button>

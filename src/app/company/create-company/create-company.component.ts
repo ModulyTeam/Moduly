@@ -5,7 +5,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { NgIf } from '@angular/common';
-import {CompanyService} from "../services/company.service";
+import { CompanyService } from "../services/company.service";
 
 @Component({
   selector: 'app-create-company',
@@ -25,16 +25,27 @@ export class CreateCompanyComponent {
 
   constructor(private fb: FormBuilder, private companyService: CompanyService, private router: Router) {
     this.createCompanyForm = this.fb.group({
-      name: ['', Validators.required],
-      description: ['']
+      companyName: ['', Validators.required],
+      legalName: ['', Validators.required],
+      ruc: ['', Validators.required],
+      address: [''],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', Validators.required]
     });
   }
 
   onSubmit() {
     if (this.createCompanyForm.valid) {
-      this.companyService.createCompany(this.createCompanyForm.value).subscribe(() => {
-        this.router.navigate(['/dashboard']);
-      });
+      const createdById = localStorage.getItem('userId');
+      if (createdById) {
+        const companyData = {
+          ...this.createCompanyForm.value,
+          createdById
+        };
+        this.companyService.createCompany(companyData).subscribe(() => {
+          this.router.navigate(['/dashboard']);
+        });
+      }
     }
   }
 }
