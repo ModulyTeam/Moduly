@@ -19,7 +19,7 @@
     </div>
 
     <div class="form-field">
-      <label for="age">Financial Age</label>
+      <label for="age">Recovery number (3 digits usually)</label>
       <input id="age" type="number" formControlName="age">
       <div class="error" *ngIf="registerForm.get('age')?.hasError('required') && registerForm.get('age')?.touched">
         Age is required
@@ -61,6 +61,16 @@
       </div>
     </div>
 
+    <div class="form-field">
+      <label for="confirmPassword">Confirm Password</label>
+      <input id="confirmPassword" type="password" formControlName="confirmPassword">
+      <div class="error" *ngIf="registerForm.get('confirmPassword')?.hasError('required') && registerForm.get('confirmPassword')?.touched">
+        Confirm Password is required
+      </div>
+      <div class="error" *ngIf="registerForm.hasError('passwordMismatch') && (registerForm.get('confirmPassword')?.touched || registerForm.get('password')?.touched)">
+        Passwords do not match
+      </div>
+    </div>
     <button type="submit">Register</button>
   </form>
 </div>
