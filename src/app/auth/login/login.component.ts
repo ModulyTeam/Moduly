@@ -40,6 +40,10 @@ export class LoginComponent {
           if (response && response.token) {
             this.authService.setToken(response.token);
             console.log('Is logged in after setting token:', this.authService.isLoggedIn());
+
+            // Store username in localStorage
+            localStorage.setItem('username', this.loginForm.get('username')?.value || '');
+
             this.router.navigate(['/dashboard']);
           } else {
             console.error('No token received in response');
@@ -51,4 +55,8 @@ export class LoginComponent {
         }
       });
     }
-  }}
+  }
+
+
+
+}

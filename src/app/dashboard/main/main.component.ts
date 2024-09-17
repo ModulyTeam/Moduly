@@ -10,10 +10,8 @@ import { CommonModule } from '@angular/common';
 })
 export class MainComponent {
   companyData = {
-    name: 'Acme Corporation',
-    description: 'Leading provider of innovative solutions.',
-    revenue: '$1,000,000',
-    employees: 35,
+    revenue: '0',
+    employees: 0,
   };
 
   constructor(private router: Router) {}
