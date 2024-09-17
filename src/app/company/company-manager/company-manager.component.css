@@ -1,0 +1,42 @@
+.company-manager-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: Arial, sans-serif;
+}
+
+.company-manager-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.company-info, .dashboard-summary {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+#currency-select {
+  margin-top: 10px;
+  padding: 5px;
+}
+
+.info-card, .summary-card {
+  background-color: #f4f4f4;
+  padding: 20px;
+  border-radius: 8px;
+  width: 30%;
+  margin: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.info-card h2, .summary-card h2 {
+  margin-bottom: 15px;
+  font-size: 1.5em;
+  color: #333;
+}
+
+.info-card p, .summary-card p {
+  font-size: 1.2em;
+  color: #555;
+}

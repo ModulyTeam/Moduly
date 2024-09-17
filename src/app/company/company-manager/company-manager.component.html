@@ -1,1 +1,36 @@
-<p>company-manager works!</p>
+<div class="company-manager-container">
+  <header class="company-manager-header">
+    <h1>Company Management</h1>
+  </header>
+
+  <section class="company-info">
+    <div class="info-card">
+      <h2>Company Information</h2>
+      <p><strong>Company Name:</strong> {{ company?.companyName }}</p>
+      <p><strong>Address:</strong> {{ company?.address }}</p>
+      <p><strong>Email:</strong> {{ company?.email }}</p>
+    </div>
+  </section>
+
+  <section class="dashboard-summary">
+    <div class="summary-card">
+      <h2>Number of Employees</h2>
+      <p>{{ numberOfEmployees }}</p>
+    </div>
+    <div class="summary-card">
+      <h2>Number of Modules</h2>
+      <p>{{ numberOfModules }}</p>
+    </div>
+    <div class="summary-card">
+      <h2>Dollar Value</h2>
+      <p>{{ convertedDollarValue | currency:selectedCurrency:'symbol':'1.2-2' }}</p>
+      <label for="currency-select">Select Currency:</label>
+      <input type="text" id="currency-search" placeholder="Search..." (input)="filterCurrencies($event)" />
+      <select id="currency-select" [(ngModel)]="selectedCurrency" (change)="onCurrencyChange($event)">
+        <option *ngFor="let currency of filteredCurrencies" [value]="currency.code">
+          {{ currency.code }} - {{ currency.name }}
+        </option>
+      </select>
+    </div>
+  </section>
+</div>
