@@ -20,8 +20,24 @@
     <button (click)="navigateTo('/users')">Manage Users</button>
     <button (click)="navigateTo('/permissions')">Manage Permissions</button>
   </section>
-  <section class="dashboard-companies">
-
+  <section class="dashboard-search">
+    <input
+      type="text"
+      placeholder="Search companies by name..."
+      [(ngModel)]="searchQuery"
+      (ngModelChange)="filterCompanies()"
+    />
   </section>
+  <section class="dashboard-companies">
+    <div class="company-card" *ngFor="let company of filteredCompanies">
+      <h3>{{ company.companyName }}</h3>
+      <p>Legal Name: {{ company.legalName }}</p>
+      <p>RUC: {{ company.ruc }}</p>
+      <p>Address: {{ company.address }}</p>
+      <p>Email: {{ company.email }}</p>
+      <button (click)="navigateTo('/manage', company.id)">Manage</button>
+    </div>
+  </section>
+
 </div>
 

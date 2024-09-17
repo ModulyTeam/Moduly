@@ -10,7 +10,7 @@ import {environment} from "../../assets/environment";
   providedIn: 'root'
 })
 export class ApiService {
-  private apiUrl = environment.apiUrl; // Ajusta según tu configuración
+  private apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
 
