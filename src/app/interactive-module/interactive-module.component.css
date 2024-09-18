@@ -1,0 +1,37 @@
+.interactive-module {
+  position: absolute;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  resize: both;
+  overflow: auto;
+  cursor: move;
+}
+
+.module-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  background-color: #f0f0f0;
+  border-bottom: 1px solid #ddd;
+}
+
+.edit-button, .delete-button, .manage-button {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.module-content {
+  padding: 10px;
+}
+
+.resize-handle {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 20px;
+  height: 20px;
+  background-color: #ddd;
+  cursor: se-resize;
+}

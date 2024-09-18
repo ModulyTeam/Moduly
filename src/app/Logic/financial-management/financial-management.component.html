@@ -1,0 +1,59 @@
+<div class="financial-management-container">
+  <h2>Gestión de Cartera de Letras/Facturas</h2>
+
+  <div class="settings">
+    <label for="currency">Moneda:</label>
+    <select id="currency" [(ngModel)]="selectedCurrency" (change)="changeCurrency()">
+      <option value="PEN">Soles (PEN)</option>
+      <option value="USD">Dólares (USD)</option>
+    </select>
+
+    <label for="discountDate">Fecha de Descuento:</label>
+    <input type="date" id="discountDate" [(ngModel)]="discountDate" (change)="calculatePortfolioTCEA()">
+  </div>
+
+  <div class="add-letter">
+    <h3>Agregar Nueva Letra/Factura</h3>
+    <!-- Aquí iría un formulario para agregar nuevas letras -->
+  </div>
+
+  <div class="letters-list">
+    <h3>Cartera de Letras/Facturas</h3>
+    <table>
+      <thead>
+      <tr>
+        <th>ID</th>
+        <th>Monto</th>
+        <th>Fecha de Vencimiento</th>
+        <th>Tasa de Descuento</th>
+        <th>Emisor</th>
+        <th>Beneficiario</th>
+        <th>Acciones</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let letter of letters">
+        <td>{{ letter.id }}</td>
+        <td>{{ letter.amount | currency:selectedCurrency }}</td>
+        <td>{{ letter.maturityDate | date }}</td>
+        <td>{{ letter.discountRate | percent }}</td>
+        <td>{{ letter.issuer }}</td>
+        <td>{{ letter.beneficiary }}</td>
+        <td>
+          <button (click)="removeLetter(letter.id)">Eliminar</button>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="portfolio-summary">
+    <h3>Resumen de la Cartera</h3>
+    <p>TCEA de la Cartera: {{ portfolioTCEA | percent:'1.2-2' }}</p>
+  </div>
+
+  <div class="actions">
+    <button (click)="calculatePortfolioTCEA()">Calcular TCEA</button>
+    <button (click)="generateReport()">Generar Reporte</button>
+  </div>
+</div>

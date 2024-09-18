@@ -1,0 +1,173 @@
+<div class="financial-calculator-container">
+  <h2 class="title">Calculadora Financiera Empresarial</h2>
+
+  <div *ngIf="showTutorial" class="tutorial-overlay">
+    <div class="tutorial-content">
+      <p>{{ getTutorialContent() }}</p>
+      <div class="tutorial-nav">
+        <button (click)="prevTutorialStep()" [disabled]="tutorialStep === 1">Anterior</button>
+        <button (click)="nextTutorialStep()">{{ tutorialStep < 5 ? 'Siguiente' : 'Finalizar' }}</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="input-section">
+    <h3>Datos del Préstamo/Inversión</h3>
+    <div class="input-group">
+      <label for="amount">Monto:</label>
+      <input type="number" id="amount" [(ngModel)]="amount" (ngModelChange)="updateCalculations()">
+      <span class="tooltip">Ingrese el monto del préstamo o inversión.</span>
+    </div>
+
+    <div class="input-group">
+      <label for="term">Plazo (meses):</label>
+      <input type="number" id="term" [(ngModel)]="term" (ngModelChange)="updateCalculations()">
+      <span class="tooltip">Ingrese el plazo en meses para el préstamo o inversión.</span>
+    </div>
+
+    <div class="input-group">
+      <label for="rateType">Tipo de Tasa:</label>
+      <select id="rateType" [(ngModel)]="rateType" (ngModelChange)="updateCalculations()">
+        <option value="nominal">Nominal</option>
+        <option value="effective">Efectiva</option>
+      </select>
+      <span class="tooltip">Seleccione si la tasa es Nominal o Efectiva.</span>
+    </div>
+
+    <div class="input-group">
+      <label for="rate">Tasa (%):</label>
+      <input type="number" id="rate" [(ngModel)]="rate" (ngModelChange)="updateCalculations()">
+      <span class="tooltip">Ingrese la tasa de interés anual en porcentaje.</span>
+    </div>
+
+    <div class="input-group">
+      <label for="capitalization">Capitalización:</label>
+      <select id="capitalization" [(ngModel)]="capitalization" (ngModelChange)="updateCalculations()">
+        <option value="daily">Diaria</option>
+        <option value="weekly">Semanal</option>
+        <option value="monthly">Mensual</option>
+        <option value="quarterly">Trimestral</option>
+        <option value="annually">Anual</option>
+      </select>
+      <span class="tooltip">Seleccione la frecuencia de capitalización.</span>
+    </div>
+
+    <div class="input-group">
+      <label for="paymentFrequency">Frecuencia de Pago:</label>
+      <select id="paymentFrequency" [(ngModel)]="paymentFrequency" (ngModelChange)="updateCalculations()">
+        <option value="monthly">Mensual</option>
+        <option value="quarterly">Trimestral</option>
+        <option value="annually">Anual</option>
+      </select>
+      <span class="tooltip">Seleccione la frecuencia con la que se realizarán los pagos.</span>
+    </div>
+
+    <div class="input-group">
+      <label for="fees">Comisiones y Gastos:</label>
+      <input type="number" id="fees" [(ngModel)]="fees" (ngModelChange)="updateCalculations()">
+      <span class="tooltip">Ingrese el total de comisiones y gastos asociados.</span>
+    </div>
+
+    <div class="input-group">
+      <label for="businessType">Tipo de Negocio:</label>
+      <select id="businessType" [(ngModel)]="businessType" (ngModelChange)="updateCalculations()">
+        <option value="startup">Startup</option>
+        <option value="sme">PYME</option>
+        <option value="corporate">Corporación</option>
+      </select>
+      <span class="tooltip">Seleccione el tipo de negocio.</span>
+    </div>
+
+    <div class="input-group">
+      <label for="riskProfile">Perfil de Riesgo:</label>
+      <select id="riskProfile" [(ngModel)]="riskProfile" (ngModelChange)="updateCalculations()">
+        <option value="conservative">Conservador</option>
+        <option value="moderate">Moderado</option>
+        <option value="aggressive">Agresivo</option>
+      </select>
+      <span class="tooltip">Seleccione el perfil de riesgo.</span>
+    </div>
+  </div>
+
+  <div class="results-section">
+    <h3>Resultados</h3>
+    <p>TCEA: <strong>{{ tcea | number:'1.2-2' }}%</strong></p>
+    <p>Pago Periódico: <strong>{{ periodicPayment | currency:'USD':'symbol':'1.2-2' }}</strong></p>
+    <p>Costo Total del Préstamo: <strong>{{ totalCost | currency:'USD':'symbol':'1.2-2' }}</strong></p>
+  </div>
+
+  <div class="analysis-section">
+    <h3>Análisis y Recomendaciones</h3>
+    <p>{{ analysis }}</p>
+  </div>
+
+  <div class="additional-metrics-section">
+    <h3>Métricas Financieras Adicionales</h3>
+    <p>TIR (Tasa Interna de Retorno): <strong>{{ irr | number:'1.2-2' }}%</strong></p>
+    <p>VAN (Valor Actual Neto): <strong>{{ npv | currency:'USD':'symbol':'1.2-2' }}</strong></p>
+    <p>Periodo de Recuperación: <strong>{{ paybackPeriod | number:'1.2-2' }} meses</strong></p>
+    <p>Índice de Rentabilidad: <strong>{{ profitabilityIndex | number:'1.2-2' }}</strong></p>
+  </div>
+
+  <div class="market-comparison-section">
+    <h3>Comparación con el Mercado</h3>
+    <p>Tasa Promedio del Mercado: <strong>{{ marketComparison.averageRate | number:'1.2-2' }}%</strong></p>
+    <p>Mejor Tasa Disponible: <strong>{{ marketComparison.bestRate | number:'1.2-2' }}%</strong></p>
+    <p>Peor Tasa Disponible: <strong>{{ marketComparison.worstRate | number:'1.2-2' }}%</strong></p>
+  </div>
+
+  <div class="scenario-analysis-section">
+    <h3>Análisis de Escenarios</h3>
+    <table>
+      <thead>
+      <tr>
+        <th>Escenario</th>
+        <th>Tasa</th>
+        <th>Monto</th>
+        <th>Pago</th>
+        <th>Costo Total</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let scenario of scenarios">
+        <td>{{ scenario.name }}</td>
+        <td>{{ scenario.rate | number:'1.2-2' }}%</td>
+        <td>{{ scenario.amount | currency:'USD':'symbol':'1.2-2' }}</td>
+        <td>{{ scenario.payment | currency:'USD':'symbol':'1.2-2' }}</td>
+        <td>{{ scenario.totalCost | currency:'USD':'symbol':'1.2-2' }}</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="actions-section">
+    <button (click)="optimizeRate()">Optimizar Tasa</button>
+    <button (click)="compareOptions()">Comparar Opciones</button>
+    <button (click)="generateAmortizationSchedule()">Generar Tabla de Amortización</button>
+    <button (click)="restartTutorial()">Reiniciar Tutorial</button>
+  </div>
+
+  <div *ngIf="showAmortizationSchedule" class="amortization-schedule">
+    <h3>Tabla de Amortización</h3>
+    <table>
+      <thead>
+      <tr>
+        <th>Periodo</th>
+        <th>Pago</th>
+        <th>Interés</th>
+        <th>Principal</th>
+        <th>Saldo</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let row of amortizationSchedule">
+        <td>{{ row.period }}</td>
+        <td>{{ row.payment | currency:'USD':'symbol':'1.2-2' }}</td>
+        <td>{{ row.interest | currency:'USD':'symbol':'1.2-2' }}</td>
+        <td>{{ row.principal | currency:'USD':'symbol':'1.2-2' }}</td>
+        <td>{{ row.balance | currency:'USD':'symbol':'1.2-2' }}</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

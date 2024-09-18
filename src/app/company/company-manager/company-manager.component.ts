@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import {ActivatedRoute, RouterLink} from '@angular/router';
 import { ApiService } from '../../requests/ApiService';
 import { Company } from '../../models/Company.model';
 import { UserCompany } from '../../models/user-company.model';
-import { CurrencyPipe, NgForOf } from '@angular/common';
+import { Module } from '../../models/Module.model';
+import {CurrencyPipe, NgClass, NgForOf, NgIf} from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { currencieslist } from '../../requests/currencies';
 
@@ -14,7 +15,10 @@ import { currencieslist } from '../../requests/currencies';
   imports: [
     CurrencyPipe,
     NgForOf,
-    FormsModule
+    FormsModule,
+    NgIf,
+    NgClass,
+    RouterLink
   ],
   styleUrls: ['./company-manager.component.css']
 })
@@ -28,6 +32,17 @@ export class CompanyManagerComponent implements OnInit {
   currencies: any[] = currencieslist;
   filteredCurrencies: any[] = this.currencies;
   exchangeRates: { [key: string]: number } = {};
+  showModal: boolean = false;
+  moduleName: string = '';
+  moduleType: string = '';
+  loading: boolean = false;
+  companyModules: Module[] = [];
+  moduleSearchQuery: string = '';
+  filteredCompanyModules: Module[] = [];
+  showDeleteConfirmation: boolean = false;
+  moduleToDelete: Module | null = null;
+  showEditModal: boolean = false;
+  moduleToEdit: Module = { moduleName: '', moduleType: '', companyId: '', userId: '', id: '' }; // Inicialización
 
   constructor(
     private apiService: ApiService,
@@ -46,7 +61,8 @@ export class CompanyManagerComponent implements OnInit {
       this.apiService.getCompanyById(companyId).subscribe(
         (company) => {
           this.company = company;
-          this.loadEmployeeData(this.company.id);
+          this.loadEmployeeData(companyId);
+          this.loadCompanyModules(companyId);
         },
         (error) => {
           console.error('Error al obtener la compañía:', error);
@@ -63,11 +79,24 @@ export class CompanyManagerComponent implements OnInit {
       (error) => console.error('Error fetching employees data:', error)
     );
   }
+  isAdminModule(module: Module): boolean {
+    return module.moduleName === 'Admin Module' && module.moduleType === 'Here, permissions are assigned to employees and invitations are sent.';
+  }
+  private loadCompanyModules(companyId: string) {
+    this.apiService.getModules(companyId).subscribe(
+      (modules: Module[]) => {
+        this.companyModules = modules;
+        this.filteredCompanyModules = modules;
+        this.numberOfModules = modules.length;
+      },
+      (error) => console.error('Error fetching company modules:', error)
+    );
+  }
 
   loadDollarValue(): void {
     this.apiService.getDollarValue().subscribe(
       (value) => {
-        this.dollarValue = value; // Siempre 1 para USD
+        this.dollarValue = value;
         this.convertDollarValue();
       },
       (error) => {
@@ -103,11 +132,11 @@ export class CompanyManagerComponent implements OnInit {
 
   private convertDollarValue() {
     if (this.selectedCurrency === 'USD') {
-      this.convertedDollarValue = this.dollarValue; // No conversion needed
+      this.convertedDollarValue = this.dollarValue;
     } else if (this.exchangeRates[this.selectedCurrency]) {
       this.convertedDollarValue = this.dollarValue * this.exchangeRates[this.selectedCurrency];
     } else {
-      this.convertedDollarValue = this.dollarValue; // Default case
+      this.convertedDollarValue = this.dollarValue;
     }
   }
 
@@ -118,4 +147,157 @@ export class CompanyManagerComponent implements OnInit {
       currency.name.toLowerCase().includes(searchTerm)
     );
   }
-}
+
+  filterModules() {
+    const query = this.moduleSearchQuery.toLowerCase();
+    this.filteredCompanyModules = this.companyModules.filter(module =>
+      module.moduleName.toLowerCase().includes(query)
+    );
+  }
+
+  openModal() {
+    this.showModal = true;
+  }
+
+  closeModal() {
+    this.showModal = false;
+  }
+
+  confirmDeleteModule(module: Module) {
+    this.moduleToDelete = { ...module };
+    this.showDeleteConfirmation = true;
+  }
+
+  closeDeleteConfirmation() {
+    this.showDeleteConfirmation = false;
+    this.moduleToDelete = null;
+  }
+
+
+  openEditModal(module: Module) {
+    this.moduleToEdit = { ...module };
+    this.showEditModal = true;
+  }
+
+  closeEditModal() {
+    this.showEditModal = false;
+    this.moduleToEdit = { moduleName: '', moduleType: '', companyId: '', userId: '', id: '' }; // Reinicializa
+  }
+
+  createModule() {
+    if (!this.company) return;
+
+    if (!this.moduleName || !this.moduleType) {
+      console.error('Module name and type are required.');
+      return;
+    }
+
+    // Check for duplicate module name and type
+    if (this.companyModules.some(module =>
+      module.moduleName === this.moduleName && module.moduleType === this.moduleType)) {
+      console.error('A module with the same name and type already exists.');
+      return;
+    }
+
+    this.loading = true;
+
+    const companyId = this.route.snapshot.paramMap.get('id');
+    if (!companyId) {
+      console.error('Company ID is missing.');
+      this.loading = false;
+      return;
+    }
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+      console.error('User ID not found in localStorage');
+      this.loading = false;
+      return;
+    }
+    const moduleData: Module = {
+      moduleName: this.moduleName,
+      moduleType: this.moduleType,
+      companyId: companyId,
+      userId: userId,
+      id: ''
+    };
+
+    this.apiService.createModule(moduleData).subscribe(
+      () => {
+        this.loading = false;
+        this.showModal = false;
+        this.loadCompanyModules(companyId);
+      },
+      (error) => {
+        console.error('Error creating module:', error);
+        this.loading = false;
+      }
+    );
+  }
+
+  updateModule() {
+    if (!this.moduleToEdit || !this.company) {
+      console.error('No module selected for editing or company information is missing.');
+      return;
+    }
+
+    if (this.isAdminModule(this.moduleToEdit)) {
+      console.error('Cannot update Admin Module.');
+      return;
+    }
+
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+      console.error('User ID not found in localStorage');
+      return;
+    }
+
+    const updatedModuleData: Module = {
+      ...this.moduleToEdit,
+      userId: userId // Ensure userId type matches expected model
+    };
+
+    this.apiService.updateModule(updatedModuleData).subscribe(
+      () => {
+        this.showEditModal = false;
+        this.moduleToEdit = { moduleName: '', moduleType: '', companyId: '', userId: '', id: '' }; // Reset
+        if (this.company && this.company.id) {
+          this.loadCompanyModules(this.company.id);
+        } else {
+          console.error('Company or company ID is undefined.');
+        }
+      },
+      error => {
+        console.error('Error updating module:', error);
+      }
+    );
+  }
+
+  deleteModule() {
+    if (!this.moduleToDelete || !this.company) return;
+
+    if (this.isAdminModule(this.moduleToDelete)) {
+      console.error('Cannot delete Admin Module.');
+      return;
+    }
+
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+      console.error('User ID not found in localStorage');
+      return;
+    }
+
+    this.apiService.deleteModule(this.moduleToDelete.id, userId).subscribe(
+      () => {
+        this.showDeleteConfirmation = false;
+        this.moduleToDelete = null;
+        if (this.company && this.company.id) {
+          this.loadCompanyModules(this.company.id);
+        } else {
+          console.error('Company or company ID is undefined.');
+        }
+      },
+      error => {
+        console.error('Error deleting module:', error);
+      }
+    );
+  }}

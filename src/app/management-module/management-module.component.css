@@ -1,0 +1,97 @@
+.management-module-container {
+  position: relative;
+  padding: 20px;
+  background-color: #fafafa;
+  border-radius: 8px;
+}
+
+.module-header {
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.module-details {
+  margin-bottom: 20px;
+  font-size: 1rem;
+  color: #666;
+}
+
+.module-functionality {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.functionality-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 15px;
+  background-color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s, box-shadow 0.3s;
+  max-width: 100%;
+  flex: 1;
+  box-sizing: border-box;
+}
+
+.functionality-card button {
+  margin-top: 10px;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  background-color: #007bff;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.functionality-card button:hover {
+  background-color: #0056b3;
+}
+
+.module-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 8px 0;
+  background-color: #fff;
+  transition: opacity 0.3s, background-color 0.3s;
+}
+
+.module-card.not-ready {
+  opacity: 0.5;
+  background-color: #f5f5f5;
+}
+
+.module-card h3 {
+  margin-top: 0;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.draggable {
+  position: absolute;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fff;
+  padding: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  cursor: move;
+}
+
+.resizable {
+  resize: both;
+  overflow: auto;
+}
+
+.module-content {
+  padding: 10px;
+}
+
+.module-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}

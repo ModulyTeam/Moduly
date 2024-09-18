@@ -6,6 +6,7 @@ import { User } from "../models/User.model";
 import { Company } from "../models/Company.model";
 import { UserCompany } from "../models/user-company.model";
 import { environment } from "../../assets/environment";
+import {Module} from "../models/Module.model";
 
 @Injectable({
   providedIn: 'root'
@@ -40,5 +41,21 @@ export class ApiService {
   getExchangeRates(): Observable<any> {
     return this.http.get<any>(this.exchangeRateUrl);
   }
+  createModule(moduleData: Module): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}module`, moduleData);
+  }
+  getModules(companyId: string): Observable<Module[]> {
+    return this.http.get<Module[]>(`${this.apiUrl}module/company/${companyId}`);
+  }
+  updateModule(moduleData: Module): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}module/${moduleData.id}`, moduleData);
+  }
+  deleteModule(id: string, userId: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}module/${id}?userId=${userId}`);
+  }
+  getModuleById(id: string): Observable<Module> {
+    return this.http.get<Module>(`${this.apiUrl}module/${id}`);
+  }
+
 
 }

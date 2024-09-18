@@ -33,4 +33,96 @@
       </select>
     </div>
   </section>
+
+  <section class="company-modules">
+    <h2>Company Modules</h2>
+    <div class="module-search">
+      <input
+        type="text"
+        placeholder="Search modules by name..."
+        [(ngModel)]="moduleSearchQuery"
+        (ngModelChange)="filterModules()"
+      />
+    </div>
+    <div class="modules-grid">
+      <div *ngFor="let module of filteredCompanyModules"
+           class="module-card"
+           [ngClass]="{'admin-module': isAdminModule(module)}">
+        <h3>{{ module.moduleName }}</h3>
+        <p>Type: {{ module.moduleType }}</p>
+        <div class="module-actions">
+          <button class="edit-module-btn"
+                  (click)="openEditModal(module)"
+                  [disabled]="isAdminModule(module)">
+            ✏️
+          </button>
+          <a [routerLink]="['/management-module', module.id]" class="manage-module-btn">
+            ⚙️
+          </a>
+          <button class="delete-module-btn"
+                  (click)="confirmDeleteModule(module)"
+                  [disabled]="isAdminModule(module)">
+            ❌
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- Popup de confirmación de eliminación -->
+  <div class="confirmation-popup" *ngIf="showDeleteConfirmation">
+    <div class="popup-content">
+      <p>Are you sure you want to delete the module "{{ moduleToDelete?.moduleName }}"?</p>
+      <button (click)="deleteModule()">Yes, delete</button>
+      <button (click)="closeDeleteConfirmation()">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Modal para editar módulo -->
+  <div class="modal-overlay" *ngIf="showEditModal">
+    <div class="modal-content">
+      <h3>Edit Module</h3>
+      <form (ngSubmit)="updateModule()">
+        <label for="editModuleName">Module Name:</label>
+        <input id="editModuleName" [(ngModel)]="moduleToEdit.moduleName" name="editModuleName" required [readonly]="isAdminModule(moduleToEdit)"/>
+
+        <label for="editModuleType">Module Type:</label>
+        <input id="editModuleType" [(ngModel)]="moduleToEdit.moduleType" name="editModuleType" required [readonly]="isAdminModule(moduleToEdit)"/>
+
+        <button type="submit" [disabled]="loading || isAdminModule(moduleToEdit)">Update</button>
+      </form>
+      <button class="modal-close" (click)="closeEditModal()">Close</button>
+    </div>
+  </div>
+
+
+  <!-- Mensaje de error en caso de que moduleToEdit sea nulo -->
+  <p *ngIf="!moduleToEdit && showEditModal">No module selected for editing. Please select a module first.</p>
+
+
+
+
+  <button class="add-module-btn" (click)="openModal()">
+    <span class="add-module-icon">+</span>
+    <span class="add-module-text">Add Module</span>
+  </button>
+
+  <!-- Modal -->
+  <div class="modal-overlay" *ngIf="showModal">
+    <div class="modal-content">
+      <h3>Add Module</h3>
+      <form (ngSubmit)="createModule()">
+        <label for="moduleName">Module Name:</label>
+        <input id="moduleName" [(ngModel)]="moduleName" name="moduleName" required />
+
+        <label for="moduleType">Module Type:</label>
+        <input id="moduleType" [(ngModel)]="moduleType" name="moduleType" required />
+
+        <button type="submit" [disabled]="loading">Create</button>
+      </form>
+      <div *ngIf="loading" class="loading-spinner"></div>
+      <button class="modal-close" (click)="closeModal()">Close</button>
+    </div>
+  </div>
 </div>

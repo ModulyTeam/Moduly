@@ -1,0 +1,19 @@
+<div class="interactive-module"
+     [ngStyle]="{'top.px': position.y, 'left.px': position.x, 'width.px': size.width, 'height.px': size.height}"
+     (mousedown)="onMouseDown($event)"
+     (mousemove)="onMouseMove($event)"
+     (mouseup)="onMouseUp($event)">
+  <header class="module-header">
+    <h3>{{ module?.moduleName }}</h3>
+    <!-- Iconos de editar y eliminar -->
+    <button class="edit-button">✏️</button>
+    <button class="delete-button">❌</button>
+    <!-- Icono de gestión -->
+    <button class="manage-button">⚙️</button>
+  </header>
+  <section class="module-content">
+    <!-- Contenido del módulo -->
+  </section>
+  <!-- Controladores de tamaño (opcional) -->
+  <div class="resize-handle" (mousedown)="onResizeStart($event)"></div>
+</div>

@@ -1,0 +1,26 @@
+<div class="management-module-container">
+  <header class="module-header">
+    <h1>Module Management: {{ moduleDetails?.moduleName }}</h1>
+  </header>
+
+  <section class="module-details" *ngIf="moduleDetails">
+    <h2>Module Details</h2>
+    <p><strong>Name:</strong> {{ moduleDetails.moduleName }}</p>
+    <p><strong>Type:</strong> {{ moduleDetails.moduleType }}</p>
+    <!-- Otros detalles del módulo -->
+  </section>
+
+  <section class="module-functionality">
+    <h2>Available Functionalities</h2>
+    <div class="module-list">
+      <div *ngFor="let module of modules" [ngClass]="{ 'not-ready': module.notReady }" class="module-card">
+        <h3>{{ module.title }}</h3>
+        <p>{{ module.content }}</p>
+        <button (click)="openModule(module.type)">Abrir SubMódulo</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contenedor para los módulos dinámicos -->
+  <ng-template #moduleContainer></ng-template>
+</div>
