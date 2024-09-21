@@ -33,7 +33,9 @@
             {{ currency.code }} - {{ currency.name }}
           </option>
         </select>
-        <input formControlName="exchangeRate" type="number" placeholder="Exchange Rate" [disabled]="invoiceForm.get('currency')?.value === 'USD'">
+        <input formControlName="exchangeRate" type="number" placeholder="Exchange Rate" 
+               [disabled]="invoiceForm.get('currency')?.value === 'USD'"
+               [attr.title]="invoiceForm.get('currency')?.value !== 'USD' ? 'Suggested rate based on current data. You can modify if needed.' : null">
         <input formControlName="tcea" type="number" placeholder="TCEA">
         <button type="submit" [disabled]="!invoiceForm.valid">Create Invoice</button>
       </form>

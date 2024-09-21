@@ -111,6 +111,17 @@
         <label for="maxTotalDiscount">Descuento total máximo por factura (%):</label>
         <input type="number" id="maxTotalDiscount" formControlName="maxTotalDiscount" min="0" max="100">
       </div>
+      <div class="form-group">
+        <label>
+          <input type="checkbox" formControlName="enableMinDesiredDiscount"> Habilitar descuento mínimo deseado
+        </label>
+      </div>
+      <div *ngIf="discountForm.get('enableMinDesiredDiscount')?.value">
+        <label>
+          Descuento mínimo deseado (%):
+          <input type="number" formControlName="minDesiredDiscount" min="0" max="100">
+        </label>
+      </div>
       <button type="submit" [disabled]="!discountForm.valid">Calcular Descuentos</button>
     </form>
   </section>
@@ -156,6 +167,17 @@
       <div class="form-group" *ngIf="fixedAmountForm.get('enableMaxDesiredDiscount')?.value">
         <label for="maxDesiredDiscount">Descuento máximo deseado (%):</label>
         <input type="number" id="maxDesiredDiscount" formControlName="maxDesiredDiscount" min="0" max="100">
+      </div>
+      <div class="form-group">
+        <label>
+          <input type="checkbox" formControlName="enableMinDesiredDiscount"> Habilitar descuento mínimo deseado
+        </label>
+      </div>
+      <div *ngIf="fixedAmountForm.get('enableMinDesiredDiscount')?.value">
+        <label>
+          Descuento mínimo deseado (%):
+          <input type="number" formControlName="minDesiredDiscount" min="0" max="100">
+        </label>
       </div>
       <button type="submit" [disabled]="!fixedAmountForm.valid">Calcular Descuento para Monto Fijo</button>
     </form>
