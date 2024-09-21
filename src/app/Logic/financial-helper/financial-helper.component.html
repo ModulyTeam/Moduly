@@ -1,7 +1,7 @@
 <div class="financial-helper-container">
   <header>
     <h1>Calculadora Financiera de Descuentos</h1>
-    <button (click)="startTutorial()">Iniciar Tutorial</button>
+    <button >Iniciar Tutorial</button>
   </header>
 
   <section class="invoice-table">
@@ -81,124 +81,6 @@
     </div>
   </section>
 
-  <section class="discount-calculator">
-    <h2>Calculadora de Descuentos</h2>
-    <form [formGroup]="discountForm" (ngSubmit)="calculateDiscount()">
-      <div class="form-group">
-        <label for="discountDate">Fecha de Descuento:</label>
-        <input type="date" id="discountDate" formControlName="discountDate" required>
-      </div>
-      <div class="form-group">
-        <label for="additionalDiscount">Descuento Adicional (%):</label>
-        <input type="number" id="additionalDiscount" formControlName="additionalDiscount" min="0" max="100">
-      </div>
-      <div class="form-group">
-        <label>
-          <input type="checkbox" formControlName="enableMaxLoss"> Habilitar pérdida máxima
-        </label>
-      </div>
-      <div class="form-group" *ngIf="discountForm.get('enableMaxLoss')?.value">
-        <label for="maxLossAmount">Pérdida máxima aceptable:</label>
-        <input type="number" id="maxLossAmount" formControlName="maxLossAmount" min="0">
-        <span>(Total a ganar: {{ calculateTotalFutureValue() | currency:'USD':'symbol':'1.2-2' }})</span>
-      </div>
-      <div class="form-group">
-        <label>
-          <input type="checkbox" formControlName="enableBalancedDiscount"> Habilitar descuento balanceado
-        </label>
-      </div>
-      <div class="form-group" *ngIf="discountForm.get('enableBalancedDiscount')?.value">
-        <label for="maxTotalDiscount">Descuento total máximo por factura (%):</label>
-        <input type="number" id="maxTotalDiscount" formControlName="maxTotalDiscount" min="0" max="100">
-      </div>
-      <button type="submit" [disabled]="!discountForm.valid">Calcular Descuentos</button>
-    </form>
-  </section>
-
-  <section class="fixed-amount-calculator">
-    <h2>Calculadora de Monto Fijo</h2>
-    <button (click)="toggleFixedAmountSection()">
-      {{ showFixedAmountSection ? 'Ocultar' : 'Mostrar' }} Calculadora de Monto Fijo
-    </button>
-    <form *ngIf="showFixedAmountSection" [formGroup]="fixedAmountForm" (ngSubmit)="calculateFixedAmountDiscount()">
-      <div class="form-group">
-        <label for="fixedAmount">Monto Fijo Deseado:</label>
-        <input type="number" id="fixedAmount" formControlName="fixedAmount" required>
-      </div>
-      <div class="form-group">
-        <label for="fixedAmountDiscountDate">Fecha de Descuento:</label>
-        <input type="date" id="fixedAmountDiscountDate" formControlName="discountDate" required>
-      </div>
-      <div class="form-group">
-        <label>
-          <input type="checkbox" formControlName="enableMaxLoss"> Habilitar pérdida máxima
-        </label>
-      </div>
-      <div class="form-group" *ngIf="fixedAmountForm.get('enableMaxLoss')?.value">
-        <label for="maxLossAmount">Pérdida máxima aceptable:</label>
-        <input type="number" id="maxLossAmount" formControlName="maxLossAmount" min="0">
-        <span>(Total a ganar: {{ calculateTotalFutureValue() | currency:'USD':'symbol':'1.2-2' }})</span>
-      </div>
-      <div class="form-group">
-        <label>
-          <input type="checkbox" formControlName="enableBalancedDiscount"> Habilitar descuento balanceado
-        </label>
-      </div>
-      <div class="form-group" *ngIf="fixedAmountForm.get('enableBalancedDiscount')?.value">
-        <label for="maxTotalDiscount">Descuento total máximo por factura (%):</label>
-        <input type="number" id="maxTotalDiscount" formControlName="maxTotalDiscount" min="0" max="100">
-      </div>
-      <div class="form-group">
-        <label>
-          <input type="checkbox" formControlName="enableMaxDesiredDiscount"> Habilitar descuento máximo deseado
-        </label>
-      </div>
-      <div class="form-group" *ngIf="fixedAmountForm.get('enableMaxDesiredDiscount')?.value">
-        <label for="maxDesiredDiscount">Descuento máximo deseado (%):</label>
-        <input type="number" id="maxDesiredDiscount" formControlName="maxDesiredDiscount" min="0" max="100">
-      </div>
-      <button type="submit" [disabled]="!fixedAmountForm.valid">Calcular Descuento para Monto Fijo</button>
-    </form>
-  </section>
-
-  <section class="results-table" *ngIf="discountResults.length > 0">
-    <h2>Resultados del Cálculo</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Código</th>
-          <th>Monto Original</th>
-          <th>Días de Anticipación</th>
-          <th>Descuento Base</th>
-          <th>Descuento Adicional</th>
-          <th>Descuento Total</th>
-          <th>Monto Final</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let result of discountResults">
-          <td>{{ result.code }}</td>
-          <td>{{ result.totalPayment | currency:'USD':'symbol':'1.2-2' }}</td>
-          <td>{{ result.daysEarly }}</td>
-          <td>{{ result.baseDiscount | number:'1.2-2' }}%</td>
-          <td>{{ result.additionalDiscount | number:'1.2-2' }}%</td>
-          <td>{{ result.totalDiscount | number:'1.2-2' }}%</td>
-          <td>{{ (result.finalDiscountedAmount || result.discountedAmount) | currency:'USD':'symbol':'1.2-2' }}</td>
-        </tr>
-      </tbody>
-      <tfoot>
-        <tr>
-          <td><strong>Totales:</strong></td>
-          <td>{{ calculateTotalOriginalAmount() | currency:'USD':'symbol':'1.2-2' }}</td>
-          <td>-</td>
-          <td>-</td>
-          <td>-</td>
-          <td>{{ calculateAverageTotalDiscount() | number:'1.2-2' }}%</td>
-          <td>{{ calculateTotalFinalAmount() | currency:'USD':'symbol':'1.2-2' }}</td>
-        </tr>
-      </tfoot>
-    </table>
-
-    <div class="explanation" [innerHTML]="explanation"></div>
-  </section>
+  <app-calculator-discount [invoices]="invoices"></app-calculator-discount>
+  <app-fixed-amount-calculator [invoices]="invoices"></app-fixed-amount-calculator>
 </div>

@@ -1,0 +1,73 @@
+<div class="calculator-container">
+    <h2>Calculadora de Monto Fijo</h2>
+    <form [formGroup]="fixedAmountForm" (ngSubmit)="calculateFixedAmountDiscount()">
+      <div class="form-group">
+        <label for="fixedAmount">Monto Fijo Deseado:</label>
+        <input type="number" id="fixedAmount" formControlName="fixedAmount" min="0" required>
+      </div>
+      <div class="form-group">
+        <label for="discountDate">Fecha de Descuento:</label>
+        <input type="date" id="discountDate" formControlName="discountDate" required>
+      </div>
+      <div class="form-group checkbox">
+        <input type="checkbox" id="enableMaxLoss" formControlName="enableMaxLoss">
+        <label for="enableMaxLoss">Habilitar Pérdida Máxima</label>
+      </div>
+      <div class="form-group" *ngIf="fixedAmountForm.get('enableMaxLoss')?.value">
+        <label for="maxLossAmount">Monto Máximo de Pérdida:</label>
+        <input type="number" id="maxLossAmount" formControlName="maxLossAmount" min="0">
+      </div>
+      <div class="form-group checkbox">
+        <input type="checkbox" id="enableBalancedDiscount" formControlName="enableBalancedDiscount">
+        <label for="enableBalancedDiscount">Habilitar Descuento Balanceado</label>
+      </div>
+      <div class="form-group" *ngIf="fixedAmountForm.get('enableBalancedDiscount')?.value">
+        <label for="maxTotalDiscount">Descuento Total Máximo Permitido(%):</label>
+        <input type="number" id="maxTotalDiscount" formControlName="maxTotalDiscount" min="0" max="100">
+      </div>
+      <div class="form-group checkbox">
+        <input type="checkbox" id="enableMaxDesiredDiscount" formControlName="enableMaxDesiredDiscount">
+        <label for="enableMaxDesiredDiscount">Habilitar Descuento Máximo Deseado</label>
+      </div>
+      <div class="form-group" *ngIf="fixedAmountForm.get('enableMaxDesiredDiscount')?.value">
+        <label for="maxDesiredDiscount">Descuento Máximo Deseado (%):</label>
+        <input type="number" id="maxDesiredDiscount" formControlName="maxDesiredDiscount" min="0" max="100">
+      </div>
+      <button type="submit" [disabled]="!fixedAmountForm.valid">Calcular Descuento</button>
+    </form>
+  
+    <div class="results" *ngIf="discountResults.length > 0">
+      <h3>Resultados del Descuento</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Pago Inicial</th>
+            <th>Valor Futuro En Fecha Vencida</th>
+            <th>Días Anticipados</th>
+            <th>TCEA (%)</th>
+            <th>Descuento Adicional (%)</th>
+            <th>Descuento Total (%)</th>
+            <th>Monto con Descuento</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let result of discountResults">
+            <td>{{ result.code }}</td>
+            <td>{{ result.totalPayment | currency }}</td>
+            <td>{{ result.futureDateValue | currency }}</td>
+            <td>{{ result.discountDays }}</td>
+            <td>{{ result.baseDiscount | number:'1.2-2' }}%</td>
+            <td>{{ result.additionalDiscount | number:'1.2-2' }}%</td>
+            <td>{{ result.totalDiscount | number:'1.2-2' }}%</td>
+            <td>{{ result.discountedAmount | currency }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  
+    <div class="explanation" *ngIf="explanation">
+      <h3>Explicación del Cálculo</h3>
+      <p>{{ explanation }}</p>
+    </div>
+  </div>
