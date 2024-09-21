@@ -91,7 +91,279 @@
 }
 
 .module-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 15px;
+}
+
+.dashboard-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.dashboard-header {
+  margin-bottom: 20px;
+}
+
+.dashboard-header h1 {
+  font-size: 24px;
+  color: #333;
+}
+
+.dashboard-content {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: auto auto auto;
+  gap: 20px;
+}
+
+.module-details, .module-functionality, .import-invoices {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.invoice-management {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  grid-column: 1 / -1; /* Ocupa ambas columnas */
+  grid-row: 2; /* Se coloca en la segunda fila */
+  width: 100%;
+  overflow-x: auto; /* Permite scroll horizontal si es necesario */
+}
+
+.module-details {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.module-functionality {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.import-invoices {
+  grid-column: 1 / -1; /* Ocupa ambas columnas en la tercera fila */
+  grid-row: 3;
+}
+
+.invoice-table-container {
+  width: 100%;
+  overflow-x: auto; /* Permite scroll horizontal en pantallas pequeñas */
+  margin-top: 20px;
+  flex-grow: 1; /* Permite que el contenedor de la tabla crezca para llenar el espacio disponible */
+}
+
+.invoice-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  min-width: 600px; /* Asegura un ancho mínimo para la tabla */
+}
+
+.invoice-table th, .invoice-table td {
+  padding: 12px;
+  border: 1px solid #e0e0e0;
+  text-align: left;
+}
+
+.invoice-table th {
+  background-color: #f5f5f5;
+  font-weight: bold;
+  color: #333;
+}
+
+.invoice-table tr:nth-child(even) {
+  background-color: #fafafa;
+}
+
+.invoice-table tr:hover {
+  background-color: #f0f0f0;
+}
+
+.action-buttons {
   display: flex;
-  flex-direction: column;
+  gap: 8px;
+}
+
+.action-buttons select, .action-buttons button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.action-buttons select {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.action-buttons select:hover {
+  background-color: #45a049;
+}
+
+.action-buttons .delete-btn {
+  background-color: #f44336;
+  color: white;
+}
+
+.action-buttons .delete-btn:hover {
+  background-color: #d32f2f;
+}
+
+/* Styles for the invoice form */
+.invoice-management form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 10px;
+  margin-bottom: 20px;
+}
+
+.invoice-management form input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.invoice-management form button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.invoice-management form button:hover {
+  background-color: #0056b3;
+}
+
+.invoice-management form button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+/* Add more styles for forms, buttons, etc. */
+
+.import-invoices {
+  margin-top: 20px;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.import-invoices h2 {
+  margin-bottom: 15px;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.import-invoices select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.import-invoices button {
+  padding: 10px 20px;
+  margin-right: 10px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+.import-invoices button:nth-child(3) {
+  background-color: #FFA500;
+}
+
+.import-invoices button:hover {
+  opacity: 0.8;
+}
+
+.import-invoices button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.import-invoices .invoice-table {
+  margin-top: 20px;
+}
+
+/* Style for disabled options */
+.import-invoices select option:disabled {
+  color: #999;
+  background-color: #f5f5f5;
+}
+
+/* Estilos responsivos para pantallas pequeñas */
+@media screen and (max-width: 768px) {
+  .dashboard-content {
+    grid-template-columns: 1fr; /* Una columna en pantallas pequeñas */
+    grid-template-rows: auto;
+  }
+
+  .module-details,
+  .module-functionality,
+  .invoice-management,
+  .import-invoices {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .invoice-management {
+    padding: 10px;
+  }
+
+  .invoice-management form {
+    grid-template-columns: 1fr; /* Una columna para el formulario en pantallas pequeñas */
+  }
+
+  .invoice-table th, .invoice-table td {
+    padding: 8px; /* Reduce el padding en celdas para pantallas pequeñas */
+  }
+}
+
+/* Ajustes para mejorar la responsividad de los formularios */
+.invoice-management form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.invoice-management form input,
+.invoice-management form button,
+.import-invoices select,
+.import-invoices button {
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+/* Ajustes para los botones de acción en la tabla */
+.action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.action-buttons select,
+.action-buttons button {
+  flex: 1;
+  min-width: 80px;
 }

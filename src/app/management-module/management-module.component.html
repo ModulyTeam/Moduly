@@ -1,26 +1,142 @@
-<div class="management-module-container">
-  <header class="module-header">
+<div class="dashboard-container">
+  <header class="dashboard-header">
     <h1>Module Management: {{ moduleDetails?.moduleName }}</h1>
   </header>
 
-  <section class="module-details" *ngIf="moduleDetails">
-    <h2>Module Details</h2>
-    <p><strong>Name:</strong> {{ moduleDetails.moduleName }}</p>
-    <p><strong>Type:</strong> {{ moduleDetails.moduleType }}</p>
-    <!-- Otros detalles del módulo -->
-  </section>
+  <div class="dashboard-content">
+    <section class="module-details" *ngIf="moduleDetails">
+      <h2>Module Details</h2>
+      <p><strong>Name:</strong> {{ moduleDetails.moduleName }}</p>
+      <p><strong>Type:</strong> {{ moduleDetails.moduleType }}</p>
+    </section>
 
-  <section class="module-functionality">
-    <h2>Available Functionalities</h2>
-    <div class="module-list">
-      <div *ngFor="let module of modules" [ngClass]="{ 'not-ready': module.notReady }" class="module-card">
-        <h3>{{ module.title }}</h3>
-        <p>{{ module.content }}</p>
-        <button (click)="openModule(module.type)">Abrir SubMódulo</button>
+    <section class="invoice-management">
+      <h2>Invoice Management</h2>
+      <form [formGroup]="invoiceForm" (ngSubmit)="createInvoice()">
+        <input formControlName="code" placeholder="Invoice Code" required>
+        <input formControlName="issueDate" type="date" placeholder="Issue Date" required>
+        <input formControlName="dueDate" type="date" placeholder="Due Date">
+        <input formControlName="description" placeholder="Description" required>
+        <input formControlName="quantity" type="number" placeholder="Quantity" required>
+        <input formControlName="unitPrice" type="number" placeholder="Unit Price" required>
+        <select formControlName="status" required>
+          <option value="OPEN">Open</option>
+          <option value="PAID">Paid</option>
+          <option value="OVERDUE">Overdue</option>
+          <option value="CANCELLED">Cancelled</option>
+        </select>
+        <select formControlName="currency" required>
+          <option *ngFor="let currency of currencies" [value]="currency.code">
+            {{ currency.code }} - {{ currency.name }}
+          </option>
+        </select>
+        <input formControlName="exchangeRate" type="number" placeholder="Exchange Rate" [disabled]="invoiceForm.get('currency')?.value === 'USD'">
+        <input formControlName="tcea" type="number" placeholder="TCEA">
+        <button type="submit" [disabled]="!invoiceForm.valid">Create Invoice</button>
+      </form>
+
+      <table class="invoice-table">
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Description</th>
+            <th>Quantity</th>
+            <th>Unit Price</th>
+            <th>Total Payment</th>
+            <th>Issue Date</th>
+            <th>Due Date</th>
+            <th>Status</th>
+            <th>Currency</th>
+            <th>Exchange Rate</th>
+            <th>TCEA</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let invoice of invoices | slice:(currentPage-1)*pageSize:currentPage*pageSize">
+            <td>{{ invoice.code }}</td>
+            <td>{{ invoice.description }}</td>
+            <td>{{ invoice.quantity }}</td>
+            <td>{{ invoice.unitPrice | currency:invoice.currency }}</td>
+            <td>{{ invoice.totalPayment | currency:invoice.currency }}</td>
+            <td>{{ invoice.issueDate | date }}</td>
+            <td>{{ invoice.dueDate | date }}</td>
+            <td>{{ invoice.status }}</td>
+            <td>{{ invoice.currency }}</td>
+            <td>{{ invoice.exchangeRate }}</td>
+            <td>{{ ((invoice.tcea ?? 0) * 100) * 100 }}%</td>
+            <td class="action-buttons">
+              <select (change)="updateInvoiceStatus(invoice?.id, $event)">
+                <option value="">Update Status</option>
+                <option value="Pending">Pending</option>
+                <option value="Paid">Paid</option>
+                <option value="Overdue">Overdue</option>
+                <option value="Cancelled">Cancelled</option>
+              </select>
+              <button class="delete-btn" (click)="deleteInvoice(invoice?.id)">Delete</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <!-- Add pagination controls -->
+    </section>
+
+    <section class="module-functionality">
+      <h2>Available Functionalities</h2>
+      <div class="module-list">
+        <div *ngFor="let module of modules" [ngClass]="{ 'not-ready': module.notReady }" class="module-card">
+          <h3>{{ module.title }}</h3>
+          <p>{{ module.content }}</p>
+          <button (click)="openModule(module.type)">Abrir SubMódulo</button>
+        </div>
+        <div class="module-card">
+          <h3>Cartera Financiera</h3>
+          <p>Accede a tu cartera financiera para una gestión completa.</p>
+          <button (click)="navigateTo('/financial-helper')">Ir a Cartera Financiera</button>
+        </div>
+        <div class="module-card">
+          <h3>Tutorial</h3>
+          <p>Aprende a usar todas las funcionalidades del módulo.</p>
+          <button (click)="startTutorial()">Iniciar Tutorial</button>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Contenedor para los módulos dinámicos -->
+    <section class="import-invoices">
+      <h2>Import Invoices from Other Modules</h2>
+      <select (change)="onModuleSelect($event)">
+        <option value="">Select a module</option>
+        <option *ngFor="let module of otherModules" [value]="module.id" [disabled]="module.id === moduleId || module.moduleType === 'admin'">
+          {{ module.moduleName }}
+        </option>
+      </select>
+      <button (click)="importSelectedInvoices(false)" [disabled]="!selectedModuleForImport || importedInvoices.length === 0">
+        Move Invoices
+      </button>
+      <button (click)="openDuplicateConfirmation()" [disabled]="!selectedModuleForImport || importedInvoices.length === 0">
+        Duplicate Invoices
+      </button>
+
+      <table *ngIf="importedInvoices.length > 0" class="invoice-table">
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Description</th>
+            <th>Total Payment</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let invoice of importedInvoices">
+            <td>{{ invoice.code }}</td>
+            <td>{{ invoice.description }}</td>
+            <td>{{ invoice.totalPayment | currency:invoice.currency }}</td>
+            <td>{{ invoice.status }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </div>
+
   <ng-template #moduleContainer></ng-template>
 </div>

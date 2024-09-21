@@ -42,9 +42,19 @@ export class CreateCompanyComponent {
           ...this.createCompanyForm.value,
           createdById
         };
-        this.companyService.createCompany(companyData).subscribe(() => {
-          this.router.navigate(['/dashboard']);
-        });
+        this.companyService.createCompany(companyData).subscribe(
+          (response: any) => {
+            // Asumiendo que la respuesta contiene el ID de la compañía creada
+            if (response && response.id) {
+              localStorage.setItem('companyId', response.id);
+            }
+            this.router.navigate(['/dashboard']);
+          },
+          (error) => {
+            console.error('Error creating company:', error);
+            // Aquí puedes manejar el error, por ejemplo, mostrando un mensaje al usuario
+          }
+        );
       }
     }
   }

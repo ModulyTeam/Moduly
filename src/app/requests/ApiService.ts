@@ -7,6 +7,7 @@ import { Company } from "../models/Company.model";
 import { UserCompany } from "../models/user-company.model";
 import { environment } from "../../assets/environment";
 import {Module} from "../models/Module.model";
+import { Invoice } from "../models/Invoice.model";
 
 @Injectable({
   providedIn: 'root'
@@ -57,5 +58,28 @@ export class ApiService {
     return this.http.get<Module>(`${this.apiUrl}module/${id}`);
   }
 
+  getInvoices(moduleId: string, userId: string): Observable<Invoice[]> {
+    return this.http.get<Invoice[]>(`${this.apiUrl}invoice/byModule/${moduleId}`, { params: { userId } });
+  }
+
+  createInvoice(invoiceData: Partial<Invoice>): Observable<Invoice> {
+    return this.http.post<Invoice>(`${this.apiUrl}invoice`, invoiceData);
+  }
+
+  getInvoiceById(invoiceId: string): Observable<Invoice> {
+    return this.http.get<Invoice>(`${this.apiUrl}invoice/${invoiceId}`);
+  }
+
+  updateInvoice(invoiceId: string, invoiceData: Partial<Invoice>): Observable<Invoice> {
+    return this.http.put<Invoice>(`${this.apiUrl}invoice/${invoiceId}`, invoiceData);
+  }
+
+  deleteInvoice(invoiceId: string, userId: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}invoice/${invoiceId}?userId=${userId}`);
+  }
+
+  updateInvoiceStatus(invoiceId: string, status: string, userId: string): Observable<Invoice> {
+    return this.http.put<Invoice>(`${this.apiUrl}invoice/${invoiceId}/status`, { status }, { params: { userId } });
+  }
 
 }

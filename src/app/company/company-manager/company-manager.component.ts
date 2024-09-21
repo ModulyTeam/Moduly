@@ -50,25 +50,29 @@ export class CompanyManagerComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.loadCompanyData();
+    const companyId = this.route.snapshot.paramMap.get('id') || localStorage.getItem('companyId');
+    if (companyId) {
+      this.loadCompanyData(companyId);
+    } else {
+      console.error('No company ID available');
+      // Manejar el caso en que no hay ID de compañía disponible
+    }
     this.loadDollarValue();
     this.loadExchangeRates();
   }
 
-  private loadCompanyData() {
-    const companyId = this.route.snapshot.paramMap.get('id');
-    if (companyId) {
-      this.apiService.getCompanyById(companyId).subscribe(
-        (company) => {
-          this.company = company;
-          this.loadEmployeeData(companyId);
-          this.loadCompanyModules(companyId);
-        },
-        (error) => {
-          console.error('Error al obtener la compañía:', error);
-        }
-      );
-    }
+  private loadCompanyData(companyId: string) {
+    localStorage.setItem('companyId', companyId);
+    this.apiService.getCompanyById(companyId).subscribe(
+      (company) => {
+        this.company = company;
+        this.loadEmployeeData(companyId);
+        this.loadCompanyModules(companyId);
+      },
+      (error) => {
+        console.error('Error al obtener la compañía:', error);
+      }
+    );
   }
 
   private loadEmployeeData(companyId: string) {
