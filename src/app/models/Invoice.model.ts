@@ -12,7 +12,7 @@ export interface Invoice {
     userId: string;
     currency?: string;
     exchangeRate?: number;
-    discountDate?: string;
+    discountDate: string | undefined | null;
     tcea?: number;
     totalPayment?: number;
 }

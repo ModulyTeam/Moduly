@@ -7,10 +7,9 @@ import { NgClass, NgForOf, NgIf, SlicePipe, CurrencyPipe, DatePipe } from "@angu
 import { TceaCalculatorComponent } from "../Logic/tcea-calculator/tcea-calculator.component";
 import { Invoice } from '../models/Invoice.model';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { concatMap, toArray } from 'rxjs/operators';
-import { from, Observable } from 'rxjs';
 import introJs from 'intro.js';
 import { currencieslist } from '../../assets/currencies';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-management-module',
@@ -131,7 +130,7 @@ export class ManagementModuleComponent implements OnInit {
     if (this.invoiceForm.valid && this.moduleId) {
       const userId = this.getCurrentUserId();
       const formValue = this.invoiceForm.getRawValue(); // Use getRawValue() to include disabled controls
-      
+
       const invoiceData: Partial<Invoice> = {
         code: formValue.code,
         moduleId: this.moduleId,
@@ -145,6 +144,7 @@ export class ManagementModuleComponent implements OnInit {
         currency: formValue.currency || 'USD',
         exchangeRate: formValue.currency === 'USD' ? 1 : Number(formValue.exchangeRate),
         totalPayment: Number(formValue.quantity) * Number(formValue.unitPrice),
+        discountDate: null, // Always set discountDate to null
       };
 
       // Add optional fields only if they have a value
@@ -215,64 +215,64 @@ export class ManagementModuleComponent implements OnInit {
     );
   }
 
-  importSelectedInvoices(duplicate: boolean = false) {
-    if (this.moduleId && this.selectedModuleForImport) {
-      const userId = this.getCurrentUserId();
-      const invoicesToMove = this.importedInvoices.map(invoice => ({
-        ...invoice,
-        id: duplicate ? undefined : invoice.id,
-        moduleId: this.moduleId
-      }));
-
-      from(invoicesToMove).pipe(
-        concatMap(invoice => 
-          duplicate 
-            ? this.apiService.createInvoice(invoice as Partial<Invoice>)
-            : this.moveInvoice(invoice as Invoice, this.moduleId!)
-        ),
-        toArray()
-      ).subscribe(
-        (movedInvoices: Invoice[]) => {
-          this.invoices = [...movedInvoices, ...this.invoices];
-          if (!duplicate) {
-            this.importedInvoices = this.importedInvoices.filter(
-              invoice => !movedInvoices.some(movedInvoice => movedInvoice.id === invoice.id)
-            );
-          }
-          this.selectedModuleForImport = null;
-        },
-        (error: unknown) => console.error('Error moving/duplicating invoices:', error)
-      );
-    }
+  exportToExcel() {
+    this.exportInvoicesToExcel(this.invoices);
   }
 
-  private moveInvoice(invoice: Invoice, newModuleId: string): Observable<Invoice> {
-    const userId = this.getCurrentUserId();
-    return new Observable<Invoice>((observer) => {
-      this.apiService.createInvoice({...invoice, moduleId: newModuleId, id: undefined}).subscribe(
-        (newInvoice: Invoice) => {
-          if (invoice.id) {
-            this.apiService.deleteInvoice(invoice.id, userId).subscribe(
-              () => {
-                observer.next(newInvoice);
-                observer.complete();
-              },
-              error => observer.error(error)
-            );
-          } else {
-            observer.next(newInvoice);
-            observer.complete();
-          }
-        },
-        error => observer.error(error)
-      );
-    });
+  exportImportedToExcel() {
+    this.exportInvoicesToExcel(this.importedInvoices);
   }
 
-  openDuplicateConfirmation() {
-    if (confirm('Warning: Duplicating invoices will create copies that are not synchronized. Changes to one will not affect the other. Do you want to proceed?')) {
-      this.importSelectedInvoices(true);
-    }
+  private exportInvoicesToExcel(invoices: Invoice[]) {
+    const exportData = invoices.map(invoice => ({
+      Code: invoice.code,
+      Description: invoice.description,
+      Quantity: invoice.quantity,
+      UnitPrice: invoice.unitPrice,
+      TotalPayment: invoice.totalPayment,
+      IssueDate: invoice.issueDate,
+      DueDate: invoice.dueDate,
+      Status: invoice.status,
+      Currency: invoice.currency,
+      ExchangeRate: invoice.exchangeRate,
+      TCEA: invoice.tcea ? invoice.tcea * 100 : null
+    }));
+
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook: XLSX.WorkBook = { Sheets: { 'data': worksheet }, SheetNames: ['data'] };
+    XLSX.writeFile(workbook, 'invoices.xlsx');
+  }
+
+  private exportInvoicesToJson(invoices: Invoice[]) {
+    const currentModuleId = this.route.snapshot.paramMap.get('id');
+    const userId = localStorage.getItem('userId') || '';
+
+    const jsonData = invoices.map(invoice => ({
+      ...invoice,
+      id: undefined,
+      code: `${invoice.code}COPY`,
+      moduleId: currentModuleId,
+      userId: userId,
+      issuerId: userId,
+      tcea: invoice.tcea != null ? invoice.tcea * 100 : null
+    }));
+
+    const jsonString = JSON.stringify(jsonData, null, 2);
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'invoices.json';
+    a.click();
+    window.URL.revokeObjectURL(url);
+  }
+
+  exportToJson() {
+    this.exportInvoicesToJson(this.invoices);
+  }
+
+  exportImportedToJson() {
+    this.exportInvoicesToJson(this.importedInvoices);
   }
 
   private getCurrentUserId(): string {
@@ -289,7 +289,7 @@ export class ManagementModuleComponent implements OnInit {
     const companyId = this.getCurrentCompanyId(); // Implement this method
     this.apiService.getModules(companyId).subscribe(
       (modules: Module[]) => {
-        this.otherModules = modules.filter(module => 
+        this.otherModules = modules.filter(module =>
           module.id !== this.moduleId && module.moduleType !== 'admin'
         );
       },
