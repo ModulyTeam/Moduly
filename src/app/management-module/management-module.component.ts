@@ -10,6 +10,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import introJs from 'intro.js';
 import { currencieslist } from '../../assets/currencies';
 import * as XLSX from 'xlsx';
+import { conversion_rates } from '../requests/exchangerates';
 
 @Component({
   selector: 'app-management-module',
@@ -79,9 +80,8 @@ export class ManagementModuleComponent implements OnInit {
         exchangeRateControl?.setValue(1);
       } else {
         exchangeRateControl?.enable();
-        if (exchangeRateControl?.value === 1) {
-          exchangeRateControl?.setValue(null);
-        }
+        const suggestedRate = this.getSuggestedExchangeRate(currency);
+        exchangeRateControl?.setValue(suggestedRate);
       }
     });
   }
@@ -131,6 +131,9 @@ export class ManagementModuleComponent implements OnInit {
       const userId = this.getCurrentUserId();
       const formValue = this.invoiceForm.getRawValue(); // Use getRawValue() to include disabled controls
 
+      const currency = formValue.currency;
+      const exchangeRate = formValue.exchangeRate;
+
       const invoiceData: Partial<Invoice> = {
         code: formValue.code,
         moduleId: this.moduleId,
@@ -141,8 +144,8 @@ export class ManagementModuleComponent implements OnInit {
         quantity: Number(formValue.quantity),
         unitPrice: Number(formValue.unitPrice),
         status: formValue.status || 'OPEN',
-        currency: formValue.currency || 'USD',
-        exchangeRate: formValue.currency === 'USD' ? 1 : Number(formValue.exchangeRate),
+        currency: currency,
+        exchangeRate: exchangeRate,
         totalPayment: Number(formValue.quantity) * Number(formValue.unitPrice),
         discountDate: null, // Always set discountDate to null
       };
@@ -370,5 +373,14 @@ export class ManagementModuleComponent implements OnInit {
     } else {
       console.error('Module ID is not available');
     }
+  }
+
+  private getSuggestedExchangeRate(currency: string): number {
+    if (currency === 'USD') return 1;
+    const usdRate = conversion_rates[currency as keyof typeof conversion_rates];
+    return usdRate ? Number((1 / usdRate).toFixed(4)) : 1;
+  }
+  displayExchangeRate(invoice: Invoice): string {
+    return invoice.exchangeRate?.toFixed(4) ?? 'N/A';
   }
 }

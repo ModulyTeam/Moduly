@@ -66,7 +66,7 @@
             <td>{{ invoice.dueDate | date }}</td>
             <td>{{ invoice.status }}</td>
             <td>{{ invoice.currency }}</td>
-            <td>{{ invoice.exchangeRate }}</td>
+            <td>{{ displayExchangeRate(invoice) }}</td>
             <td>{{ ((invoice.tcea ?? 0) * 100)  }}%</td>
             <td class="action-buttons">
               <select (change)="updateInvoiceStatus(invoice?.id, $event)">
