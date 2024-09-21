@@ -5,10 +5,10 @@ import { RegisterComponent } from "./auth/register/register.component";
 import { CreateCompanyComponent } from "./company/create-company/create-company.component";
 import { MainComponent } from "./dashboard/main/main.component";
 import { UserListComponent } from "./users/user-list/user-list.component";
-import { ManagePermissionsComponent } from "./permissions/manage-permissions/manage-permissions.component";
 import { CompanyManagerComponent } from "./company/company-manager/company-manager.component";
 import { AuthGuard } from "./auth/services/auth.guard";
 import {ManagementModuleComponent} from "./management-module/management-module.component";
+import {FinancialHelperComponent} from "./Logic/financial-helper/financial-helper.component";
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -17,9 +17,9 @@ export const routes: Routes = [
   { path: 'create-company', component: CreateCompanyComponent, canActivate: [AuthGuard] },
   { path: 'dashboard', component: MainComponent, canActivate: [AuthGuard] },
   { path: 'users', component: UserListComponent, canActivate: [AuthGuard] },
-  { path: 'permissions', component: ManagePermissionsComponent, canActivate: [AuthGuard] },
   { path: 'manage/:id', component: CompanyManagerComponent, canActivate: [AuthGuard] },
   { path: 'management-module/:id', component: ManagementModuleComponent, canActivate: [AuthGuard] },
+  { path: 'financial-helper', component: FinancialHelperComponent, canActivate: [AuthGuard] },
 
   { path: '**', redirectTo: '/login' },
 ];
