@@ -152,7 +152,7 @@ export class ManagementModuleComponent implements OnInit {
         invoiceData.dueDate = new Date(formValue.dueDate).toISOString();
       }
       if (formValue.tcea !== null && formValue.tcea !== '') {
-        invoiceData.tcea = Number(formValue.tcea) / 100; // Store as decimal
+        invoiceData.tcea = Number(formValue.tcea); // Store as percentage
       }
 
       this.apiService.createInvoice(invoiceData).subscribe(
@@ -362,5 +362,13 @@ export class ManagementModuleComponent implements OnInit {
     ];
 
     introJs().setOptions({ steps: steps }).start();
+  }
+
+  navigateToFinancialHelper() {
+    if (this.moduleId) {
+      this.router.navigate(['/financial-helper', this.moduleId]);
+    } else {
+      console.error('Module ID is not available');
+    }
   }
 }

@@ -67,7 +67,7 @@
             <td>{{ invoice.status }}</td>
             <td>{{ invoice.currency }}</td>
             <td>{{ invoice.exchangeRate }}</td>
-            <td>{{ ((invoice.tcea ?? 0) * 100) * 100 }}%</td>
+            <td>{{ ((invoice.tcea ?? 0) * 100)  }}%</td>
             <td class="action-buttons">
               <select (change)="updateInvoiceStatus(invoice?.id, $event)">
                 <option value="">Update Status</option>
@@ -103,7 +103,7 @@
         <div class="module-card">
           <h3>Cartera Financiera</h3>
           <p>Accede a tu cartera financiera para una gestión completa.</p>
-          <button (click)="navigateTo('/financial-helper')">Ir a Cartera Financiera</button>
+          <button (click)="navigateToFinancialHelper()">Ir a Cartera Financiera</button>
         </div>
         <div class="module-card">
           <h3>Tutorial</h3>

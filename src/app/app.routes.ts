@@ -19,7 +19,7 @@ export const routes: Routes = [
   { path: 'users', component: UserListComponent, canActivate: [AuthGuard] },
   { path: 'manage/:id', component: CompanyManagerComponent, canActivate: [AuthGuard] },
   { path: 'management-module/:id', component: ManagementModuleComponent, canActivate: [AuthGuard] },
-  { path: 'financial-helper', component: FinancialHelperComponent, canActivate: [AuthGuard] },
+  { path: 'financial-helper/:moduleId', component: FinancialHelperComponent, canActivate: [AuthGuard] },
 
   { path: '**', redirectTo: '/login' },
 ];

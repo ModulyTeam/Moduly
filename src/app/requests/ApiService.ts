@@ -59,7 +59,7 @@ export class ApiService {
   }
 
   getInvoices(moduleId: string, userId: string): Observable<Invoice[]> {
-    return this.http.get<Invoice[]>(`${this.apiUrl}invoice/byModule/${moduleId}`, { params: { userId } });
+    return this.http.get<Invoice[]>(`${this.apiUrl}invoice/bymodule/${moduleId}`, { params: { userId } });
   }
 
   createInvoice(invoiceData: Partial<Invoice>): Observable<Invoice> {
