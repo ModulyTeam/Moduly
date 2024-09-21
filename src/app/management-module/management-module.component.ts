@@ -10,7 +10,6 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import introJs from 'intro.js';
 import { currencieslist } from '../../assets/currencies';
 import * as XLSX from 'xlsx';
-import { conversion_rates } from '../requests/exchangerates';
 
 @Component({
   selector: 'app-management-module',
@@ -72,7 +71,7 @@ export class ManagementModuleComponent implements OnInit {
       tcea: [null, [Validators.min(0), Validators.max(100)]]
     });
 
-    // Modify the currency change listener
+    // Add currency change listener
     this.invoiceForm.get('currency')?.valueChanges.subscribe(currency => {
       const exchangeRateControl = this.invoiceForm.get('exchangeRate');
       if (currency === 'USD') {
@@ -80,8 +79,9 @@ export class ManagementModuleComponent implements OnInit {
         exchangeRateControl?.setValue(1);
       } else {
         exchangeRateControl?.enable();
-        const suggestedRate = conversion_rates[currency as keyof typeof conversion_rates];
-        exchangeRateControl?.setValue(suggestedRate);
+        if (exchangeRateControl?.value === 1) {
+          exchangeRateControl?.setValue(null);
+        }
       }
     });
   }

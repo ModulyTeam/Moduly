@@ -37,9 +37,7 @@ export class FinancialHelperComponent implements OnInit {
       enableMaxLoss: [false],
       maxLossAmount: [{ value: 0, disabled: true }, [Validators.min(0)]],
       enableBalancedDiscount: [false],
-      maxTotalDiscount: [{ value: 0, disabled: true }, [Validators.min(0), Validators.max(100)]],
-      enableMinDesiredDiscount: [false],
-      minDesiredDiscount: [{ value: 0, disabled: true }, [Validators.min(0), Validators.max(100)]]
+      maxTotalDiscount: [{ value: 0, disabled: true }, [Validators.min(0), Validators.max(100)]]
     });
 
     this.fixedAmountForm = this.formBuilder.group({
@@ -50,9 +48,7 @@ export class FinancialHelperComponent implements OnInit {
       enableBalancedDiscount: [false],
       maxTotalDiscount: [{ value: 0, disabled: true }, [Validators.min(0), Validators.max(100)]],
       enableMaxDesiredDiscount: [false],
-      maxDesiredDiscount: [{ value: 0, disabled: true }, [Validators.min(0), Validators.max(100)]],
-      enableMinDesiredDiscount: [false],
-      minDesiredDiscount: [{ value: 0, disabled: true }, [Validators.min(0), Validators.max(100)]]
+      maxDesiredDiscount: [{ value: 0, disabled: true }, [Validators.min(0), Validators.max(100)]]
     });
 
     // Agregar listeners para habilitar/deshabilitar el campo maxLossAmount
@@ -96,23 +92,6 @@ export class FinancialHelperComponent implements OnInit {
         this.fixedAmountForm.get('maxDesiredDiscount')?.disable();
       }
     });
-
-    // Add listeners for the new minDesiredDiscount control
-    this.discountForm.get('enableMinDesiredDiscount')?.valueChanges.subscribe(enabled => {
-      if (enabled) {
-        this.discountForm.get('minDesiredDiscount')?.enable();
-      } else {
-        this.discountForm.get('minDesiredDiscount')?.disable();
-      }
-    });
-
-    this.fixedAmountForm.get('enableMinDesiredDiscount')?.valueChanges.subscribe(enabled => {
-      if (enabled) {
-        this.fixedAmountForm.get('minDesiredDiscount')?.enable();
-      } else {
-        this.fixedAmountForm.get('minDesiredDiscount')?.disable();
-      }
-    });
   }
 
   ngOnInit() {
@@ -145,8 +124,6 @@ export class FinancialHelperComponent implements OnInit {
     const maxLossAmount = this.discountForm.get('maxLossAmount')?.value;
     const enableBalancedDiscount = this.discountForm.get('enableBalancedDiscount')?.value;
     const maxTotalDiscount = this.discountForm.get('maxTotalDiscount')?.value / 100 || 0;
-    const enableMinDesiredDiscount = this.discountForm.get('enableMinDesiredDiscount')?.value;
-    const minDesiredDiscount = this.discountForm.get('minDesiredDiscount')?.value / 100 || 0;
 
     let totalExcessDiscount = 0;
 
@@ -161,19 +138,6 @@ export class FinancialHelperComponent implements OnInit {
       
       // Calcular el monto total incluyendo intereses
       const totalAmount = (invoice.totalPayment ?? 0) * Math.pow(1 + tcea, totalDays / 365);
-
-      if (discountDate > dueDate) {
-        // The invoice is already due, no discount applies
-        return {
-          ...invoice,
-          daysEarly: 0,
-          baseDiscount: 0,
-          additionalDiscount: 0,
-          totalDiscount: 0,
-          discountedAmount: totalAmount,
-          isExpired: true
-        };
-      }
 
       if (daysEarly <= 0) {
         // La factura ya venció, no se aplica descuento
@@ -196,10 +160,6 @@ export class FinancialHelperComponent implements OnInit {
         const excessDiscount = totalDiscount - maxTotalDiscount;
         totalExcessDiscount += excessDiscount * invoice.totalPayment!;
         totalDiscount = maxTotalDiscount;
-      }
-
-      if (enableMinDesiredDiscount && totalDiscount < minDesiredDiscount) {
-        totalDiscount = minDesiredDiscount;
       }
 
       const discountedAmount = totalAmount * (1 - totalDiscount);
@@ -225,19 +185,20 @@ export class FinancialHelperComponent implements OnInit {
   }
 
   calculateFixedAmountDiscount() {
-    const fixedAmount = this.fixedAmountForm.get('fixedAmount')?.value;
-    const discountDate = new Date(this.fixedAmountForm.get('discountDate')?.value);
+    const fixedAmount = this.fixedAmountForm.get('fixedAmount')?.value || 0;
+    const discountDate = new Date(this.fixedAmountForm.get('discountDate')?.value || '');
     const maxLossEnabled = this.fixedAmountForm.get('enableMaxLoss')?.value;
     const maxLossAmount = this.fixedAmountForm.get('maxLossAmount')?.value;
+    const enableBalancedDiscount = this.fixedAmountForm.get('enableBalancedDiscount')?.value;
+    const maxTotalDiscount = this.fixedAmountForm.get('maxTotalDiscount')?.value / 100 || 0;
     const enableMaxDesiredDiscount = this.fixedAmountForm.get('enableMaxDesiredDiscount')?.value;
-    const maxDesiredDiscount = this.fixedAmountForm.get('maxDesiredDiscount')?.value / 100;
-    const enableMinDesiredDiscount = this.fixedAmountForm.get('enableMinDesiredDiscount')?.value;
-    const minDesiredDiscount = this.fixedAmountForm.get('minDesiredDiscount')?.value / 100 || 0;
-  
+    const maxDesiredDiscount = this.fixedAmountForm.get('maxDesiredDiscount')?.value / 100 || 0;
+
     let totalOriginalAmount = 0;
-    let totalFutureValue = 0;
+    let totalDiscountedAmount = 0;
     let amountFromExpiredInvoices = 0;
-  
+    let totalFutureValue = this.calculateTotalFutureValue();
+
     this.discountResults = this.invoices.map(invoice => {
       const issueDate = new Date(invoice.issueDate || '');
       const dueDate = new Date(invoice.dueDate || '');
@@ -247,10 +208,11 @@ export class FinancialHelperComponent implements OnInit {
       const tcea = invoice.tcea || 0;
       const dailyRate = Math.pow(1 + tcea, 1/365) - 1;
       
+      // Calcular el monto total incluyendo intereses
       const totalAmount = (invoice.totalPayment ?? 0) * Math.pow(1 + tcea, totalDays / 365);
-      totalFutureValue += totalAmount;
-  
+
       if (daysEarly <= 0) {
+        // La factura ya venció o vencerá antes de la fecha de descuento
         amountFromExpiredInvoices += totalAmount;
         return {
           ...invoice,
@@ -259,84 +221,67 @@ export class FinancialHelperComponent implements OnInit {
           additionalDiscount: 0,
           totalDiscount: 0,
           discountedAmount: totalAmount,
+          totalAmount,
           isExpired: true
         };
       }
-  
+
       totalOriginalAmount += totalAmount;
-      
       const discountFactor = Math.pow(1 + dailyRate, daysEarly);
       const baseDiscount = 1 - (1 / discountFactor);
-  
+      const discountedAmount = totalAmount * (1 - baseDiscount);
+      totalDiscountedAmount += discountedAmount;
+
       return {
         ...invoice,
         daysEarly,
         baseDiscount: baseDiscount * 100,
-        additionalDiscount: 0,
-        totalDiscount: baseDiscount * 100,
-        discountedAmount: totalAmount * (1 - baseDiscount),
+        discountedAmount,
+        totalAmount,
         isExpired: false
       };
     });
-  
+
     const remainingAmount = fixedAmount - amountFromExpiredInvoices;
-    const maxAllowedDiscount = maxLossEnabled ? (totalFutureValue - maxLossAmount) / totalOriginalAmount : 1;
-  
-    if (remainingAmount > totalOriginalAmount || remainingAmount < 0) {
-      this.generateExplanation(true, amountFromExpiredInvoices, fixedAmount, false, 'El monto fijo deseado está fuera del rango posible.');
+    const additionalDiscountPercentage = Math.max(0, (totalDiscountedAmount - remainingAmount) / totalOriginalAmount);
+
+    // Verificar si se puede alcanzar el monto fijo deseado
+    let canReachFixedAmount = true;
+    let reason = '';
+
+    if (totalFutureValue < fixedAmount) {
+      canReachFixedAmount = false;
+      reason = 'El monto fijo deseado es mayor que el valor futuro total de las facturas.';
+    } else if (maxLossEnabled && (totalFutureValue - fixedAmount) > maxLossAmount) {
+      canReachFixedAmount = false;
+      reason = 'No se puede alcanzar el monto fijo deseado sin exceder la pérdida máxima permitida.';
+    } else if (enableMaxDesiredDiscount && additionalDiscountPercentage > maxDesiredDiscount) {
+      canReachFixedAmount = false;
+      reason = 'No se puede alcanzar el monto fijo deseado sin exceder el descuento máximo deseado.';
+    }
+
+    if (!canReachFixedAmount) {
+      this.generateExplanation(true, amountFromExpiredInvoices, fixedAmount, canReachFixedAmount, reason);
       return;
     }
-  
-    let totalDiscountedAmount = amountFromExpiredInvoices;
-    let additionalDiscountPercentage = 0;
-  
-    // Modify the calculateTotalDiscountedAmount function
-    const calculateTotalDiscountedAmount = (additionalDiscount: number) => {
-      return this.discountResults.reduce((total, result) => {
-        if (result.isExpired) return total + result.discountedAmount;
-        const baseDiscount = result.baseDiscount / 100;
-        const totalDiscount = Math.max(
-          Math.min(baseDiscount + additionalDiscount, maxDesiredDiscount || 1),
-          enableMinDesiredDiscount ? minDesiredDiscount : 0
-        );
-        return total + (result.discountedAmount * (1 - totalDiscount / baseDiscount));
-      }, 0);
-    };
-  
-    // Búsqueda binaria para encontrar el descuento adicional óptimo
-    let left = 0;
-    let right = Math.min(maxAllowedDiscount, maxDesiredDiscount || 1);
-    while (right - left > 0.0001) {
-      additionalDiscountPercentage = (left + right) / 2;
-      totalDiscountedAmount = calculateTotalDiscountedAmount(additionalDiscountPercentage);
-      
-      if (totalDiscountedAmount > fixedAmount) {
-        left = additionalDiscountPercentage;
-      } else {
-        right = additionalDiscountPercentage;
-      }
-    }
-  
-    // Apply the discount found
+
     this.discountResults = this.discountResults.map(result => {
-      if (result.isExpired) return result;
-      const baseDiscount = result.baseDiscount / 100;
-      const totalDiscount = Math.max(
-        Math.min(baseDiscount + additionalDiscountPercentage, maxDesiredDiscount || 1),
-        enableMinDesiredDiscount ? minDesiredDiscount : 0
-      );
+      if (result.isExpired) {
+        return result;
+      }
+      const totalDiscount = result.baseDiscount / 100 + additionalDiscountPercentage - (result.baseDiscount / 100 * additionalDiscountPercentage);
+      const finalDiscountedAmount = result.totalAmount * (1 - totalDiscount);
+
       return {
         ...result,
-        additionalDiscount: (totalDiscount - baseDiscount) * 100,
+        additionalDiscount: additionalDiscountPercentage * 100,
         totalDiscount: totalDiscount * 100,
-        finalDiscountedAmount: result.discountedAmount * (1 - totalDiscount / baseDiscount)
+        finalDiscountedAmount,
       };
     });
-  
-    const finalTotalAmount = this.discountResults.reduce((total, result) => total + (result.finalDiscountedAmount || result.discountedAmount), 0);
-    const canReachFixedAmount = Math.abs(finalTotalAmount - fixedAmount) < 0.01;
-  
-    this.generateExplanation(true, amountFromExpiredInvoices, fixedAmount, canReachFixedAmount, canReachFixedAmount ? '' : 'No se puede alcanzar el monto exacto debido a las restricciones.');
+
+    this.isFixedAmountCalculation = true;
+    this.generateExplanation(true, amountFromExpiredInvoices, fixedAmount, canReachFixedAmount);
   }
 
   toggleFixedAmountSection() {
