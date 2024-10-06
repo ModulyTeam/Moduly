@@ -47,7 +47,7 @@
   transition: background-color 0.3s;
 }
 
-.functionality-card button:hover {
+.functionality-card button:hover, .module-functionality button:hover{
   background-color: #0056b3;
 }
 
