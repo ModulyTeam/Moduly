@@ -131,6 +131,7 @@
 
         <div class="form-group">
           <label for="allowedActions">Select Allowed Action:</label>
+          <p>This field is for verification only. Please select one of the permissions that are part of the selected permission type.</p>
           <select id="allowedActions" [(ngModel)]="selectedAllowedAction" class="form-control">
             <option *ngFor="let action of allowedActions" [value]="action.value">
               {{ action.label }}

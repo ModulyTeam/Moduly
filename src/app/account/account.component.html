@@ -12,23 +12,48 @@
     <p><strong>Email:</strong> {{ user.email }}</p>
   </div>
 
-
   <div class="invitations-dashboard">
     <h3>Invitaciones</h3>
 
     <div class="invitations-section">
       <h4>Invitaciones Pendientes</h4>
-      <ul>
-        <li *ngFor="let invitation of pendingInvitations">{{ invitation.email }} - {{ invitation.status }}</li>
-      </ul>
-      <button (click)="sendInvitation({ email: 'example@example.com' })">Enviar invitación</button>
+      <table>
+        <thead>
+        <tr>
+          <th>Email</th>
+          <th>Status</th>
+          <th>Acción</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let invitation of pendingInvitations">
+          <td>{{ invitation.email }}</td>
+          <td>{{ invitation.status }}</td>
+          <td>
+            <button (click)="acceptInvitation(invitation.id)">Aceptar</button>
+            <button (click)="denyInvitation(invitation.id)">Denegar</button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
     </div>
 
     <div class="invitations-section">
       <h4>Invitaciones Enviadas</h4>
-      <ul>
-        <li *ngFor="let invitation of sentInvitations">{{ invitation.email }} - {{ invitation.status }}</li>
-      </ul>
+      <table>
+        <thead>
+        <tr>
+          <th>Email</th>
+          <th>Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let invitation of sentInvitations">
+          <td>{{ invitation.email }}</td>
+          <td>{{ invitation.status }}</td>
+        </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 
@@ -59,4 +84,3 @@
   </div>
 
 </div>
-

@@ -51,10 +51,10 @@ th, td {
 }
 
 .long-text {
-  max-width: 300px; /* Tamaño máximo para el valor */
-  white-space: nowrap; /* Evitar que el texto se quiebre */
-  overflow: hidden; /* Esconder el texto que sobrepasa */
-  text-overflow: ellipsis; /* Añadir "..." cuando el texto es muy largo */
+  max-width: 300px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   position: relative;
 }
 
@@ -70,7 +70,7 @@ th, td {
 }
 
 .long-text {
-  cursor: pointer; /* Para indicar que se puede copiar */
+  cursor: pointer;
 }
 
 .long-text:hover {

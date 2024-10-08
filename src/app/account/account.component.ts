@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
-import {User} from "../models/User.model";
-import {AsyncPipe, NgForOf, NgIf} from "@angular/common";
-import {ApiService} from "../requests/ApiService";
-
+import { User } from "../models/User.model";
+import { AsyncPipe, NgForOf, NgIf } from "@angular/common";
+import { ApiService } from "../requests/ApiService";
 
 @Component({
   selector: 'app-account',
@@ -16,7 +15,7 @@ import {ApiService} from "../requests/ApiService";
   templateUrl: './account.component.html',
   styleUrls: ['./account.component.css']
 })
-export class AccountComponent {
+export class AccountComponent implements OnInit {
   userId: string = localStorage.getItem('userId') || '';
   user$: Observable<User>;
 
@@ -28,6 +27,12 @@ export class AccountComponent {
     this.user$ = this.apiService.getUserById(this.userId);
   }
 
+  // Llamar a las funciones de carga al iniciar el componente
+  ngOnInit(): void {
+    this.loadPendingInvitations();
+    this.loadSentInvitations();
+  }
+
   getLocalStorageKeys(): string[] {
     return Object.keys(localStorage);
   }
@@ -35,8 +40,22 @@ export class AccountComponent {
   getLocalStorageItem(key: string): string | null {
     return localStorage.getItem(key);
   }
-  sendInvitation(invitationData: any): void {
-    console.log('Sending invitation:', invitationData);
+
+  // Funciones para aceptar o denegar invitaciones
+  acceptInvitation(invitationId: number): void {
+    console.log(`Invitation ${invitationId} accepted`);
+    const invitation = this.pendingInvitations.find(inv => inv.id === invitationId);
+    if (invitation) {
+      invitation.status = 'Accepted';
+    }
+  }
+
+  denyInvitation(invitationId: number): void {
+    console.log(`Invitation ${invitationId} denied`);
+    const invitation = this.pendingInvitations.find(inv => inv.id === invitationId);
+    if (invitation) {
+      invitation.status = 'Denied';
+    }
   }
 
   loadPendingInvitations(): void {
