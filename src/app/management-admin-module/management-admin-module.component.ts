@@ -21,15 +21,12 @@ import {User} from "../models/User.model";
   templateUrl: './management-admin-module.component.html',
   styleUrl: './management-admin-module.component.css'
 })
+
 export class ManagementAdminModuleComponent implements OnInit {
   activeTab: 'create' | 'assign' | 'view' = 'create';
   permissionForm: FormGroup;
   employees: any[] = [];
   modules: any[] = [];
-  userPermissions = [];
-  showAssignModal = false;
-  showViewModal = false;
-  selectedEmployee: any;
   selectedActions: boolean[] = [];
   permissionTypes: any[] = [];
   allowedActions = Object.keys(AllowedActionEnum)
@@ -142,35 +139,5 @@ export class ManagementAdminModuleComponent implements OnInit {
       this.loadPermissionTypes(companyId);
     }
   }
-  viewPermissions(userCompanyId: string) {
-    this.apiService.getUserPermissions(userCompanyId).subscribe((permissions) => {
-      this.userPermissions = permissions;
-      this.showViewModal = true;
-    });
-  }
 
-  openAssignModal(employee: any) {
-    this.selectedEmployee = employee;
-    this.showAssignModal = true;
-  }
-
-  closeAssignModal() {
-    this.showAssignModal = false;
-  }
-
-  closeViewModal() {
-    this.showViewModal = false;
-  }
-
-  assignPermissionToUser(permissionType: any) {
-    const assignment = {
-      userId: this.selectedEmployee.userCompanyId,
-      permissionTypeId: permissionType.id
-    };
-
-    this.apiService.assignPermission(assignment).subscribe(() => {
-      alert('Permission assigned successfully');
-      this.closeAssignModal();
-    });
-  }
 }
