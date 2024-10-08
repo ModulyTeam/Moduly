@@ -31,7 +31,9 @@ export class ApiService {
   getEmployeesByCompany(companyId: string): Observable<UserCompany[]> {
     return this.http.get<UserCompany[]>(`${this.apiUrl}company/getemployeesbycompany/${companyId}`);
   }
-
+  getPermissionTypes(companyId: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}permission-assignment/company/${companyId}/permission-types`);
+  }
   getCompanyById(companyId: string): Observable<Company> {
     return this.http.get<Company>(`${this.apiUrl}company/${companyId}`);
   }

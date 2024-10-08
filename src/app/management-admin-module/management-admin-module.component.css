@@ -122,3 +122,40 @@ th {
 .table-container {
   overflow-x: auto;
 }
+
+.permission-types-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.permission-type-card {
+  background-color: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 15px;
+}
+
+.permission-type-card h3 {
+  margin-top: 0;
+  color: #007bff;
+}
+
+.allowed-actions h4 {
+  margin-bottom: 5px;
+}
+
+.allowed-actions ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.allowed-actions li {
+  background-color: #e9ecef;
+  border-radius: 3px;
+  padding: 3px 8px;
+  margin-bottom: 5px;
+  display: inline-block;
+  margin-right: 5px;
+}

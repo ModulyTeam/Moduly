@@ -10,6 +10,11 @@
       (click)="setActiveTab('assign')">
       Assign Permissions
     </button>
+    <button
+      [class.active]="activeTab === 'view'"
+      (click)="setActiveTab('view')">
+      View Permissions Type
+    </button>
   </div>
 
   <div class="tab-content">
@@ -79,6 +84,27 @@
           </tr>
           </tbody>
         </table>
+      </div>
+    </div>
+
+
+    <div *ngIf="activeTab === 'view'" class="card">
+      <h2>View Permission Types</h2>
+      <button (click)="refreshPermissionTypes()" class="btn-secondary">Refresh</button>
+      <div class="permission-types-container">
+        <div *ngFor="let permissionType of permissionTypes" class="permission-type-card">
+          <h3>{{permissionType.name}}</h3>
+          <p>{{permissionType.description || 'No description'}}</p>
+          <p><strong>Company:</strong> {{permissionType.companyName}}</p>
+          <div class="allowed-actions">
+            <h4>Allowed Actions:</h4>
+            <ul>
+              <li *ngFor="let action of permissionType.permissionTypeActions">
+                {{action.allowedAction}}
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
   </div>

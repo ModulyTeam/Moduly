@@ -2,12 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ApiService } from '../requests/ApiService';
 
-import {UserCompany} from "../models/user-company.model";
-import {AllowedActionEnum} from "../models/AllowedActionEnum";
-import {PermissionType} from "../models/PermissionType";
+import { UserCompany } from "../models/user-company.model";
+import { AllowedActionEnum } from "../models/AllowedActionEnum";
+import { PermissionType } from "../models/PermissionType";
 
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
-
 
 @Component({
   selector: 'app-management-admin-module',
@@ -21,11 +20,12 @@ import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Va
   styleUrl: './management-admin-module.component.css'
 })
 export class ManagementAdminModuleComponent implements OnInit {
-  activeTab: 'create' | 'assign' = 'create';
+  activeTab: 'create' | 'assign' | 'view' = 'create';
   permissionForm: FormGroup;
   employees: UserCompany[] = [];
   modules: any[] = [];
   selectedActions: boolean[] = [];
+  permissionTypes: any[] = [];
   allowedActions = Object.keys(AllowedActionEnum)
     .filter(key => isNaN(Number(key)))
     .map(key => ({
@@ -42,7 +42,6 @@ export class ManagementAdminModuleComponent implements OnInit {
       description: ['']
     });
 
-    // Initialize selectedActions array
     this.selectedActions = new Array(this.allowedActions.length).fill(false);
   }
 
@@ -51,10 +50,11 @@ export class ManagementAdminModuleComponent implements OnInit {
     if (companyId) {
       this.loadEmployees(companyId);
       this.loadModules(companyId);
+      this.loadPermissionTypes(companyId);
     }
   }
 
-  setActiveTab(tab: 'create' | 'assign') {
+  setActiveTab(tab: 'create' | 'assign' | 'view') {
     this.activeTab = tab;
   }
 
@@ -71,6 +71,13 @@ export class ManagementAdminModuleComponent implements OnInit {
   loadModules(companyId: string) {
     this.apiService.getModules(companyId).subscribe(
       modules => this.modules = modules
+    );
+  }
+
+  loadPermissionTypes(companyId: string) {
+    this.apiService.getPermissionTypes(companyId).subscribe(
+      permissionTypes => this.permissionTypes = permissionTypes,
+      error => console.error('Error loading permission types:', error)
     );
   }
 
@@ -97,10 +104,18 @@ export class ManagementAdminModuleComponent implements OnInit {
             console.log('Permission type created:', response);
             this.permissionForm.reset();
             this.selectedActions = new Array(this.allowedActions.length).fill(false);
+            this.loadPermissionTypes(companyId);
           },
           error => console.error('Error creating permission type:', error)
         );
       }
+    }
+  }
+
+  refreshPermissionTypes() {
+    const companyId = localStorage.getItem('companyId');
+    if (companyId) {
+      this.loadPermissionTypes(companyId);
     }
   }
 }
