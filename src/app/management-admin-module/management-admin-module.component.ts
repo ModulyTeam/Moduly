@@ -199,7 +199,7 @@ export class ManagementAdminModuleComponent implements OnInit {
   }
 
   closeUserPermissions() {
-    this.selectedUserPermissions = null;
+    this.permissionsWithDetails = [];  // Limpiar los permisos detallados
   }
 
 
@@ -250,6 +250,14 @@ export class ManagementAdminModuleComponent implements OnInit {
         this.assignErrorMessage = 'Error assigning permissions: ' + error.message;
       }
     );
+  }
+
+
+  closeAssignPermissions() {
+    this.selectedUserPermissions = null;
+    this.selectedModuleId = null;
+    this.selectedPermissionTypeId = null;
+    this.selectedAllowedAction = null;
   }
 
 

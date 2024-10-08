@@ -159,6 +159,21 @@ th {
   display: inline-block;
   margin-right: 5px;
 }
+.buttons {
+  display: flex;
+  justify-content: start;
+}
+
+.buttons button {
+  margin-right: 1vw;
+}
+
+.buttons button:last-child {
+  margin-right: 0;
+}
+
+
+
 .modal {
   position: fixed;
   top: 50%;
@@ -179,27 +194,7 @@ th {
 .modal button {
   margin-top: 20px;
 }
-.overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
 
-.overlay-content {
-  background-color: white;
-  padding: 20px;
-  border-radius: 5px;
-  max-width: 80%;
-  max-height: 80%;
-  overflow-y: auto;
-}
 .permission-card {
   border: 1px solid #ccc;
   padding: 20px;
@@ -271,4 +266,87 @@ button {
 
 button:hover {
   background-color: #0056b3;
+}
+.assign-permission-container {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  margin: 20px auto;
+}
+
+h2 {
+  margin-bottom: 20px;
+  color: #333;
+  font-size: 24px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: #555;
+}
+
+select.form-control {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+button.btn-primary {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button.btn-primary:hover {
+  background-color: #0056b3;
+}
+
+button.btn-secondary {
+  background-color: #6c757d;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button.btn-secondary:hover {
+  background-color: #5a6268;
+}
+
+.alert {
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+.alert-success {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.alert-danger {
+  background-color: #f8d7da;
+  color: #721c24;
 }

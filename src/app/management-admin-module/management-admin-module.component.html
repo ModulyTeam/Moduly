@@ -79,13 +79,75 @@
             <td>{{employee.fullName}}</td>
             <td>{{employee.email}}</td>
             <td>{{employee.joinDate | date:'shortDate'}}</td>
-            <td class="actions">
+            <td class="buttons">
               <button class="btn-secondary" (click)="viewUserPermissions(employee.id)">View Permissions</button>
               <button class="btn-primary" (click)="prepareAssignPermissions(employee.id)">Assign Permission</button>
             </td>
+
           </tr>
           </tbody>
         </table>
+      </div>
+      <div *ngIf="permissionsWithDetails && permissionsWithDetails.length > 0">
+        <h3>User Permissions</h3>
+        <div *ngFor="let permission of permissionsWithDetails">
+          <div class="permission-card">
+            <h4>Module: {{ permission.module?.name }}</h4>
+            <p class="module-details"><strong>Module Creation Date:</strong> {{ permission.module?.creationDate | date:'shortDate' }}</p> <!-- Muestra la fecha de creación -->
+            <p class="module-details"><strong>Module Type:</strong> {{ permission.module?.type }}</p> <!-- Muestra la descripción del módulo (type) -->
+
+
+            <h5>Permission Type:</h5>
+            <p><strong>Name:</strong> {{ permission.permissionTypeName }}</p>
+            <p><strong>Description:</strong> {{ permission.permissionTypeDescription }}</p>
+
+            <h5>Granted:</h5>
+            <p>{{ permission.isGranted }}</p>
+          </div>
+          <hr>
+        </div>
+
+        <button (click)="closeUserPermissions()">Close</button>
+      </div>
+
+      <div *ngIf="selectedUserPermissions" class="assign-permission-container card">
+        <h2>Assign Permissions to {{ selectedUserPermissions.fullName }}</h2>
+
+        <div class="form-group">
+          <label for="modules">Select Module:</label>
+          <select id="modules" [(ngModel)]="selectedModuleId" class="form-control">
+            <option *ngFor="let module of modules" [value]="module.id">{{ module.moduleName }}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="permissionTypes">Select Permission Types:</label>
+          <select id="permissionTypes" [(ngModel)]="selectedPermissionTypeId" class="form-control">
+            <option *ngFor="let permissionType of permissionTypes" [value]="permissionType.id">
+              {{permissionType.name}} - {{permissionType.description || 'No description'}}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="allowedActions">Select Allowed Action:</label>
+          <select id="allowedActions" [(ngModel)]="selectedAllowedAction" class="form-control">
+            <option *ngFor="let action of allowedActions" [value]="action.value">
+              {{ action.label }}
+            </option>
+          </select>
+        </div>
+
+        <div class="actions">
+          <button class="btn btn-primary" (click)="assignPermissions()">Assign Permissions</button>
+        </div>
+
+        <div *ngIf="assignSuccessMessage" class="alert alert-success mt-3">{{ assignSuccessMessage }}</div>
+        <div *ngIf="assignErrorMessage" class="alert alert-danger mt-3">{{ assignErrorMessage }}</div>
+
+        <div class="mt-3">
+          <button class="btn btn-secondary" (click)="closeAssignPermissions()">Close</button>
+        </div>
       </div>
     </div>
 
@@ -112,61 +174,7 @@
   </div>
 
 
-  <div *ngIf="permissionsWithDetails && permissionsWithDetails.length > 0">
-    <h3>User Permissions</h3>
-    <div *ngFor="let permission of permissionsWithDetails">
-      <div class="permission-card">
-        <h4>Module: {{ permission.module?.name }}</h4>
-        <p class="module-details"><strong>Module Creation Date:</strong> {{ permission.module?.creationDate | date:'shortDate' }}</p> <!-- Muestra la fecha de creación -->
-        <p class="module-details"><strong>Module Type:</strong> {{ permission.module?.type }}</p> <!-- Muestra la descripción del módulo (type) -->
 
-
-        <h5>Permission Type:</h5>
-        <p><strong>Name:</strong> {{ permission.permissionTypeName }}</p>
-        <p><strong>Description:</strong> {{ permission.permissionTypeDescription }}</p>
-
-        <h5>Granted:</h5>
-        <p>{{ permission.isGranted }}</p>
-      </div>
-      <hr>
-    </div>
-
-    <button (click)="closeUserPermissions()">Close</button>
-  </div>
-
-  <div *ngIf="selectedUserPermissions" class="assign-permission-container">
-    <h2>Assign Permissions to {{ selectedUserPermissions.fullName }}</h2>
-
-    <div class="form-group">
-      <label for="modules">Select Module:</label>
-      <select id="modules" [(ngModel)]="selectedModuleId">
-        <option *ngFor="let module of modules" [value]="module.id">{{ module.moduleName }}</option>
-      </select>
-    </div>
-
-
-    <div class="form-group">
-      <label for="permissionTypes">Select Permission Types:</label>
-      <select id="permissionTypes" [(ngModel)]="selectedPermissionTypeId">
-        <option *ngFor="let permissionType of permissionTypes" [value]="permissionType.id">
-          {{permissionType.name}} - {{permissionType.description || 'No description'}}
-        </option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label for="allowedActions">Select Allowed Action:</label>
-      <select id="allowedActions" [(ngModel)]="selectedAllowedAction">
-        <option *ngFor="let action of allowedActions" [value]="action.value">
-          {{ action.label }}
-        </option>
-      </select>
-    </div>
-
-    <button class="btn-primary" (click)="assignPermissions()">Assign Permissions</button>
-    <div *ngIf="assignSuccessMessage" class="success-message">{{ assignSuccessMessage }}</div>
-    <div *ngIf="assignErrorMessage" class="error-message">{{ assignErrorMessage }}</div>
-  </div>
 
 
 
