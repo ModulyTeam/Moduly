@@ -9,6 +9,7 @@ import { PermissionType } from "../models/PermissionType";
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import {forkJoin} from "rxjs";
 import {User} from "../models/User.model";
+import {Module} from "../models/Module.model";
 
 @Component({
   selector: 'app-management-admin-module',
@@ -36,7 +37,11 @@ export class ManagementAdminModuleComponent implements OnInit {
       label: key.replace(/_/g, ' ').toLowerCase()
     }));
   employeesWithDetails: (UserCompany & User)[] = [];
-
+//new
+  userCompanies: UserCompany[] = [];  // Nuevo array para almacenar los UserCompany
+  selectedUserPermissions: any = null;
+  modulesWithDetails: any[] = []; //  detalles de los módulos
+  permissionsWithDetails: any[] = []; //  permisos detallados
   constructor(
     private fb: FormBuilder,
     private apiService: ApiService
@@ -70,6 +75,8 @@ export class ManagementAdminModuleComponent implements OnInit {
     this.apiService.getEmployeesByCompany(companyId).subscribe(
       (employees: UserCompany[]) => {
         this.employees = employees;
+        this.userCompanies = employees;  // Almacenar los UserCompany originales
+
         this.loadEmployeeDetails();
       }
     );
@@ -139,5 +146,51 @@ export class ManagementAdminModuleComponent implements OnInit {
       this.loadPermissionTypes(companyId);
     }
   }
+  viewUserPermissions(userId: string) {
+    const employee = this.employeesWithDetails.find(emp => emp.userId === userId);
+    if (employee) {
+      const userCompany = this.userCompanies.find(emp => emp.userId === userId);
+      if (userCompany) {
+        this.apiService.getUserPermissions(userCompany.id).subscribe(
+          (permissions: any[]) => {
+            // Obtenemos los detalles del módulo utilizando el moduleId
+            const moduleRequests = permissions.map((permission: { moduleId: string; }) =>
+              this.apiService.getModuleById(permission.moduleId)
+            );
 
+            // Mapear los permisos junto con los detalles de los módulos
+            forkJoin(moduleRequests).subscribe(
+              (modules: Module[]) => {
+                console.log('Modules:', modules);  // Verifica que los módulos lleguen correctamente
+                this.permissionsWithDetails = permissions.map((permission: any, index: number) => ({
+                  module: {
+                    id: permission.moduleId,
+                    name: modules[index]?.moduleName || 'Unknown',
+                    type: modules[index]?.moduleType || 'Unknown',
+                    creationDate: modules[index]?.creationDate || 'Unknown'
+                  },
+                  permissionTypeName: permission.permissionType.name,
+                  permissionTypeDescription: permission.permissionType.description || 'No description available',
+                  isGranted: permission.isGranted ? 'Yes' : 'No'
+                }));
+              },
+              error => console.error('Error loading module details:', error)
+            );
+          },
+          error => console.error('Error loading user permissions:', error)
+        );
+      } else {
+        console.error('UserCompany not found for userId:', userId);
+      }
+    } else {
+      console.error('Employee not found');
+    }
+  }
+
+
+
+
+  closeUserPermissions() {
+    this.selectedUserPermissions = null;
+  }
 }

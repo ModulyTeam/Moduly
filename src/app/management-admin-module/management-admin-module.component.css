@@ -179,3 +179,96 @@ th {
 .modal button {
   margin-top: 20px;
 }
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.overlay-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+  max-width: 80%;
+  max-height: 80%;
+  overflow-y: auto;
+}
+.permission-card {
+  border: 1px solid #ccc;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.permission-card h4 {
+  margin-top: 0;
+  color: #2c3e50;
+}
+
+.permission-card p {
+  font-size: 14px;
+  color: #7f8c8d;
+}
+
+button {
+  padding: 10px 20px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #2980b9;
+}
+.permission-card {
+  padding: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-bottom: 15px;
+}
+
+.permission-card h4 {
+  margin-top: 0;
+  color: #333;
+}
+
+.module-details {
+  font-style: italic;
+  margin: 5px 0;
+  color: #666;
+}
+
+.module-details strong {
+  color: #333;
+}
+
+.permission-card p {
+  margin: 5px 0;
+}
+
+.permission-card hr {
+  margin-top: 10px;
+}
+
+button {
+  margin-top: 10px;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+}
+
+button:hover {
+  background-color: #0056b3;
+}

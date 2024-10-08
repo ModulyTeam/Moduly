@@ -80,7 +80,7 @@
             <td>{{employee.email}}</td>
             <td>{{employee.joinDate | date:'shortDate'}}</td>
             <td class="actions">
-              <button class="btn-secondary">View Permissions</button>
+              <button class="btn-secondary" (click)="viewUserPermissions(employee.id)">View Permissions</button>
               <button class="btn-primary">Assign Permission</button>
             </td>
           </tr>
@@ -110,4 +110,30 @@
       </div>
     </div>
   </div>
+
+
+  <div *ngIf="permissionsWithDetails && permissionsWithDetails.length > 0">
+    <h3>User Permissions</h3>
+    <div *ngFor="let permission of permissionsWithDetails">
+      <div class="permission-card">
+        <h4>Module: {{ permission.module?.name }}</h4>
+        <p class="module-details"><strong>Module Creation Date:</strong> {{ permission.module?.creationDate | date:'shortDate' }}</p> <!-- Muestra la fecha de creación -->
+        <p class="module-details"><strong>Module Type:</strong> {{ permission.module?.type }}</p> <!-- Muestra la descripción del módulo (type) -->
+
+
+        <h5>Permission Type:</h5>
+        <p><strong>Name:</strong> {{ permission.permissionTypeName }}</p>
+        <p><strong>Description:</strong> {{ permission.permissionTypeDescription }}</p>
+
+        <h5>Granted:</h5>
+        <p>{{ permission.isGranted }}</p>
+      </div>
+      <hr>
+    </div>
+
+    <button (click)="closeUserPermissions()">Close</button>
+  </div>
+
+
+
 </div>

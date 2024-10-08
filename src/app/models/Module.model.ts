@@ -4,4 +4,5 @@ export interface Module {
   moduleType: string;
   companyId: string;  // O el tipo adecuado
   userId: string;     // O el tipo adecuado
+  creationDate?: string;
 }
