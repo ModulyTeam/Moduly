@@ -1,0 +1,78 @@
+.account-container {
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+h2 {
+  color: #333;
+}
+
+h3 {
+  color: #007bff;
+}
+
+.invitations-dashboard {
+  margin-top: 20px;
+}
+
+.invitations-section {
+  margin-bottom: 20px;
+}
+
+button {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+.localStorage-table {
+  margin-top: 20px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.long-text {
+  max-width: 300px; /* Tamaño máximo para el valor */
+  white-space: nowrap; /* Evitar que el texto se quiebre */
+  overflow: hidden; /* Esconder el texto que sobrepasa */
+  text-overflow: ellipsis; /* Añadir "..." cuando el texto es muy largo */
+  position: relative;
+}
+
+.long-text:hover {
+  overflow: visible;
+  white-space: normal;
+  background-color: #f0f0f0;
+  z-index: 1;
+}
+
+.long-text span {
+  color: #999;
+}
+
+.long-text {
+  cursor: pointer; /* Para indicar que se puede copiar */
+}
+
+.long-text:hover {
+  background-color: #f0f0f0;
+}

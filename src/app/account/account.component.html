@@ -1,0 +1,62 @@
+<div class="account-container">
+  <h2>Mi cuenta</h2>
+
+  <!-- Datos del usuario -->
+  <div *ngIf="user$ | async as user">
+    <h3>Información del usuario</h3>
+    <p><strong>Username:</strong> {{ user.username }}</p>
+    <p><strong>Full Name:</strong> {{ user.fullName }}</p>
+    <p><strong>Age:</strong> {{ user.age }}</p>
+    <p><strong>DNI:</strong> {{ user.dni }}</p>
+    <p><strong>Phone Number:</strong> {{ user.phoneNumber }}</p>
+    <p><strong>Email:</strong> {{ user.email }}</p>
+  </div>
+
+
+  <div class="invitations-dashboard">
+    <h3>Invitaciones</h3>
+
+    <div class="invitations-section">
+      <h4>Invitaciones Pendientes</h4>
+      <ul>
+        <li *ngFor="let invitation of pendingInvitations">{{ invitation.email }} - {{ invitation.status }}</li>
+      </ul>
+      <button (click)="sendInvitation({ email: 'example@example.com' })">Enviar invitación</button>
+    </div>
+
+    <div class="invitations-section">
+      <h4>Invitaciones Enviadas</h4>
+      <ul>
+        <li *ngFor="let invitation of sentInvitations">{{ invitation.email }} - {{ invitation.status }}</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Tabla de localStorage -->
+  <div class="localStorage-table">
+    <h3>Valores del localStorage</h3>
+    <table>
+      <thead>
+      <tr>
+        <th>Clave</th>
+        <th>Valor</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let key of getLocalStorageKeys()">
+        <td>{{ key }}</td>
+        <td class="long-text" [title]="getLocalStorageItem(key)">
+          <ng-container *ngIf="key === 'jwt_token'">
+            ....................................
+          </ng-container>
+          <ng-container *ngIf="key !== 'jwt_token'">
+            {{ getLocalStorageItem(key) }}
+          </ng-container>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+

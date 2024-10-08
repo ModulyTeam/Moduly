@@ -1,0 +1,15 @@
+<header>
+  <div class="header-container">
+    <div class="logo">
+      <a routerLink="/dashboard">Moduly</a>
+      <p class="subtitle">La mejor app para letras de descuento</p>
+    </div>
+    <nav>
+      <ul>
+        <li><button (click)="navigateTo('/dashboard')">Home</button></li>
+        <li><button (click)="navigateTo('/account')">Account</button></li>
+        <li><button (click)="logOut()">Log Out</button></li>
+      </ul>
+    </nav>
+  </div>
+</header>

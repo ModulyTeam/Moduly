@@ -9,6 +9,7 @@ import { AuthGuard } from "./auth/services/auth.guard";
 import {ManagementModuleComponent} from "./management-module/management-module.component";
 import {FinancialHelperComponent} from "./Logic/financial-helper/financial-helper.component";
 import {ManagementAdminModuleComponent} from "./management-admin-module/management-admin-module.component";
+import {AccountComponent} from "./account/account.component";
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -20,6 +21,7 @@ export const routes: Routes = [
   { path: 'management-module/:id', component: ManagementModuleComponent, canActivate: [AuthGuard] },
   { path: 'management-admin-module/:id', component: ManagementAdminModuleComponent, canActivate: [AuthGuard] },
   { path: 'financial-helper/:moduleId', component: FinancialHelperComponent, canActivate: [AuthGuard] },
+  { path: 'account', component: AccountComponent, canActivate: [AuthGuard] },
 
   { path: '**', redirectTo: '/login' },
 ];

@@ -12,17 +12,17 @@
 .dashboard-header {
   text-align: center;
   margin-bottom: 30px;
+}
 
-  h1 {
-    font-size: 2.5em;
-    margin-bottom: 10px;
-    color: #f1c40f; /* Color del título del header */
-  }
+.dashboard-header h1 {
+  font-size: 2.5em;
+  margin-bottom: 10px;
+  color: #333;
+}
 
-  p {
-    font-size: 1.2em;
-    color: #666;
-  }
+.dashboard-header p {
+  font-size: 1.2em;
+  color: #666;
 }
 
 /* Search Bar */
@@ -30,22 +30,22 @@
   display: flex;
   justify-content: center;
   margin: 20px 0;
+}
 
-  input {
-    width: 100%;
-    max-width: 400px;
-    padding: 10px;
-    border: 1px solid #e0e0e0;
-    border-radius: 5px;
-    font-size: 1em;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: border-color 0.3s ease;
+.dashboard-search input {
+  width: 100%;
+  max-width: 400px;
+  padding: 10px;
+  border: 1px solid #e0e0e0;
+  border-radius: 5px;
+  font-size: 1em;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: border-color 0.3s ease;
+}
 
-    &:focus {
-      border-color: #f1c40f; /* Color del borde del input al recibir foco */
-      outline: none;
-    }
-  }
+.dashboard-search input:focus {
+  border-color: #333;
+  outline: none;
 }
 
 /* Summary Cards */
@@ -54,34 +54,34 @@
   justify-content: space-around;
   margin-bottom: 30px;
   flex-wrap: wrap;
+}
 
-  .summary-card {
-    background-color: #ffffff;
-    padding: 20px;
-    border-radius: 8px;
-    text-align: center;
-    width: 100%;
-    max-width: 300px;
-    border: 1px solid #e0e0e0;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+.dashboard-summary .summary-card {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  width: 100%;
+  max-width: 300px;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
 
-    h2 {
-      margin-bottom: 10px;
-      font-size: 1.5em;
-      color: #333;
-    }
+.dashboard-summary .summary-card h2 {
+  margin-bottom: 10px;
+  font-size: 1.5em;
+  color: #333;
+}
 
-    p {
-      font-size: 2em;
-      color: #f1c40f; /* Color del texto en el summary */
-    }
+.dashboard-summary .summary-card p {
+  font-size: 2em;
+  color: #333;
+}
 
-    &:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-    }
-  }
+.dashboard-summary .summary-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
 /* Actions */
@@ -90,22 +90,22 @@
   justify-content: center;
   gap: 20px;
   margin-bottom: 30px;
+}
 
-  button {
-    background-color: #f1c40f; /* Color de fondo del botón de acción */
-    color: #fff;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 5px;
-    font-size: 1em;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.3s ease;
+.dashboard-actions button {
+  background-color: #f5f5f5;
+  color: #333;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 5px;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
 
-    &:hover {
-      background-color: #f39c12; /* Color del botón al pasar el ratón */
-      transform: scale(1.05);
-    }
-  }
+.dashboard-actions button:hover {
+  background-color: #e0e0e0;
+  transform: scale(1.05);
 }
 
 /* Companies Grid */
@@ -113,48 +113,48 @@
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
+}
 
-  .company-card {
-    background-color: #ffffff;
-    padding: 20px;
-    border-radius: 8px;
-    border: 1px solid #e0e0e0;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    width: 100%;
-    max-width: 300px;
+.dashboard-companies .company-card {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  width: 100%;
+  max-width: 300px;
+}
 
-    h3 {
-      margin-bottom: 10px;
-      font-size: 1.5em;
-      color: #f1c40f; /* Color del título en el card de empresa */
-    }
+.dashboard-companies .company-card h3 {
+  margin-bottom: 10px;
+  font-size: 1.5em;
+  color: #333;
+}
 
-    p {
-      font-size: 1em;
-      color: #333;
-      margin: 5px 0;
-    }
+.dashboard-companies .company-card p {
+  font-size: 1em;
+  color: #333;
+  margin: 5px 0;
+}
 
-    button {
-      background-color: #f1c40f; /* Color de fondo del botón en el card de empresa */
-      color: #fff;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 5px;
-      font-size: 1em;
-      cursor: pointer;
-      transition: background-color 0.3s ease, transform 0.3s ease;
+.dashboard-companies .company-card button {
+  background-color: #f5f5f5;
+  color: #333;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
 
-      &:hover {
-        background-color: #f39c12; /* Color del botón al pasar el ratón */
-        transform: scale(1.05);
-      }
-    }
+.dashboard-companies .company-card button:hover {
+  background-color: #e0e0e0;
+  transform: scale(1.05);
+}
 
-    &:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-    }
-  }
+.dashboard-companies .company-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
