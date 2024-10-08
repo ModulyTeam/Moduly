@@ -45,7 +45,14 @@ export class ApiService {
     return this.http.post(`${this.apiUrl}permission-assignment/create-permission-type`, permissionType);
   }
 
-  assignPermission(assignment: { permissionTypeId: any; userId: any }): Observable<any> {
+  assignPermission(assignment: {
+    companyId: string;
+    assignerUserId: string;
+    permissionTypeId: any;
+    targetUserId: any;
+    allowedAction: any;
+    moduleId: any
+  }): Observable<any> {
     return this.http.post(`${this.apiUrl}permission-assignment/assign`, assignment);
   }
 

@@ -81,7 +81,7 @@
             <td>{{employee.joinDate | date:'shortDate'}}</td>
             <td class="actions">
               <button class="btn-secondary" (click)="viewUserPermissions(employee.id)">View Permissions</button>
-              <button class="btn-primary">Assign Permission</button>
+              <button class="btn-primary" (click)="prepareAssignPermissions(employee.id)">Assign Permission</button>
             </td>
           </tr>
           </tbody>
@@ -132,6 +132,40 @@
     </div>
 
     <button (click)="closeUserPermissions()">Close</button>
+  </div>
+
+  <div *ngIf="selectedUserPermissions" class="assign-permission-container">
+    <h2>Assign Permissions to {{ selectedUserPermissions.fullName }}</h2>
+
+    <div class="form-group">
+      <label for="modules">Select Module:</label>
+      <select id="modules" [(ngModel)]="selectedModuleId">
+        <option *ngFor="let module of modules" [value]="module.id">{{ module.moduleName }}</option>
+      </select>
+    </div>
+
+
+    <div class="form-group">
+      <label for="permissionTypes">Select Permission Types:</label>
+      <select id="permissionTypes" [(ngModel)]="selectedPermissionTypeId">
+        <option *ngFor="let permissionType of permissionTypes" [value]="permissionType.id">
+          {{permissionType.name}} - {{permissionType.description || 'No description'}}
+        </option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="allowedActions">Select Allowed Action:</label>
+      <select id="allowedActions" [(ngModel)]="selectedAllowedAction">
+        <option *ngFor="let action of allowedActions" [value]="action.value">
+          {{ action.label }}
+        </option>
+      </select>
+    </div>
+
+    <button class="btn-primary" (click)="assignPermissions()">Assign Permissions</button>
+    <div *ngIf="assignSuccessMessage" class="success-message">{{ assignSuccessMessage }}</div>
+    <div *ngIf="assignErrorMessage" class="error-message">{{ assignErrorMessage }}</div>
   </div>
 
 

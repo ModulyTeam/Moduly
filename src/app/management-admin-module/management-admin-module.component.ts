@@ -42,6 +42,17 @@ export class ManagementAdminModuleComponent implements OnInit {
   selectedUserPermissions: any = null;
   modulesWithDetails: any[] = []; //  detalles de los módulos
   permissionsWithDetails: any[] = []; //  permisos detallados
+
+  // Nuevas variables para manejar la asignación de permisos
+  selectedPermissionTypes: any[] = [];
+  selectedModuleId: string | null = null; // Nueva propiedad para el módulo seleccionado
+  selectedPermissionTypeId: string | null = null; // Nueva propiedad para el tipo de permiso seleccionado
+  selectedAllowedAction: AllowedActionEnum | null = null; // Nueva propiedad para la acción permitida seleccionada
+
+  assignSuccessMessage: string = '';
+  assignErrorMessage: string = '';
+
+
   constructor(
     private fb: FormBuilder,
     private apiService: ApiService
@@ -187,10 +198,59 @@ export class ManagementAdminModuleComponent implements OnInit {
     }
   }
 
-
-
-
   closeUserPermissions() {
     this.selectedUserPermissions = null;
   }
+
+
+
+  prepareAssignPermissions(userId: string) {
+    const employee = this.employeesWithDetails.find(emp => emp.userId === userId);
+    const companyId = localStorage.getItem('companyId'); // Obtener companyId del localStorage
+
+    if (employee && companyId) {
+      this.selectedUserPermissions = employee;
+      // Llamar al servicio para obtener los módulos por el companyId
+      this.apiService.getModules(companyId).subscribe(
+        (modules: Module[]) => {
+          this.modules = modules; // Asignar los módulos obtenidos a this.modules
+        },
+        error => console.error('Error loading modules:', error)
+      );
+    }
+  }
+
+
+  assignPermissions() {
+    const assignerUserId = localStorage.getItem('userId');
+    const companyId = localStorage.getItem('companyId');
+
+    if (!this.selectedUserPermissions || !assignerUserId || !companyId || !this.selectedPermissionTypeId || !this.selectedModuleId || !this.selectedAllowedAction) {
+      this.assignErrorMessage = 'Please fill out all required fields.';
+      return;
+    }
+
+    const assignment = {
+      assignerUserId,
+      targetUserId: this.selectedUserPermissions.userId,
+      companyId: companyId,
+      moduleId: this.selectedModuleId,
+      permissionTypeId: this.selectedPermissionTypeId,
+      allowedAction: this.selectedAllowedAction
+    };
+
+    this.apiService.assignPermission(assignment).subscribe(
+      response => {
+        this.assignSuccessMessage = 'Permissions successfully assigned!';
+        this.assignErrorMessage = '';
+        this.viewUserPermissions(this.selectedUserPermissions.userId);
+      },
+      error => {
+        this.assignSuccessMessage = '';
+        this.assignErrorMessage = 'Error assigning permissions: ' + error.message;
+      }
+    );
+  }
+
+
 }
