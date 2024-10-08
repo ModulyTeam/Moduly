@@ -1,11 +1,11 @@
 <div class="account-container">
-  <!-- Datos del usuario -->
+  <!-- User data -->
   <div *ngIf="user$ | async as user">
     <h2>Account Information</h2>
     <p><strong>Username:</strong> {{ user.username }}</p>
     <p><strong>Full Name:</strong> {{ user.fullName }}</p>
     <p><strong>Age:</strong> {{ user.age }}</p>
-    <p><strong>DNI:</strong> {{ user.dni }}</p>
+    <p><strong>ID Number:</strong> {{ user.dni }}</p>
     <p><strong>Phone Number:</strong> {{ user.phoneNumber }}</p>
     <p><strong>Email:</strong> {{ user.email }}</p>
   </div>
@@ -20,7 +20,7 @@
         <tr>
           <th>Email</th>
           <th>Status</th>
-          <th>Acción</th>
+          <th>Action</th>
         </tr>
         </thead>
         <tbody>
@@ -28,8 +28,8 @@
           <td>{{ invitation.email }}</td>
           <td>{{ invitation.status }}</td>
           <td>
-            <button (click)="acceptInvitation(invitation.id)">Aceptar</button>
-            <button (click)="denyInvitation(invitation.id)">Denegar</button>
+            <button (click)="acceptInvitation(invitation.id)">Accept</button>
+            <button (click)="denyInvitation(invitation.id)">Deny</button>
           </td>
         </tr>
         </tbody>
@@ -37,7 +37,7 @@
     </div>
 
     <div class="invitations-section">
-      <h4>Invitations sent</h4>
+      <h4>Sent Invitations</h4>
       <table>
         <thead>
         <tr>
@@ -55,14 +55,14 @@
     </div>
   </div>
 
-  <!-- Tabla de localStorage -->
+  <!-- LocalStorage table -->
   <div class="localStorage-table">
-    <h3>Valores del localStorage</h3>
+    <h3>LocalStorage Values</h3>
     <table>
       <thead>
       <tr>
-        <th>Clave</th>
-        <th>Valor</th>
+        <th>Key</th>
+        <th>Value</th>
       </tr>
       </thead>
       <tbody>
