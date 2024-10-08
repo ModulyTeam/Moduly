@@ -56,7 +56,7 @@
                   [disabled]="isAdminModule(module)">
             ✏️
           </button>
-          <a [routerLink]="['/management-module', module.id]" class="manage-module-btn">
+          <a [routerLink]="isAdminModule(module) ? ['/management-admin-module', module.id] : ['/management-module', module.id]" class="manage-module-btn">
             ⚙️
           </a>
           <button class="delete-module-btn"
@@ -70,7 +70,6 @@
 
   </section>
 
-  <!-- Popup de confirmación de eliminación -->
   <div class="confirmation-popup" *ngIf="showDeleteConfirmation">
     <div class="popup-content">
       <p>Are you sure you want to delete the module "{{ moduleToDelete?.moduleName }}"?</p>
@@ -79,7 +78,6 @@
     </div>
   </div>
 
-  <!-- Modal para editar módulo -->
   <div class="modal-overlay" *ngIf="showEditModal">
     <div class="modal-content">
       <h3>Edit Module</h3>

@@ -55,7 +55,6 @@ export class CompanyManagerComponent implements OnInit {
       this.loadCompanyData(companyId);
     } else {
       console.error('No company ID available');
-      // Manejar el caso en que no hay ID de compañía disponible
     }
     this.loadDollarValue();
     this.loadExchangeRates();
