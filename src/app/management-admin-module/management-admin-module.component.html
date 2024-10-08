@@ -70,13 +70,15 @@
           <tr>
             <th>Name</th>
             <th>Email</th>
+            <th>Join Date</th>
             <th>Actions</th>
           </tr>
           </thead>
           <tbody>
-          <tr *ngFor="let employee of employees">
-            <td>{{employee.userId}}</td>
-            <td>{{employee.joinDate}}</td>
+          <tr *ngFor="let employee of employeesWithDetails">
+            <td>{{employee.fullName}}</td>
+            <td>{{employee.email}}</td>
+            <td>{{employee.joinDate | date:'shortDate'}}</td>
             <td class="actions">
               <button class="btn-secondary">View Permissions</button>
               <button class="btn-primary">Assign Permission</button>

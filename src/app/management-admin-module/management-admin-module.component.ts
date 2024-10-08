@@ -7,6 +7,8 @@ import { AllowedActionEnum } from "../models/AllowedActionEnum";
 import { PermissionType } from "../models/PermissionType";
 
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
+import {forkJoin} from "rxjs";
+import {User} from "../models/User.model";
 
 @Component({
   selector: 'app-management-admin-module',
@@ -22,8 +24,12 @@ import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Va
 export class ManagementAdminModuleComponent implements OnInit {
   activeTab: 'create' | 'assign' | 'view' = 'create';
   permissionForm: FormGroup;
-  employees: UserCompany[] = [];
+  employees: any[] = [];
   modules: any[] = [];
+  userPermissions = [];
+  showAssignModal = false;
+  showViewModal = false;
+  selectedEmployee: any;
   selectedActions: boolean[] = [];
   permissionTypes: any[] = [];
   allowedActions = Object.keys(AllowedActionEnum)
@@ -32,6 +38,7 @@ export class ManagementAdminModuleComponent implements OnInit {
       value: AllowedActionEnum[key as keyof typeof AllowedActionEnum],
       label: key.replace(/_/g, ' ').toLowerCase()
     }));
+  employeesWithDetails: (UserCompany & User)[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -64,10 +71,27 @@ export class ManagementAdminModuleComponent implements OnInit {
 
   loadEmployees(companyId: string) {
     this.apiService.getEmployeesByCompany(companyId).subscribe(
-      employees => this.employees = employees
+      (employees: UserCompany[]) => {
+        this.employees = employees;
+        this.loadEmployeeDetails();
+      }
     );
   }
+  loadEmployeeDetails() {
+    const userRequests = this.employees.map(employee =>
+      this.apiService.getUserById(employee.userId)
+    );
 
+    forkJoin(userRequests).subscribe(
+      (users: User[]) => {
+        this.employeesWithDetails = this.employees.map((employee, index) => ({
+          ...employee,
+          ...users[index]
+        }));
+      },
+      error => console.error('Error loading user details:', error)
+    );
+  }
   loadModules(companyId: string) {
     this.apiService.getModules(companyId).subscribe(
       modules => this.modules = modules
@@ -117,5 +141,36 @@ export class ManagementAdminModuleComponent implements OnInit {
     if (companyId) {
       this.loadPermissionTypes(companyId);
     }
+  }
+  viewPermissions(userCompanyId: string) {
+    this.apiService.getUserPermissions(userCompanyId).subscribe((permissions) => {
+      this.userPermissions = permissions;
+      this.showViewModal = true;
+    });
+  }
+
+  openAssignModal(employee: any) {
+    this.selectedEmployee = employee;
+    this.showAssignModal = true;
+  }
+
+  closeAssignModal() {
+    this.showAssignModal = false;
+  }
+
+  closeViewModal() {
+    this.showViewModal = false;
+  }
+
+  assignPermissionToUser(permissionType: any) {
+    const assignment = {
+      userId: this.selectedEmployee.userCompanyId,
+      permissionTypeId: permissionType.id
+    };
+
+    this.apiService.assignPermission(assignment).subscribe(() => {
+      alert('Permission assigned successfully');
+      this.closeAssignModal();
+    });
   }
 }
