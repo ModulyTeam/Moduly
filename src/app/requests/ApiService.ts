@@ -8,6 +8,8 @@ import { UserCompany } from "../models/user-company.model";
 import { environment } from "../../assets/environment";
 import {Module} from "../models/Module.model";
 import { Invoice } from "../models/Invoice.model";
+import {PermissionAssignment} from "../models/PermissionAssignment";
+import {PermissionType} from "../models/PermissionType";
 
 @Injectable({
   providedIn: 'root'
@@ -33,7 +35,25 @@ export class ApiService {
   getCompanyById(companyId: string): Observable<Company> {
     return this.http.get<Company>(`${this.apiUrl}company/${companyId}`);
   }
+  getUserById(userId: string): Observable<User> {
+    return this.http.get<User>(`${this.apiUrl}user/${userId}`);
+  }
 
+  createPermissionType(permissionType: PermissionType): Observable<any> {
+    return this.http.post(`${this.apiUrl}permission-assignment/create-permission-type`, permissionType);
+  }
+
+  assignPermission(assignment: PermissionAssignment): Observable<any> {
+    return this.http.post(`${this.apiUrl}permission-assignment/assign`, assignment);
+  }
+
+  getUserPermissions(userCompanyId: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}permission-assignment/${userCompanyId}`);
+  }
+
+  getPermissionsByCompany(userId: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}permission-assignment/company/${userId}`);
+  }
   getDollarValue(): Observable<number> {
     return this.http.get<any>(this.exchangeRateUrl).pipe(
       map(response => response.conversion_rates.USD)

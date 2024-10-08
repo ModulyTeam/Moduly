@@ -1,1 +1,85 @@
-<p>management-admin-module works!</p>
+<div class="dashboard-container">
+  <div class="tabs">
+    <button
+      [class.active]="activeTab === 'create'"
+      (click)="setActiveTab('create')">
+      Create Permission Type
+    </button>
+    <button
+      [class.active]="activeTab === 'assign'"
+      (click)="setActiveTab('assign')">
+      Assign Permissions
+    </button>
+  </div>
+
+  <div class="tab-content">
+    <div *ngIf="activeTab === 'create'" class="card">
+      <h2>Create New Permission Type</h2>
+      <form [formGroup]="permissionForm" (ngSubmit)="createPermissionType()">
+        <div class="form-group">
+          <label for="name">Permission Name</label>
+          <input
+            id="name"
+            type="text"
+            formControlName="name"
+            placeholder="Enter permission name">
+        </div>
+
+        <div class="form-group">
+          <label for="description">Description</label>
+          <textarea
+            id="description"
+            formControlName="description"
+            placeholder="Enter description">
+          </textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Allowed Actions</label>
+          <div class="checkbox-group">
+            <div *ngFor="let action of allowedActions; let i=index" class="checkbox-item">
+              <input
+                type="checkbox"
+                [id]="action.label"
+                [checked]="selectedActions[i]"
+                (change)="onCheckboxChange(i)">
+              <label [for]="action.label">{{action.label}}</label>
+            </div>
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          [disabled]="!permissionForm.valid"
+          class="btn-primary">
+          Create Permission Type
+        </button>
+      </form>
+    </div>
+
+    <div *ngIf="activeTab === 'assign'" class="card">
+      <h2>Assign Permissions to Users</h2>
+      <div class="table-container">
+        <table>
+          <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Actions</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let employee of employees">
+            <td>{{employee.userId}}</td>
+            <td>{{employee.joinDate}}</td>
+            <td class="actions">
+              <button class="btn-secondary">View Permissions</button>
+              <button class="btn-primary">Assign Permission</button>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
