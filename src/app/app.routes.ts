@@ -4,7 +4,6 @@ import { LoginComponent } from "./auth/login/login.component";
 import { RegisterComponent } from "./auth/register/register.component";
 import { CreateCompanyComponent } from "./company/create-company/create-company.component";
 import { MainComponent } from "./dashboard/main/main.component";
-import { UserListComponent } from "./users/user-list/user-list.component";
 import { CompanyManagerComponent } from "./company/company-manager/company-manager.component";
 import { AuthGuard } from "./auth/services/auth.guard";
 import {ManagementModuleComponent} from "./management-module/management-module.component";
@@ -16,7 +15,6 @@ export const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'create-company', component: CreateCompanyComponent, canActivate: [AuthGuard] },
   { path: 'dashboard', component: MainComponent, canActivate: [AuthGuard] },
-  { path: 'users', component: UserListComponent, canActivate: [AuthGuard] },
   { path: 'manage/:id', component: CompanyManagerComponent, canActivate: [AuthGuard] },
   { path: 'management-module/:id', component: ManagementModuleComponent, canActivate: [AuthGuard] },
   { path: 'financial-helper/:moduleId', component: FinancialHelperComponent, canActivate: [AuthGuard] },
