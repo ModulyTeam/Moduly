@@ -1,9 +1,7 @@
 <div class="account-container">
-  <h2>Mi cuenta</h2>
-
   <!-- Datos del usuario -->
   <div *ngIf="user$ | async as user">
-    <h3>Información del usuario</h3>
+    <h2>Account Information</h2>
     <p><strong>Username:</strong> {{ user.username }}</p>
     <p><strong>Full Name:</strong> {{ user.fullName }}</p>
     <p><strong>Age:</strong> {{ user.age }}</p>
@@ -13,10 +11,10 @@
   </div>
 
   <div class="invitations-dashboard">
-    <h3>Invitaciones</h3>
+    <h3>Invitations</h3>
 
     <div class="invitations-section">
-      <h4>Invitaciones Pendientes</h4>
+      <h4>Pending Invitations</h4>
       <table>
         <thead>
         <tr>
@@ -39,7 +37,7 @@
     </div>
 
     <div class="invitations-section">
-      <h4>Invitaciones Enviadas</h4>
+      <h4>Invitations sent</h4>
       <table>
         <thead>
         <tr>
