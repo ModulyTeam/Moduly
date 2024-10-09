@@ -15,6 +15,11 @@
       (click)="setActiveTab('view')">
       View Permissions Type
     </button>
+    <button
+      [class.active]="activeTab === 'CreateInvitation'"
+      (click)="setActiveTab('CreateInvitation')">
+      Create Invitation
+    </button>
   </div>
 
   <div class="tab-content">
@@ -35,8 +40,7 @@
           <textarea
             id="description"
             formControlName="description"
-            placeholder="Enter description">
-          </textarea>
+            placeholder="Enter description"></textarea>
         </div>
 
         <div class="form-group">
@@ -83,19 +87,17 @@
               <button class="btn-secondary" (click)="viewUserPermissions(employee.id)">View Permissions</button>
               <button class="btn-primary" (click)="prepareAssignPermissions(employee.id)">Assign Permission</button>
             </td>
-
           </tr>
           </tbody>
         </table>
       </div>
-      <div *ngIf="permissionsWithDetails && permissionsWithDetails.length > 0">
+      <div *ngIf="permissionsWithDetails.length > 0">
         <h3>User Permissions</h3>
         <div *ngFor="let permission of permissionsWithDetails">
           <div class="permission-card">
             <h4>Module: {{ permission.module?.name }}</h4>
-            <p class="module-details"><strong>Module Creation Date:</strong> {{ permission.module?.creationDate | date:'shortDate' }}</p> <!-- Muestra la fecha de creación -->
-            <p class="module-details"><strong>Module Type:</strong> {{ permission.module?.type }}</p> <!-- Muestra la descripción del módulo (type) -->
-
+            <p class="module-details"><strong>Module Creation Date:</strong> {{ permission.module?.creationDate | date:'shortDate' }}</p>
+            <p class="module-details"><strong>Module Type:</strong> {{ permission.module?.type }}</p>
 
             <h5>Permission Type:</h5>
             <p><strong>Name:</strong> {{ permission.permissionTypeName }}</p>
@@ -106,7 +108,6 @@
           </div>
           <hr>
         </div>
-
         <button (click)="closeUserPermissions()">Close</button>
       </div>
 
@@ -152,7 +153,6 @@
       </div>
     </div>
 
-
     <div *ngIf="activeTab === 'view'" class="card">
       <h2>View Permission Types</h2>
       <button (click)="refreshPermissionTypes()" class="btn-secondary">Refresh</button>
@@ -172,11 +172,27 @@
         </div>
       </div>
     </div>
+
+    <div *ngIf="activeTab === 'CreateInvitation'" class="card">
+      <h2>Create Invitation</h2>
+      <form [formGroup]="invitationForm" (ngSubmit)="createInvitation()">
+        <div class="form-group">
+          <label for="employeeSelect">Select Employee:</label>
+          <select id="employeeSelect" formControlName="employeeId" (change)="selectEmployeeForInvitation()">
+            <option value="">Select an employee</option>
+            <option *ngFor="let employee of employeesWithDetails" [value]="employee.id">
+              {{employee.fullName}} ({{employee.email}})
+            </option>
+          </select>
+        </div>
+
+        <button type="submit" [disabled]="!invitationForm.valid" class="btn-primary">
+          Send Invitation
+        </button>
+      </form>
+
+      <div *ngIf="invitationSuccessMessage" class="alert alert-success mt-3">{{ invitationSuccessMessage }}</div>
+      <div *ngIf="invitationErrorMessage" class="alert alert-danger mt-3">{{ invitationErrorMessage }}</div>
+    </div>
   </div>
-
-
-
-
-
-
 </div>

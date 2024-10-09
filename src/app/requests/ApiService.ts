@@ -26,14 +26,21 @@ export class ApiService {
   }): Observable<any> {
     return this.http.post(`${this.apiUrl}company/invitations`, invitationData);
   }
-  // Actualizar estado de invitación
+
   updateInvitationStatus(invitationId: string, status: string): Observable<any> {
     return this.http.put(`${this.apiUrl}company/invitations/${invitationId}/status`, { status });
   }
 
-  // Obtener invitación por ID
   getInvitationById(invitationId: string): Observable<any> {
     return this.http.get(`${this.apiUrl}company/invitations/${invitationId}`);
+  }
+
+  getPendingInvitations(userId: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}company/invitations/pending/${userId}`);
+  }
+
+  getSentInvitations(transmitterId: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}company/invitations/sent/${transmitterId}`);
   }
   getUserByUsername(username: string): Observable<User> {
     return this.http.get<User>(`${this.apiUrl}user/getbyusername/${username}`);
@@ -109,7 +116,9 @@ export class ApiService {
   createInvoice(invoiceData: Partial<Invoice>): Observable<Invoice> {
     return this.http.post<Invoice>(`${this.apiUrl}invoice`, invoiceData);
   }
-
+  getAllUsers(): Observable<User[]> {
+    return this.http.get<User[]>(`${this.apiUrl}user`);
+  }
   getInvoiceById(invoiceId: string): Observable<Invoice> {
     return this.http.get<Invoice>(`${this.apiUrl}invoice/${invoiceId}`);
   }

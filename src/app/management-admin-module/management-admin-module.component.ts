@@ -24,7 +24,7 @@ import {Module} from "../models/Module.model";
 })
 
 export class ManagementAdminModuleComponent implements OnInit {
-  activeTab: 'create' | 'assign' | 'view' = 'create';
+  activeTab: 'create' | 'assign' | 'view' | 'CreateInvitation' = 'create';
   permissionForm: FormGroup;
   employees: any[] = [];
   modules: any[] = [];
@@ -37,21 +37,25 @@ export class ManagementAdminModuleComponent implements OnInit {
       label: key.replace(/_/g, ' ').toLowerCase()
     }));
   employeesWithDetails: (UserCompany & User)[] = [];
-//new
-  userCompanies: UserCompany[] = [];  // Nuevo array para almacenar los UserCompany
+  userCompanies: UserCompany[] = [];
   selectedUserPermissions: any = null;
-  modulesWithDetails: any[] = []; //  detalles de los módulos
-  permissionsWithDetails: any[] = []; //  permisos detallados
+  modulesWithDetails: any[] = [];
+  permissionsWithDetails: any[] = [];
 
-  // Nuevas variables para manejar la asignación de permisos
   selectedPermissionTypes: any[] = [];
-  selectedModuleId: string | null = null; // Nueva propiedad para el módulo seleccionado
-  selectedPermissionTypeId: string | null = null; // Nueva propiedad para el tipo de permiso seleccionado
-  selectedAllowedAction: AllowedActionEnum | null = null; // Nueva propiedad para la acción permitida seleccionada
+  selectedModuleId: string | null = null;
+  selectedPermissionTypeId: string | null = null;
+  selectedAllowedAction: AllowedActionEnum | null = null;
 
   assignSuccessMessage: string = '';
   assignErrorMessage: string = '';
 
+  // New properties for invitation
+  invitationForm: FormGroup;
+  selectedEmployeeForInvitation: User | null = null;
+  invitationSuccessMessage: string = '';
+  invitationErrorMessage: string = '';
+  allUsers: User[] = []; // New property to store all users
 
   constructor(
     private fb: FormBuilder,
@@ -60,6 +64,10 @@ export class ManagementAdminModuleComponent implements OnInit {
     this.permissionForm = this.fb.group({
       name: ['', Validators.required],
       description: ['']
+    });
+
+    this.invitationForm = this.fb.group({
+      userId: ['', Validators.required] // Changed from employeeId to userId
     });
 
     this.selectedActions = new Array(this.allowedActions.length).fill(false);
@@ -71,10 +79,12 @@ export class ManagementAdminModuleComponent implements OnInit {
       this.loadEmployees(companyId);
       this.loadModules(companyId);
       this.loadPermissionTypes(companyId);
+      this.loadAllUsers(); // Add this new method call
+
     }
   }
 
-  setActiveTab(tab: 'create' | 'assign' | 'view') {
+  setActiveTab(tab: 'create' | 'assign' | 'view' | 'CreateInvitation') {
     this.activeTab = tab;
   }
 
@@ -259,6 +269,48 @@ export class ManagementAdminModuleComponent implements OnInit {
     this.selectedPermissionTypeId = null;
     this.selectedAllowedAction = null;
   }
+  loadAllUsers() {
+    this.apiService.getAllUsers().subscribe(
+      users => {
+        this.allUsers = users;
+      },
+      error => console.error('Error loading users:', error)
+    );
+  }
+  createInvitation() {
+    if (this.invitationForm.valid) {
+      const transmitterId = localStorage.getItem('userId');
+      const companyId = localStorage.getItem('companyId');
+      const selectedUserId = this.invitationForm.get('userId')?.value;
 
+      if (!selectedUserId || !transmitterId || !companyId) {
+        this.invitationErrorMessage = 'Please select a user and ensure you are logged in.';
+        return;
+      }
+
+      const invitationData = {
+        userId: selectedUserId,
+        transmitterId: transmitterId,
+        companyId: companyId
+      };
+
+      this.apiService.createInvitation(invitationData).subscribe(
+        response => {
+          this.invitationSuccessMessage = 'Invitation created successfully!';
+          this.invitationErrorMessage = '';
+          this.invitationForm.reset();
+        },
+        error => {
+          this.invitationErrorMessage = 'Error creating invitation: ' + error.message;
+          this.invitationSuccessMessage = '';
+        }
+      );
+    }
+  }
+
+  selectEmployeeForInvitation() {
+    const userId = this.invitationForm.get('userId')?.value;
+    this.selectedEmployeeForInvitation = this.allUsers.find(user => user.id === userId) || null;
+  }
 
 }

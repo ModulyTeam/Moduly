@@ -19,7 +19,6 @@ export class AccountComponent implements OnInit {
   userId: string = localStorage.getItem('userId') || '';
   user$: Observable<User>;
 
-  // Variables para las invitaciones
   pendingInvitations: any[] = [];
   sentInvitations: any[] = [];
 
@@ -27,7 +26,6 @@ export class AccountComponent implements OnInit {
     this.user$ = this.apiService.getUserById(this.userId);
   }
 
-  // Llamar a las funciones de carga al iniciar el componente
   ngOnInit(): void {
     this.loadPendingInvitations();
     this.loadSentInvitations();
@@ -41,34 +39,41 @@ export class AccountComponent implements OnInit {
     return localStorage.getItem(key);
   }
 
-  // Funciones para aceptar o denegar invitaciones
-  acceptInvitation(invitationId: number): void {
-    console.log(`Invitation ${invitationId} accepted`);
-    const invitation = this.pendingInvitations.find(inv => inv.id === invitationId);
-    if (invitation) {
-      invitation.status = 'Accepted';
-    }
+  acceptInvitation(invitationId: string): void {
+    this.apiService.updateInvitationStatus(invitationId, 'Accepted').subscribe(
+      () => {
+        console.log(`Invitation ${invitationId} accepted`);
+        this.loadPendingInvitations(); // Reload pending invitations
+      },
+      error => console.error('Error accepting invitation:', error)
+    );
   }
 
-  denyInvitation(invitationId: number): void {
-    console.log(`Invitation ${invitationId} denied`);
-    const invitation = this.pendingInvitations.find(inv => inv.id === invitationId);
-    if (invitation) {
-      invitation.status = 'Denied';
-    }
+  denyInvitation(invitationId: string): void {
+    this.apiService.updateInvitationStatus(invitationId, 'Rejected').subscribe(
+      () => {
+        console.log(`Invitation ${invitationId} denied`);
+        this.loadPendingInvitations(); // Reload pending invitations
+      },
+      error => console.error('Error denying invitation:', error)
+    );
   }
 
   loadPendingInvitations(): void {
-    this.pendingInvitations = [
-      { id: 1, email: 'user1@example.com', status: 'Pending' },
-      { id: 2, email: 'user2@example.com', status: 'Pending' }
-    ];
+    this.apiService.getPendingInvitations(this.userId).subscribe(
+      (invitations) => {
+        this.pendingInvitations = invitations;
+      },
+      error => console.error('Error loading pending invitations:', error)
+    );
   }
 
   loadSentInvitations(): void {
-    this.sentInvitations = [
-      { id: 3, email: 'user3@example.com', status: 'Sent' },
-      { id: 4, email: 'user4@example.com', status: 'Sent' }
-    ];
+    this.apiService.getSentInvitations(this.userId).subscribe(
+      (invitations) => {
+        this.sentInvitations = invitations;
+      },
+      error => console.error('Error loading sent invitations:', error)
+    );
   }
 }
