@@ -19,7 +19,22 @@ export class ApiService {
   private exchangeRateUrl = 'https://v6.exchangerate-api.com/v6/01a33f09590295ef36d111a5/latest/USD';
 
   constructor(private http: HttpClient) {}
+  createInvitation(invitationData: {
+    userId: string;
+    transmitterId: string;
+    companyId: string;
+  }): Observable<any> {
+    return this.http.post(`${this.apiUrl}company/invitations`, invitationData);
+  }
+  // Actualizar estado de invitación
+  updateInvitationStatus(invitationId: string, status: string): Observable<any> {
+    return this.http.put(`${this.apiUrl}company/invitations/${invitationId}/status`, { status });
+  }
 
+  // Obtener invitación por ID
+  getInvitationById(invitationId: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}company/invitations/${invitationId}`);
+  }
   getUserByUsername(username: string): Observable<User> {
     return this.http.get<User>(`${this.apiUrl}user/getbyusername/${username}`);
   }
