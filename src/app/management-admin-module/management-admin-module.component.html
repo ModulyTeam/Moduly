@@ -177,11 +177,11 @@
       <h2>Create Invitation</h2>
       <form [formGroup]="invitationForm" (ngSubmit)="createInvitation()">
         <div class="form-group">
-          <label for="employeeSelect">Select Employee:</label>
-          <select id="employeeSelect" formControlName="employeeId" (change)="selectEmployeeForInvitation()">
-            <option value="">Select an employee</option>
-            <option *ngFor="let employee of employeesWithDetails" [value]="employee.id">
-              {{employee.fullName}} ({{employee.email}})
+          <label for="userSelect">Select User to Invite:</label>
+          <select id="userSelect" formControlName="userId">
+            <option value="">Select a user</option>
+            <option *ngFor="let user of filteredUsers" [value]="user.id">
+              {{user.fullName}} ({{user.email}})
             </option>
           </select>
         </div>
@@ -191,8 +191,12 @@
         </button>
       </form>
 
-      <div *ngIf="invitationSuccessMessage" class="alert alert-success mt-3">{{ invitationSuccessMessage }}</div>
-      <div *ngIf="invitationErrorMessage" class="alert alert-danger mt-3">{{ invitationErrorMessage }}</div>
+      <div *ngIf="invitationSuccessMessage" class="alert alert-success mt-3">
+        {{ invitationSuccessMessage }}
+      </div>
+      <div *ngIf="invitationErrorMessage" class="alert alert-danger mt-3">
+        {{ invitationErrorMessage }}
+      </div>
     </div>
   </div>
 </div>

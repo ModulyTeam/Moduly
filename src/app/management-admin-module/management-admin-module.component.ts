@@ -55,8 +55,8 @@ export class ManagementAdminModuleComponent implements OnInit {
   selectedEmployeeForInvitation: User | null = null;
   invitationSuccessMessage: string = '';
   invitationErrorMessage: string = '';
-  allUsers: User[] = []; // New property to store all users
-
+  allUsers: User[] = [];
+  filteredUsers: User[] = [];
   constructor(
     private fb: FormBuilder,
     private apiService: ApiService
@@ -79,7 +79,7 @@ export class ManagementAdminModuleComponent implements OnInit {
       this.loadEmployees(companyId);
       this.loadModules(companyId);
       this.loadPermissionTypes(companyId);
-      this.loadAllUsers(); // Add this new method call
+      this.loadAllUsers(companyId);
 
     }
   }
@@ -92,16 +92,7 @@ export class ManagementAdminModuleComponent implements OnInit {
     this.selectedActions[index] = !this.selectedActions[index];
   }
 
-  loadEmployees(companyId: string) {
-    this.apiService.getEmployeesByCompany(companyId).subscribe(
-      (employees: UserCompany[]) => {
-        this.employees = employees;
-        this.userCompanies = employees;  // Almacenar los UserCompany originales
 
-        this.loadEmployeeDetails();
-      }
-    );
-  }
   loadEmployeeDetails() {
     const userRequests = this.employees.map(employee =>
       this.apiService.getUserById(employee.userId)
@@ -269,12 +260,30 @@ export class ManagementAdminModuleComponent implements OnInit {
     this.selectedPermissionTypeId = null;
     this.selectedAllowedAction = null;
   }
-  loadAllUsers() {
+  loadAllUsers(companyId: string) {
     this.apiService.getAllUsers().subscribe(
       users => {
         this.allUsers = users;
+        this.filterAvailableUsers(companyId);
       },
       error => console.error('Error loading users:', error)
+    );
+  }
+  loadEmployees(companyId: string) {
+    this.apiService.getEmployeesByCompany(companyId).subscribe(
+      (employees: UserCompany[]) => {
+        this.employees = employees;
+        this.userCompanies = employees;
+        this.loadEmployeeDetails();
+        this.filterAvailableUsers(companyId);
+      }
+    );
+  }
+  filterAvailableUsers(companyId: string) {
+    // Filter out users who are already in the company
+    const existingUserIds = this.userCompanies.map(uc => uc.userId);
+    this.filteredUsers = this.allUsers.filter(user =>
+      !existingUserIds.includes(user.id)
     );
   }
   createInvitation() {
@@ -296,12 +305,12 @@ export class ManagementAdminModuleComponent implements OnInit {
 
       this.apiService.createInvitation(invitationData).subscribe(
         response => {
-          this.invitationSuccessMessage = 'Invitation created successfully!';
+          this.invitationSuccessMessage = 'Invitation sent successfully!';
           this.invitationErrorMessage = '';
           this.invitationForm.reset();
         },
         error => {
-          this.invitationErrorMessage = 'Error creating invitation: ' + error.message;
+          this.invitationErrorMessage = 'Error sending invitation: ' + error.message;
           this.invitationSuccessMessage = '';
         }
       );
