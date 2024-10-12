@@ -35,7 +35,7 @@
       </div>
       <button type="submit" [disabled]="!fixedAmountForm.valid">Calcular Descuento</button>
     </form>
-  
+
     <div class="results" *ngIf="discountResults.length > 0">
       <h3>Resultados del Descuento</h3>
       <table>
@@ -64,8 +64,11 @@
           </tr>
         </tbody>
       </table>
+      <button (click)="exportToPDF()" style="background-color: red; color: white;">
+        Exportar a PDF
+      </button>
     </div>
-  
+
     <div class="explanation" *ngIf="explanation">
       <h3>Explicación del Cálculo</h3>
       <p>{{ explanation }}</p>

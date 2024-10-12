@@ -2,6 +2,8 @@ import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Invoice } from '../../models/Invoice.model';
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 interface ExpiredInvoiceDetail {
   code: string;
@@ -32,6 +34,8 @@ export class FixedAmountCalculatorComponent {
   @Input() invoices: Invoice[] = [];
   fixedAmountForm: FormGroup;
   discountResults: any[] = [];
+  discount: DiscountResult[] = [];
+  importDiscountResults: DiscountResult[] = [];
   explanation: string = '';
 
   constructor(private formBuilder: FormBuilder) {
@@ -66,7 +70,7 @@ export class FixedAmountCalculatorComponent {
       const dueDate = new Date(invoice.dueDate || '');
       const totalDays = (dueDate.getTime() - issueDate.getTime()) / (1000 * 3600 * 24);
       const discountDays = Math.max(0, (dueDate.getTime() - discountDate.getTime()) / (1000 * 3600 * 24));
-      
+
       const tcea = invoice.tcea || 0;
       let baseDiscount = 0;
       let originalFutureValue = 0;
@@ -152,7 +156,7 @@ export class FixedAmountCalculatorComponent {
           lastNonExpiredInvoice.discountedAmount -= adjustment;
           lastNonExpiredInvoice.totalDiscount = (1 - lastNonExpiredInvoice.discountedAmount / lastNonExpiredInvoice.originalFutureValue) * 100;
           lastNonExpiredInvoice.additionalDiscount = lastNonExpiredInvoice.totalDiscount - lastNonExpiredInvoice.baseDiscount;
-          
+
           console.log('Ajuste final aplicado:', adjustment);
           console.log('Descuento total final para última factura:', lastNonExpiredInvoice.totalDiscount, '%');
         }
@@ -218,5 +222,34 @@ export class FixedAmountCalculatorComponent {
     }, 0);
   }
 
+  exportToPDF() {
+    this.exportDiscountResultToPDF(this.discount); // Siempre exporta 'this.discount'
+  }
+
+  private exportDiscountResultToPDF(discount: DiscountResult[]) {
+    const doc = new jsPDF();
+
+    doc.text('Discount Results', 14, 10);
+
+    const exportData = discount.map(d => ([
+      d.code,
+      d.totalPayment,
+      d.futureDateValue,
+      d.discountDays,
+      d.baseDiscount,
+      d.additionalDiscount,
+      d.totalDiscount,
+      d.discountedAmount
+    ]));
+
+    const headers = [['Code', 'Total Payment', 'Future Date Value', 'Discount Days', 'Base Discount', 'Additional Discount', 'Total Discount', 'Discounted Amount']];
+
+    (doc as any).autoTable({
+      head: headers,
+      body: exportData,
+    });
+
+    doc.save('discount-results.pdf');
+  }
 
 }
