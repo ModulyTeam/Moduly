@@ -1,0 +1,99 @@
+.invoice-container {
+  font-family: Arial, sans-serif;
+  max-width: 1000px;
+  margin: 40px auto;
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+.invoice-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.invoice-header h1 {
+  color: #2c3e50;
+  margin-bottom: 10px;
+}
+
+.invoice-header p {
+  color: #7f8c8d;
+  font-size: 14px;
+}
+
+.invoice-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 30px;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 5px;
+}
+
+.summary-item {
+  flex: 1 1 calc(25% - 10px);
+  min-width: 150px;
+}
+
+.summary-item span {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #34495e;
+}
+
+.summary-item input,
+.summary-item button {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.invoice-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px; /* Increased gap */
+}
+
+.invoice-section {
+  flex: 1 1 calc(50% - 20px); /* Adjusted width to account for gap */
+  min-width: 300px;
+  margin-bottom: 20px;
+}
+
+.invoice-section h2 {
+  color: #34495e;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #2c3e50;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+
+input[disabled] {
+  background-color: #f9f9f9;
+  cursor: not-allowed;
+}

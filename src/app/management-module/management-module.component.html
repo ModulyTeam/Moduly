@@ -35,6 +35,16 @@
         </select>
         <input formControlName="exchangeRate" type="number" placeholder="Exchange Rate" [disabled]="invoiceForm.get('currency')?.value === 'USD'">
         <input formControlName="tcea" type="number" placeholder="TCEA">
+
+
+
+        <select *ngIf="showBankList" formControlName="selectedBank" (change)="onBankChange($event)">
+          <option value="" disabled selected>Seleccione un banco</option>
+          <option *ngFor="let bank of banks" [value]="bank.id" [selected]="bank.id === defaultBankId">{{ bank.name }}</option>
+        </select>
+
+
+
         <button type="submit" [disabled]="!invoiceForm.valid">Create Invoice</button>
       </form>
 
@@ -110,6 +120,18 @@
           <p>Aprende a usar todas las funcionalidades del módulo.</p>
           <button (click)="startTutorial()">Iniciar Tutorial</button>
         </div>
+
+
+
+
+        <div class="module-card">
+          <h3>Banco</h3>
+          <p>Especifica el Banco con el que vas a realizar el tramite.</p>
+          <button id="bank-button" (click)="setBank()">Escoger Banco</button>
+        </div>
+
+
+
       </div>
     </section>
 

@@ -29,6 +29,23 @@ import { conversion_rates } from '../requests/exchangerates';
   styleUrls: ['./management-module.component.css']
 })
 export class ManagementModuleComponent implements OnInit {
+
+
+
+  showBankButton = false;
+  showBankList = false;
+  defaultBankId = 1; // ID del Banco de Crédito del Perú
+  selectedBankId = this.defaultBankId; // Variable para guardar el banco seleccionado
+  banks = [
+    { id: 1, name: 'Banco de Crédito del Perú' },
+    { id: 2, name: 'Interbank' },
+    { id: 3, name: 'BBVA' },
+    { id: 4, name: 'Scotiabank' }
+  ];
+
+
+
+
   moduleId: string | null = null;
   moduleDetails: Module | null = null;
   modules: any[] = [
@@ -168,6 +185,14 @@ export class ManagementModuleComponent implements OnInit {
       );
     } else {
       console.error('Form is invalid or moduleId is missing');
+    }
+
+    if (this.invoiceForm.valid) {
+      const invoiceData = this.invoiceForm.value;
+      const selectedBank = this.banks.find(bank => bank.id === this.invoiceForm.get('selectedBank')?.value);
+
+      this.router.navigateByUrl('/invoice-form/:id', { state: { invoiceData, selectedBank } });
+      window.open('/invoice-form/:id', '_blank');
     }
   }
 
@@ -367,6 +392,33 @@ export class ManagementModuleComponent implements OnInit {
     introJs().setOptions({ steps: steps }).start();
   }
 
+
+
+
+
+  setBank() {
+    this.showBankButton = true;
+    const steps = [
+      {
+        element: '.module-details',
+        intro: 'En la sección de Invoice Managements ha sido habilitado el botón para especificar el banco.'
+      }
+    ];
+
+    introJs().setOptions({ steps: steps }).start();
+    this.showBankList = !this.showBankList;
+  }
+
+  onBankChange(event: Event) {
+    const selectElement = event.target as HTMLSelectElement;
+    this.selectedBankId = Number(selectElement.value);
+  }
+
+
+
+
+
+
   navigateToFinancialHelper() {
     if (this.moduleId) {
       this.router.navigate(['/financial-helper', this.moduleId]);
@@ -383,4 +435,5 @@ export class ManagementModuleComponent implements OnInit {
   displayExchangeRate(invoice: Invoice): string {
     return invoice.exchangeRate?.toFixed(4) ?? 'N/A';
   }
+
 }

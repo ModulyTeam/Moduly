@@ -1,0 +1,125 @@
+<div class="invoice-container">
+  <header class="invoice-header">
+    <h1>Factura de Cambio de Letra - {{ selectedBank.name }}</h1>
+    <p>Este documento registra la información esencial de una Letra de Cambio para transacciones comerciales.</p>
+  </header>
+
+  <div class="invoice-summary">
+    <div class="summary-item">
+      <span>Code</span>
+      <input type="text" [value]="invoice.code" disabled>
+    </div>
+    <div class="summary-item">
+      <span>Description</span>
+      <input type="text" [value]="invoice.description" disabled>
+    </div>
+    <div class="summary-item">
+      <span>Quantity</span>
+      <input type="number" [value]="invoice.quantity" disabled>
+    </div>
+    <div class="summary-item">
+      <span>UnitPrice</span>
+      <input type="number" [value]="invoice.unitPrice" disabled>
+    </div>
+    <div class="summary-item">
+      <span>TotalPayment</span>
+      <input type="number" [value]="invoice.totalPayment" disabled>
+    </div>
+    <div class="summary-item">
+      <span>IssueDate</span>
+      <input type="date" [value]="invoice.issueDate" disabled>
+    </div>
+    <div class="summary-item">
+      <span>Due Date</span>
+      <input type="date" [value]="invoice.dueDate" disabled>
+    </div>
+    <div class="summary-item">
+      <span>Status</span>
+      <input type="text" [value]="invoice.status" disabled>
+    </div>
+    <div class="summary-item">
+      <span>Currency</span>
+      <input type="text" [value]="invoice.currency" disabled>
+    </div>
+    <div class="summary-item">
+      <span>ExchangeRate</span>
+      <input type="number" [value]="invoice.exchangeRate" disabled>
+    </div>
+    <div class="summary-item">
+      <span>TCEA</span>
+      <input type="number" [value]="invoice.tcea" disabled>
+    </div>
+  </div>
+
+  <div class="invoice-details">
+    <section class="invoice-section">
+      <h2>Información del Emisor</h2>
+      <div class="form-group">
+        <label for="issuerRef">Referencia del girador:</label>
+        <input type="text" id="issuerRef" [value]="invoice.issuerRef">
+      </div>
+      <div class="form-group">
+        <label for="placeOfIssue">Lugar de giro:</label>
+        <input type="text" id="placeOfIssue" [value]="invoice.placeOfIssue" >
+      </div>
+    </section>
+
+    <section class="invoice-section">
+      <h2>Información del Receptor</h2>
+      <div class="form-group">
+        <label for="recipientName">Nombre del girado:</label>
+        <input type="text" id="recipientName" [value]="invoice.recipientName" >
+      </div>
+      <div class="form-group">
+        <label for="recipientAddress">Domicilio del girado:</label>
+        <input type="text" id="recipientAddress" [value]="invoice.recipientAddress" >
+      </div>
+      <div class="form-group">
+        <label for="recipientDoi">D.O.I.:</label>
+        <input type="text" id="recipientDoi" [value]="invoice.recipientDoi" >
+      </div>
+      <div class="form-group">
+        <label for="recipientPhone">Teléfono:</label>
+        <input type="text" id="recipientPhone" [value]="invoice.recipientPhone" >
+      </div>
+    </section>
+
+    <section class="invoice-section">
+      <h2>Información del Pago</h2>
+      <div class="form-group">
+        <label for="bank">Banco:</label>
+        <input type="text" id="bank" [value]="selectedBank.name" >
+      </div>
+      <div class="form-group">
+        <label for="bankOffice">Oficina:</label>
+        <input type="text" id="bankOffice" [value]="selectedBank.office">
+      </div>
+      <div class="form-group">
+        <label for="accountNumber">Número de cuenta:</label>
+        <input type="text" id="accountNumber" [value]="invoice.accountNumber" >
+      </div>
+      <div class="form-group">
+        <label for="discountCode">D.C.:</label>
+        <input type="text" id="discountCode" [value]="invoice.discountCode" >
+      </div>
+    </section>
+
+    <section class="invoice-section">
+      <h2>Información Adicional</h2>
+      <div class="form-group">
+        <label for="guarantor">Fiador:</label>
+        <input type="text" id="guarantor" [value]="invoice.guarantor">
+      </div>
+      <div class="form-group">
+        <label for="permanentGuarantee">Aval Permanente:</label>
+        <input type="text" id="permanentGuarantee" [value]="invoice.permanentGuarantee">
+      </div>
+      <div class="form-group">
+        <label for="signatures">Firma:</label>
+        <input type="text" id="signatures" [value]="invoice.signatures">
+      </div>
+    </section>
+  </div>
+
+
+</div>
