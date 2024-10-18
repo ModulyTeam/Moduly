@@ -187,13 +187,14 @@ export class ManagementModuleComponent implements OnInit {
       console.error('Form is invalid or moduleId is missing');
     }
 
+    /*
     if (this.invoiceForm.valid) {
       const invoiceData = this.invoiceForm.value;
       const selectedBank = this.banks.find(bank => bank.id === this.invoiceForm.get('selectedBank')?.value);
 
       this.router.navigateByUrl('/invoice-form/:id', { state: { invoiceData, selectedBank } });
       window.open('/invoice-form/:id', '_blank');
-    }
+    }*/
   }
 
   deleteInvoice(invoiceId: string | undefined) {
