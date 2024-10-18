@@ -18,7 +18,7 @@ export const routes: Routes = [
   { path: 'create-company', component: CreateCompanyComponent, canActivate: [AuthGuard] },
   { path: 'dashboard', component: MainComponent, canActivate: [AuthGuard] },
   { path: 'manage/:id', component: CompanyManagerComponent, canActivate: [AuthGuard] },
-  { path: 'management-module/:id', component: ManagementModuleComponent},
+  { path: 'management-module/:id', component: ManagementModuleComponent, canActivate: [AuthGuard]},
   { path: 'management-admin-module/:id', component: ManagementAdminModuleComponent, canActivate: [AuthGuard] },
   { path: 'financial-helper/:moduleId', component: FinancialHelperComponent},
   { path: 'account', component: AccountComponent, canActivate: [AuthGuard] },

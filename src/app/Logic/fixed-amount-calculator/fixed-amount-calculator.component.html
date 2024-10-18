@@ -34,6 +34,10 @@
         <input type="number" id="maxDesiredDiscount" formControlName="maxDesiredDiscount" min="0" max="100">
       </div>
       <button type="submit" [disabled]="!fixedAmountForm.valid">Calcular Descuento</button>
+      <!-- Botón convertidor PDF -->
+      <button (click)="exportToPDF()" style="background-color: red; color: white; margin-left: 13px;">
+          Exportar a PDF
+      </button>
     </form>
 
     <div class="results" *ngIf="discountResults.length > 0">
@@ -64,10 +68,8 @@
           </tr>
         </tbody>
       </table>
-      <button (click)="exportToPDF()" style="background-color: red; color: white;">
-        Exportar a PDF
-      </button>
     </div>
+
 
     <div class="explanation" *ngIf="explanation">
       <h3>Explicación del Cálculo</h3>

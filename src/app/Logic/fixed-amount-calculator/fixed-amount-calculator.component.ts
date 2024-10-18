@@ -2,7 +2,7 @@ import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Invoice } from '../../models/Invoice.model';
-import jsPDF from "jspdf";
+import jsPDF from 'jspdf';
 import "jspdf-autotable";
 
 interface ExpiredInvoiceDetail {
