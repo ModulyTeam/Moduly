@@ -66,7 +66,7 @@ export class FixedAmountCalculatorComponent {
       const dueDate = new Date(invoice.dueDate || '');
       const totalDays = (dueDate.getTime() - issueDate.getTime()) / (1000 * 3600 * 24);
       const discountDays = Math.max(0, (dueDate.getTime() - discountDate.getTime()) / (1000 * 3600 * 24));
-      
+
       const tcea = invoice.tcea || 0;
       let baseDiscount = 0;
       let originalFutureValue = 0;
@@ -152,7 +152,7 @@ export class FixedAmountCalculatorComponent {
           lastNonExpiredInvoice.discountedAmount -= adjustment;
           lastNonExpiredInvoice.totalDiscount = (1 - lastNonExpiredInvoice.discountedAmount / lastNonExpiredInvoice.originalFutureValue) * 100;
           lastNonExpiredInvoice.additionalDiscount = lastNonExpiredInvoice.totalDiscount - lastNonExpiredInvoice.baseDiscount;
-          
+
           console.log('Ajuste final aplicado:', adjustment);
           console.log('Descuento total final para última factura:', lastNonExpiredInvoice.totalDiscount, '%');
         }

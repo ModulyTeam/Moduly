@@ -405,7 +405,6 @@ export class ManagementModuleComponent implements OnInit {
       }
     ];
 
-    introJs().setOptions({ steps: steps }).start();
     this.showBankList = !this.showBankList;
   }
 
