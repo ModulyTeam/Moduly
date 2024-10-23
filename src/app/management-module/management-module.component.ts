@@ -42,6 +42,7 @@ export class ManagementModuleComponent implements OnInit {
     { id: 3, name: 'BBVA' },
     { id: 4, name: 'Scotiabank' }
   ];
+  selectedBankName: string = '';
 
 
 
@@ -86,7 +87,8 @@ export class ManagementModuleComponent implements OnInit {
       status: ['OPEN', Validators.required],
       currency: ['USD', Validators.required],
       exchangeRate: [{ value: 1, disabled: true }],
-      tcea: [null, [Validators.min(0), Validators.max(100)]]
+      tcea: [null, [Validators.min(0), Validators.max(100)]],
+
     });
 
     // Add currency change listener
@@ -150,6 +152,8 @@ export class ManagementModuleComponent implements OnInit {
 
       const currency = formValue.currency;
       const exchangeRate = formValue.exchangeRate;
+      const selectedBank = this.banks.find(bank => bank.id === formValue.selectedBank);
+      const selectedBankName = selectedBank ? selectedBank.name : '';
 
       const invoiceData: Partial<Invoice> = {
         code: formValue.code,
@@ -164,7 +168,13 @@ export class ManagementModuleComponent implements OnInit {
         currency: currency,
         exchangeRate: exchangeRate,
         totalPayment: Number(formValue.quantity) * Number(formValue.unitPrice),
+
+
+        bankName: selectedBankName,
+
+
         discountDate: null, // Always set discountDate to null
+
       };
 
       // Add optional fields only if they have a value
@@ -186,15 +196,6 @@ export class ManagementModuleComponent implements OnInit {
     } else {
       console.error('Form is invalid or moduleId is missing');
     }
-
-    /*
-    if (this.invoiceForm.valid) {
-      const invoiceData = this.invoiceForm.value;
-      const selectedBank = this.banks.find(bank => bank.id === this.invoiceForm.get('selectedBank')?.value);
-
-      this.router.navigateByUrl('/invoice-form/:id', { state: { invoiceData, selectedBank } });
-      window.open('/invoice-form/:id', '_blank');
-    }*/
   }
 
   deleteInvoice(invoiceId: string | undefined) {
@@ -264,7 +265,10 @@ export class ManagementModuleComponent implements OnInit {
       Status: invoice.status,
       Currency: invoice.currency,
       ExchangeRate: invoice.exchangeRate,
-      TCEA: invoice.tcea ? invoice.tcea * 100 : null
+      TCEA: invoice.tcea ? invoice.tcea * 100 : null,
+
+      BankName: invoice.bankName, // Añadir el nombre del banco
+
     }));
 
     const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportData);
@@ -283,7 +287,9 @@ export class ManagementModuleComponent implements OnInit {
       moduleId: currentModuleId,
       userId: userId,
       issuerId: userId,
-      tcea: invoice.tcea != null ? invoice.tcea * 100 : null
+      tcea: invoice.tcea != null ? invoice.tcea * 100 : null,
+
+      bankName: invoice.bankName // Añadir el nombre del banco
     }));
 
     const jsonString = JSON.stringify(jsonData, null, 2);
@@ -435,5 +441,7 @@ export class ManagementModuleComponent implements OnInit {
   displayExchangeRate(invoice: Invoice): string {
     return invoice.exchangeRate?.toFixed(4) ?? 'N/A';
   }
+
+
 
 }

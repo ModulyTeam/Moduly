@@ -33,6 +33,7 @@
             {{ currency.code }} - {{ currency.name }}
           </option>
         </select>
+
         <input formControlName="exchangeRate" type="number" placeholder="Exchange Rate" [disabled]="invoiceForm.get('currency')?.value === 'USD'">
         <input formControlName="tcea" type="number" placeholder="TCEA">
 
@@ -62,6 +63,7 @@
             <th>Currency</th>
             <th>Exchange Rate</th>
             <th>TCEA</th>
+            <th>Bank</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -78,6 +80,7 @@
             <td>{{ invoice.currency }}</td>
             <td>{{ displayExchangeRate(invoice) }}</td>
             <td>{{ ((invoice.tcea ?? 0) * 100)  }}%</td>
+            <td>{{ invoice.bankName }}</td>
             <td class="action-buttons">
               <select (change)="updateInvoiceStatus(invoice?.id, $event)">
                 <option value="">Update Status</option>
@@ -92,7 +95,7 @@
         </tbody>
         <tfoot>
           <tr>
-            <td colspan="12">
+            <td colspan="13">
               <button (click)="exportToExcel()">Exportar a Excel</button>
               <button (click)="exportToJson()">Exportar a JSON</button>
             </td>
@@ -175,3 +178,5 @@
 
   <ng-template #moduleContainer></ng-template>
 </div>
+
+
