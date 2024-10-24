@@ -34,8 +34,6 @@ export class FixedAmountCalculatorComponent {
   @Input() invoices: Invoice[] = [];
   fixedAmountForm: FormGroup;
   discountResults: any[] = [];
-  discount: DiscountResult[] = [];
-  importDiscountResults: DiscountResult[] = [];
   explanation: string = '';
 
   constructor(private formBuilder: FormBuilder) {
@@ -49,6 +47,39 @@ export class FixedAmountCalculatorComponent {
       enableMaxDesiredDiscount: [false],
       maxDesiredDiscount: [0, [Validators.min(0), Validators.max(100)]]
     });
+  }
+
+  exportToPDF() {
+    // Crear el documento PDF
+    const doc = new jsPDF();
+
+    // Agregar el título
+    doc.text('Documentación de Descuento', 14, 20);
+
+    // Formato de los datos
+    const tableData = this.discountResults.map(d => [
+      d.code,
+      d.totalPayment.toFixed(2),
+      d.futureDateValue.toFixed(2),
+      d.discountDays,
+      d.baseDiscount.toFixed(2) + '%',
+      d.additionalDiscount.toFixed(2) + '%',
+      d.totalDiscount.toFixed(2) + '%',
+      d.discountedAmount.toFixed(2)
+    ]);
+
+    // Definir los encabezados de la tabla
+    const headers = [['Código', 'Pago Total', 'Valor Futuro', 'Días de Descuento', 'Descuento Base', 'Descuento Adicional', 'Descuento Total', 'Monto con Descuento']];
+
+    // Generar la tabla con los datos y encabezados
+    (doc as any).autoTable({
+      head: headers,
+      body: tableData,
+      startY: 30, // Posición donde empieza la tabla
+    });
+
+    // Guardar el PDF con un nombre
+    doc.save('DESC.pdf');
   }
 
   calculateFixedAmountDiscount() {
@@ -222,34 +253,5 @@ export class FixedAmountCalculatorComponent {
     }, 0);
   }
 
-  exportToPDF() {
-    this.exportDiscountResultToPDF(this.discount); // Siempre exporta 'this.discount'
-  }
-
-  private exportDiscountResultToPDF(discount: DiscountResult[]) {
-    const doc = new jsPDF();
-
-    doc.text('Discount Results', 14, 10);
-
-    const exportData = discount.map(d => ([
-      d.code,
-      d.totalPayment,
-      d.futureDateValue,
-      d.discountDays,
-      d.baseDiscount,
-      d.additionalDiscount,
-      d.totalDiscount,
-      d.discountedAmount
-    ]));
-
-    const headers = [['Code', 'Total Payment', 'Future Date Value', 'Discount Days', 'Base Discount', 'Additional Discount', 'Total Discount', 'Discounted Amount']];
-
-    (doc as any).autoTable({
-      head: headers,
-      body: exportData,
-    });
-
-    doc.save('discount-results.pdf');
-  }
 
 }
