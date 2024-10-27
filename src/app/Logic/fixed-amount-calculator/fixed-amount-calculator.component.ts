@@ -2,8 +2,8 @@ import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Invoice } from '../../models/Invoice.model';
-import jsPDF from 'jspdf';
-import "jspdf-autotable";
+import jsPDF from "jspdf";
+import autoTable from 'jspdf-autotable';
 
 interface ExpiredInvoiceDetail {
   code: string;
@@ -49,38 +49,7 @@ export class FixedAmountCalculatorComponent {
     });
   }
 
-  exportToPDF() {
-    // Crear el documento PDF
-    const doc = new jsPDF();
 
-    // Agregar el título
-    doc.text('Documentación de Descuento', 14, 20);
-
-    // Formato de los datos
-    const tableData = this.discountResults.map(d => [
-      d.code,
-      d.totalPayment.toFixed(2),
-      d.futureDateValue.toFixed(2),
-      d.discountDays,
-      d.baseDiscount.toFixed(2) + '%',
-      d.additionalDiscount.toFixed(2) + '%',
-      d.totalDiscount.toFixed(2) + '%',
-      d.discountedAmount.toFixed(2)
-    ]);
-
-    // Definir los encabezados de la tabla
-    const headers = [['Código', 'Pago Total', 'Valor Futuro', 'Días de Descuento', 'Descuento Base', 'Descuento Adicional', 'Descuento Total', 'Monto con Descuento']];
-
-    // Generar la tabla con los datos y encabezados
-    (doc as any).autoTable({
-      head: headers,
-      body: tableData,
-      startY: 30, // Posición donde empieza la tabla
-    });
-
-    // Guardar el PDF con un nombre
-    doc.save('DESC.pdf');
-  }
 
   calculateFixedAmountDiscount() {
     const fixedAmount = this.fixedAmountForm.get('fixedAmount')?.value;
@@ -253,5 +222,69 @@ export class FixedAmountCalculatorComponent {
     }, 0);
   }
 
+
+  public exportToPDF() {
+    const doc = new jsPDF();
+
+    // Define the columns
+    const columns = [
+      'Código',
+      'Pago Inicial',
+      'Valor Futuro',
+      'Días Anticipados',
+      'TCEA (%)',
+      'Descuento Adicional Máximo Permitido (%)',
+      'Descuento Total (%)',
+      'Monto con Descuento'
+    ];
+
+    // Transform the data
+    const rows = this.discountResults.map(result => [
+      result.code,
+      new Intl.NumberFormat('es-PE', { style: 'currency', currency: 'PEN' }).format(result.totalPayment),
+      new Intl.NumberFormat('es-PE', { style: 'currency', currency: 'PEN' }).format(result.futureDateValue),
+      result.discountDays,
+      result.baseDiscount.toFixed(2) + '%',
+      result.additionalDiscount.toFixed(2) + '%',
+      result.totalDiscount.toFixed(2) + '%',
+      new Intl.NumberFormat('es-PE', { style: 'currency', currency: 'PEN' }).format(result.discountedAmount)
+    ]);
+
+    // Add title
+    doc.setFontSize(16);
+    doc.text('Resultados del Descuento', 14, 15);
+
+    // Add the table
+    autoTable(doc, {
+      head: [columns],
+      body: rows,
+      startY: 25,
+      theme: 'grid',
+      styles: {
+        fontSize: 8,
+        cellPadding: 2,
+      },
+      headStyles: {
+        fillColor: [66, 66, 66],
+        textColor: 255,
+        fontSize: 8,
+        fontStyle: 'bold',
+      },
+
+      columnStyles: {
+        0: { cellWidth: 20 }, // Código
+        1: { cellWidth: 25, halign: 'right' }, // Pago Inicial
+        2: { cellWidth: 25, halign: 'right' }, // Valor Futuro
+        3: { cellWidth: 20, halign: 'center' }, // Días
+        4: { cellWidth: 20, halign: 'right' }, // TCEA
+        5: { cellWidth: 20, halign: 'right' }, // Desc Adicional
+        6: { cellWidth: 20, halign: 'right' }, // Desc Total
+        7: { cellWidth: 25, halign: 'right' }, // Monto Final
+      }
+    });
+
+    // Save the PDF
+    doc.save('DescMontoFijo.pdf');
+  }
 
 }
