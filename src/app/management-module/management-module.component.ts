@@ -11,6 +11,8 @@ import introJs from 'intro.js';
 import { currencieslist } from '../../assets/currencies';
 import * as XLSX from 'xlsx';
 import { conversion_rates } from '../requests/exchangerates';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 @Component({
   selector: 'app-management-module',
@@ -278,6 +280,8 @@ export class ManagementModuleComponent implements OnInit {
     this.exportInvoicesToJson(this.importedInvoices);
   }
 
+
+
   private getCurrentUserId(): string {
     // This is just an example. Replace with your actual implementation.
     return localStorage.getItem('userId') || '';
@@ -383,4 +387,88 @@ export class ManagementModuleComponent implements OnInit {
   displayExchangeRate(invoice: Invoice): string {
     return invoice.exchangeRate?.toFixed(4) ?? 'N/A';
   }
+
+
+  exportToPDF(): void {
+    this.exportInvoicesToPDF(this.invoices);
+  }
+
+  exportImportedToPDF(): void {
+    this.exportInvoicesToPDF(this.importedInvoices);
+  }
+
+  private exportInvoicesToPDF(invoices: Invoice[]): void {
+    const doc = new jsPDF();
+
+    // Título y número de planilla
+    doc.setFontSize(14);
+    doc.text('Planilla Electrónica de Letras', 10, 10);
+    doc.setFontSize(12);
+    doc.text('Número de Planilla (CNR): 211100955587', 10, 20);
+
+    // Espacio entre secciones
+    doc.text('', 10, 30);
+
+    // Datos principales de la factura
+    const invoiceData = invoices.map(invoice => ([
+      invoice.code,
+      'Factura',
+      invoice.issueDate,
+      invoice.dueDate,
+      invoice.description
+    ]));
+
+    doc.autoTable({
+      startY: 30,
+      head: [['Número de Documento', 'Tipo de Documento', 'Fecha de Emisión', 'Fecha de Vencimiento', 'Razón Social']],
+      body: invoiceData,
+      theme: 'grid',
+      styles: { fontSize: 10, cellPadding: 3 }
+    });
+
+    // Espacio antes de la siguiente sección
+    doc.text('', 10, doc.lastAutoTable.finalY + 10);
+
+    // Datos del cliente
+    doc.text('Datos del Cliente', 10, doc.lastAutoTable.finalY + 15);
+    const clientData = invoices.map(invoice => ([
+      '123456789', // Ejemplo de RUC del cliente
+      invoice.description
+    ]));
+
+    //
+    doc.autoTable({
+      startY: doc.lastAutoTable.finalY + 20,
+      head: [['RUC del Cliente', 'Razón Social']],
+      body: clientData,
+      theme: 'grid',
+      styles: { fontSize: 10, cellPadding: 3 }
+    });
+
+    // Detalles de la factura
+    doc.text('Detalles de la Factura', 10, doc.lastAutoTable.finalY + 15);
+    const detailsData = invoices.map(invoice => ([
+      invoice.quantity,
+      invoice.unitPrice,
+      invoice.totalPayment,
+      invoice.status,
+      invoice.currency,
+      invoice.exchangeRate,
+      invoice.tcea ? (invoice.tcea * 100).toFixed(2) + '%' : null
+    ]));
+
+    doc.autoTable({
+      startY: doc.lastAutoTable.finalY + 20,
+      head: [['Cantidad', 'Precio Unitario', 'Total a Pagar', 'Estado', 'Moneda', 'Tipo de Cambio', 'TCEA (%)']],
+      body: detailsData,
+      theme: 'grid',
+      styles: { fontSize: 10, cellPadding: 3 }
+    });
+
+    // Guardar el archivo PDF
+    doc.save('planilla_letras.pdf');
+  }
+
+
+
 }
