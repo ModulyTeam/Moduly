@@ -80,7 +80,7 @@
             <td>{{ invoice.currency }}</td>
             <td>{{ displayExchangeRate(invoice) }}</td>
             <td>{{ ((invoice.tcea ?? 0) * 100)  }}%</td>
-            <td>{{ invoice.bankName }}</td>
+            <td>{{ getBankNameById(invoice.bankId) }}</td>
             <td class="action-buttons">
               <select (change)="updateInvoiceStatus(invoice?.id, $event)">
                 <option value="">Update Status</option>

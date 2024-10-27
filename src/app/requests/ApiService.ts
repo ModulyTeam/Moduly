@@ -82,4 +82,33 @@ export class ApiService {
     return this.http.put<Invoice>(`${this.apiUrl}invoice/${invoiceId}/status`, { status }, { params: { userId } });
   }
 
+  createBank(companyId: string, bankData: {
+    name: string;
+    accountNumber: string;
+    iban: string;
+    swift: string;
+    accountHolderName: string;
+    accountType: string;
+    bankAddress: string;
+    paymentReference: string;
+  }): Observable<any> {
+    return this.http.post(`${this.apiUrl}/api/v1/company/${companyId}/banks`, bankData);
+  }
+
+  getBanksByCompany(companyId: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/api/v1/company/${companyId}/banks`);
+  }
+
+  getBankById(companyId: string, bankId: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/api/v1/company/${companyId}/banks/${bankId}`);
+  }
+
+  updateBank(companyId: string, bankId: string, bankData: Partial<any>): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/api/v1/company/${companyId}/banks/${bankId}`, bankData);
+  }
+
+  deleteBank(companyId: string, bankId: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/api/v1/company/${companyId}/banks/${bankId}`);
+  }
+
 }

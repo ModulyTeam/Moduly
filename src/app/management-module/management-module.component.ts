@@ -11,6 +11,7 @@ import introJs from 'intro.js';
 import { currencieslist } from '../../assets/currencies';
 import * as XLSX from 'xlsx';
 import { conversion_rates } from '../requests/exchangerates';
+import {Observable, of} from "rxjs";
 
 @Component({
   selector: 'app-management-module',
@@ -61,6 +62,7 @@ export class ManagementModuleComponent implements OnInit {
 
   invoices: Invoice[] = [];
   invoiceForm: FormGroup;
+  bankForm: FormGroup;
   currentPage = 1;
   pageSize = 10;
 
@@ -89,6 +91,17 @@ export class ManagementModuleComponent implements OnInit {
       exchangeRate: [{ value: 1, disabled: true }],
       tcea: [null, [Validators.min(0), Validators.max(100)]],
 
+    });
+
+    this.bankForm = this.formBuilder.group({
+      name: ['', Validators.required],
+      accountNumber: ['', Validators.required],
+      iban: ['', Validators.required],
+      swift: ['', Validators.required],
+      accountHolderName: ['', Validators.required],
+      accountType: ['', Validators.required],
+      bankAddress: ['', Validators.required],
+      paymentReference: ['', Validators.required],
     });
 
     // Add currency change listener
@@ -152,51 +165,78 @@ export class ManagementModuleComponent implements OnInit {
 
       const currency = formValue.currency;
       const exchangeRate = formValue.exchangeRate;
-      const selectedBank = this.banks.find(bank => bank.id === formValue.selectedBank);
-      const selectedBankName = selectedBank ? selectedBank.name : '';
 
-      const invoiceData: Partial<Invoice> = {
-        code: formValue.code,
-        moduleId: this.moduleId,
-        issuerId: userId,
-        userId: userId,
-        issueDate: new Date(formValue.issueDate).toISOString(),
-        description: formValue.description,
-        quantity: Number(formValue.quantity),
-        unitPrice: Number(formValue.unitPrice),
-        status: formValue.status || 'OPEN',
-        currency: currency,
-        exchangeRate: exchangeRate,
-        totalPayment: Number(formValue.quantity) * Number(formValue.unitPrice),
+      // Crear el banco primero
+      this.createBank().subscribe(
+        (response) => {
+          const bankId = response.id || '522bad34-ba9a-407b-977d-33688b001cec';
+
+          const moduleId = this.moduleId || 'default-module-id';
 
 
-        bankName: selectedBankName,
+          const invoiceData: Partial<Invoice> = {
+            code: formValue.code,
+            moduleId: moduleId, // Usar el moduleId asegurado
+            issuerId: userId,
+            userId: userId,
+            issueDate: new Date(formValue.issueDate).toISOString(),
+            description: formValue.description,
+            quantity: Number(formValue.quantity),
+            unitPrice: Number(formValue.unitPrice),
+            status: formValue.status || 'OPEN',
+            currency: currency,
+            exchangeRate: exchangeRate,
+            totalPayment: Number(formValue.quantity) * Number(formValue.unitPrice),
+            bankId: bankId,
+            discountDate: null,
+          };
 
+          // Add optional fields only if they have a value
+          if (formValue.dueDate) {
+            invoiceData.dueDate = new Date(formValue.dueDate).toISOString();
+          }
+          if (formValue.tcea !== null && formValue.tcea !== '') {
+            invoiceData.tcea = Number(formValue.tcea); // Store as percentage
+          }
 
-        discountDate: null, // Always set discountDate to null
-
-      };
-
-      // Add optional fields only if they have a value
-      if (formValue.dueDate) {
-        invoiceData.dueDate = new Date(formValue.dueDate).toISOString();
-      }
-      if (formValue.tcea !== null && formValue.tcea !== '') {
-        invoiceData.tcea = Number(formValue.tcea); // Store as percentage
-      }
-
-      this.apiService.createInvoice(invoiceData).subscribe(
-        (newInvoice: Invoice) => {
-          console.log('Invoice created successfully:', newInvoice);
-          this.invoices.unshift(newInvoice);
-          this.invoiceForm.reset();
+          // Crear la factura
+          this.apiService.createInvoice(invoiceData).subscribe(
+            (newInvoice: Invoice) => {
+              console.log('Invoice created successfully:', newInvoice);
+              this.invoices.unshift(newInvoice);
+              this.invoiceForm.reset();
+            },
+            error => console.error('Error creating invoice:', error)
+          );
         },
-        error => console.error('Error creating invoice:', error)
+        error => console.error('Error creating bank:', error)
       );
     } else {
       console.error('Form is invalid or moduleId is missing');
     }
   }
+
+    createBank(): Observable<any> {
+      const companyId = '48afda7d-0809-46e7-a6f1-cfeccca4ae8a';
+      const selectedBank = this.banks.find(bank => bank.id === this.selectedBankId);
+      if (selectedBank) {
+        const bankData = {
+          name: selectedBank.name,
+          accountNumber: '1234567890',
+          iban: 'PE12345678901234567890123456',
+          swift: 'BCPLPEPL',
+          accountHolderName: 'John Doe',
+          accountType: 'Savings',
+          bankAddress: '123 Bank St, Lima, Peru',
+          paymentReference: 'Invoice Payment'
+        };
+
+        return this.apiService.createBank(companyId, bankData);
+      } else {
+        console.error('Selected bank not found');
+        return of(null); // Return an observable with null value
+      }
+    }
 
   deleteInvoice(invoiceId: string | undefined) {
     if (!invoiceId) return;
@@ -418,6 +458,10 @@ export class ManagementModuleComponent implements OnInit {
   onBankChange(event: Event) {
     const selectElement = event.target as HTMLSelectElement;
     this.selectedBankId = Number(selectElement.value);
+  }
+  getBankNameById(bankId: string): string {
+    const selectedBank = this.banks.find(bank => bank.id === Number(bankId));
+    return selectedBank ? selectedBank.name : 'No Bank Assigned';
   }
 
 

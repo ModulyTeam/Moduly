@@ -15,5 +15,6 @@ export interface Invoice {
     discountDate: string | undefined | null;
     tcea?: number;
     totalPayment?: number;
+    bankId: string;
     bankName: string;
 }
