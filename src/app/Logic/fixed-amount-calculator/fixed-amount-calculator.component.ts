@@ -51,6 +51,13 @@ export class FixedAmountCalculatorComponent {
     const fixedAmount = this.fixedAmountForm.get('fixedAmount')?.value;
     const discountDate = new Date(this.fixedAmountForm.get('discountDate')?.value);
     const maxTotalDiscount = this.fixedAmountForm.get('maxTotalDiscount')?.value / 100 || 1; // Si no se especifica, usar 100%
+    const enableMaxLoss = this.fixedAmountForm.get('enableMaxLoss')?.value;
+    const maxLossAmount = this.fixedAmountForm.get('maxLossAmount')?.value;
+    const enableBalancedDiscount = this.fixedAmountForm.get('enableBalancedDiscount')?.value;
+    const enableMaxDesiredDiscount = this.fixedAmountForm.get('enableMaxDesiredDiscount')?.value; // Nuevo campo
+    const maxDesiredDiscount = this.fixedAmountForm.get('maxDesiredDiscount')?.value / 100; // Nuevo campo
+
+
 
     console.log('Monto fijo deseado:', fixedAmount);
     console.log('Fecha de descuento:', discountDate);
@@ -66,7 +73,7 @@ export class FixedAmountCalculatorComponent {
       const dueDate = new Date(invoice.dueDate || '');
       const totalDays = (dueDate.getTime() - issueDate.getTime()) / (1000 * 3600 * 24);
       const discountDays = Math.max(0, (dueDate.getTime() - discountDate.getTime()) / (1000 * 3600 * 24));
-      
+
       const tcea = invoice.tcea || 0;
       let baseDiscount = 0;
       let originalFutureValue = 0;
@@ -107,6 +114,28 @@ export class FixedAmountCalculatorComponent {
     // Calcular el monto total con descuento base
     totalDiscountedAmount = this.discountResults.reduce((sum, result) => sum + result.discountedAmount, 0);
     console.log('Monto total con descuento base:', totalDiscountedAmount);
+
+    if (enableMaxLoss) {
+      const totalOriginalFutureValue = this.calculateTotalFutureValue();
+      const totalLoss = totalOriginalFutureValue - totalDiscountedAmount;
+
+      if (totalLoss > maxLossAmount) {
+        const excessLoss = totalLoss - maxLossAmount;
+        const lossReductionFactor = excessLoss / totalLoss;
+
+        this.discountResults = this.discountResults.map(result => {
+          const adjustedTotalDiscount = result.totalDiscount / 100 * (1 - lossReductionFactor);
+          const adjustedAdditionalDiscount = (adjustedTotalDiscount - result.baseDiscount / 100) / (1 - result.baseDiscount / 100);
+          const finalDiscountedAmount = result.originalFutureValue * (1 - adjustedTotalDiscount);
+          return {
+            ...result,
+            additionalDiscount: adjustedAdditionalDiscount * 100,
+            totalDiscount: adjustedTotalDiscount * 100,
+            discountedAmount: finalDiscountedAmount
+          };
+        });
+      }
+    }
 
     // Segundo paso: ajustar descuentos adicionales si es necesario
     if (totalDiscountedAmount > fixedAmount) {
@@ -152,7 +181,7 @@ export class FixedAmountCalculatorComponent {
           lastNonExpiredInvoice.discountedAmount -= adjustment;
           lastNonExpiredInvoice.totalDiscount = (1 - lastNonExpiredInvoice.discountedAmount / lastNonExpiredInvoice.originalFutureValue) * 100;
           lastNonExpiredInvoice.additionalDiscount = lastNonExpiredInvoice.totalDiscount - lastNonExpiredInvoice.baseDiscount;
-          
+
           console.log('Ajuste final aplicado:', adjustment);
           console.log('Descuento total final para última factura:', lastNonExpiredInvoice.totalDiscount, '%');
         }
@@ -161,8 +190,32 @@ export class FixedAmountCalculatorComponent {
       console.log('No se necesita descuento adicional');
     }
 
-    // Recalcular el monto total final con descuento
-    totalDiscountedAmount = this.discountResults.reduce((sum, result) => sum + result.discountedAmount, 0);
+    if (enableMaxDesiredDiscount) {
+      this.discountResults = this.discountResults.map(result => {
+        const desiredDiscountLimit = Math.min(result.totalDiscount / 100, maxDesiredDiscount);
+        return {
+          ...result,
+          totalDiscount: desiredDiscountLimit * 100,
+          discountedAmount: result.originalFutureValue * (1 - desiredDiscountLimit)
+        };
+      });
+
+      // Recalcular el monto total con descuento para verificar
+      totalDiscountedAmount = this.discountResults.reduce((sum, result) => sum + result.discountedAmount, 0);
+      console.log('Monto total ajustado con descuento máximo deseado:', totalDiscountedAmount);
+    }
+
+    if (enableBalancedDiscount) {
+      this.discountResults = this.discountResults.map(result => {
+        const totalDiscount = Math.min(result.totalDiscount / 100, maxTotalDiscount);
+        return {
+          ...result,
+          totalDiscount: totalDiscount * 100,
+          discountedAmount: result.originalFutureValue * (1 - totalDiscount)
+        };
+      });
+    }
+
     console.log('Monto total final con descuento:', totalDiscountedAmount);
 
     this.generateExplanation(hasExpiredInvoices, expiredInvoicesDetails, totalDiscountedAmount, fixedAmount);
