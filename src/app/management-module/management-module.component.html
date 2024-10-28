@@ -35,7 +35,7 @@
         </select>
         <input formControlName="exchangeRate" type="number" placeholder="Exchange Rate" [disabled]="invoiceForm.get('currency')?.value === 'USD'">
         <input formControlName="tcea" type="number" placeholder="TCEA">
-        <select formControlName="bank" (change)="onBankChange($event)" required>
+        <select formControlName="bank" (change)="onBankChange($event)">
           <option *ngFor="let bank of banks" [value]="bank.id">{{ bank.name }}</option>
           <option value="new">Create a new bank</option>
         </select>
