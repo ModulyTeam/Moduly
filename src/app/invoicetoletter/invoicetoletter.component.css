@@ -1,0 +1,347 @@
+/* Base Container */
+.invoice-container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 3rem;
+  background: white;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+  border-radius: 12px;
+  color: #1f2937;
+}
+
+/* Header Section */
+.header-section {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 3rem;
+  margin-bottom: 3rem;
+  padding-bottom: 2.5rem;
+  border-bottom: 2px solid #f3f4f6;
+}
+
+.company-logo {
+  width: 180px;
+  position: relative;
+}
+
+.logo {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  margin-bottom: 0.75rem;
+  border-radius: 8px;
+}
+
+.logo-upload {
+  text-align: center;
+}
+
+.upload-btn {
+  display: inline-block;
+  padding: 0.625rem 1.25rem;
+  background: #f3f4f6;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+}
+
+.upload-btn:hover {
+  background: #e5e7eb;
+}
+
+.company-info {
+  padding: 1rem 0;
+}
+
+.company-info h1 {
+  color: #111827;
+  margin-bottom: 1rem;
+  font-size: 2.25rem;
+}
+
+.invoice-details {
+  text-align: right;
+  background: #f9fafb;
+  padding: 1.5rem;
+  border-radius: 8px;
+  min-width: 250px;
+}
+
+.invoice-details h2 {
+  color: #4f46e5;
+  margin-bottom: 1.5rem;
+  font-size: 1.75rem;
+}
+
+.details-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.details-grid div {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.details-grid label {
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+/* Client Section */
+.client-section {
+  margin-bottom: 3rem;
+  padding: 2rem;
+  background: #f9fafb;
+  border-radius: 8px;
+}
+
+.client-details {
+  margin-top: 1rem;
+  display: grid;
+  gap: 0.5rem;
+}
+
+/* Items Section */
+.items-section {
+  margin-bottom: 3rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-bottom: 1.5rem;
+}
+
+th, td {
+  padding: 1.25rem;
+  text-align: left;
+}
+
+th {
+  background: #f9fafb;
+  font-weight: 600;
+  color: #374151;
+}
+
+th:first-child {
+  border-top-left-radius: 8px;
+}
+
+th:last-child {
+  border-top-right-radius: 8px;
+}
+
+td {
+  border-bottom: 1px solid #f3f4f6;
+}
+
+/* Totals Section */
+.totals-section {
+  margin-left: auto;
+  width: 350px;
+  margin-bottom: 3rem;
+  background: #f9fafb;
+  padding: 1.5rem;
+  border-radius: 8px;
+}
+
+.totals-grid {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.totals-grid > div {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.totals-grid > div:last-child {
+  border-bottom: none;
+  padding-top: 1.25rem;
+  font-size: 1.125rem;
+}
+
+.tax-input {
+  width: 100px;
+  padding: 0.5rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  text-align: right;
+  background: white;
+}
+
+/* Additional Fields */
+.additional-fields {
+  margin-bottom: 3rem;
+}
+
+.fields-grid {
+  display: grid;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.field-item {
+  background: #f9fafb;
+  padding: 1.25rem;
+  border-radius: 8px;
+}
+
+.field-content {
+  display: grid;
+  gap: 1rem;
+}
+
+.label-input, .value-input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background: white;
+}
+
+.remove-field-btn {
+  padding: 0.5rem 1rem;
+  background: #ef4444;
+  color: white;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+}
+
+.remove-field-btn:hover {
+  background: #dc2626;
+}
+
+/* Notes Section */
+.notes-section {
+  margin-bottom: 3rem;
+}
+
+.notes-input {
+  width: 100%;
+  min-height: 120px;
+  padding: 1.25rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  margin-top: 1rem;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  gap: 1.25rem;
+  justify-content: flex-end;
+  padding-top: 2rem;
+  border-top: 2px solid #f3f4f6;
+}
+
+.add-field-btn,
+.preview-btn,
+.export-btn {
+  padding: 0.875rem 1.75rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.add-field-btn {
+  background: #10b981;
+  color: white;
+}
+
+.preview-btn {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.export-btn {
+  background: #4f46e5;
+  color: white;
+}
+
+.add-field-btn:hover {
+  background: #059669;
+}
+
+.preview-btn:hover {
+  background: #e5e7eb;
+}
+
+.export-btn:hover {
+  background: #4338ca;
+}
+
+/* Preview Mode Styles */
+.preview-mode .input-field,
+.preview-mode .tax-input,
+.preview-mode .notes-input,
+.preview-mode .label-input,
+.preview-mode .value-input {
+  border-color: transparent;
+  background: transparent;
+  padding: 0;
+}
+
+.preview-mode .upload-btn,
+.preview-mode .remove-field-btn,
+.preview-mode .add-field-btn {
+  display: none;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .invoice-container {
+    padding: 2rem;
+    margin: 1rem;
+  }
+
+  .header-section {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .company-logo {
+    margin: 0 auto;
+  }
+
+  .invoice-details {
+    text-align: left;
+  }
+
+  .totals-section {
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .invoice-container {
+    padding: 1.5rem;
+  }
+
+  th, td {
+    padding: 1rem 0.75rem;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+  }
+
+  .add-field-btn,
+  .preview-btn,
+  .export-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}

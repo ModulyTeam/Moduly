@@ -22,7 +22,7 @@ export const routes: Routes = [
   { path: 'management-module/:id', component: ManagementModuleComponent, canActivate: [AuthGuard] },
   { path: 'management-admin-module/:id', component: ManagementAdminModuleComponent, canActivate: [AuthGuard] },
   { path: 'financial-helper/:moduleId', component: FinancialHelperComponent, canActivate: [AuthGuard] },
-  { path: 'emitpdfletteinvoice/:invoiceid', component: InvoicetoletterComponent, canActivate: [AuthGuard] },
+  { path: 'emitpdfletteinvoice/:id', component: InvoicetoletterComponent, canActivate: [AuthGuard] },
   { path: 'account', component: AccountComponent, canActivate: [AuthGuard] },
 
   { path: '**', redirectTo: '/login' },

@@ -1,1 +1,191 @@
-<p>invoicetoletter works!</p>
+<div class="invoice-container" id="invoice-container" [class.preview-mode]="isPreviewMode">
+  <!-- Header Section -->
+  <div class="header-section">
+    <div class="company-logo">
+      <img [src]="logoUrl" alt="Company Logo" class="logo" />
+      <div class="logo-upload" *ngIf="!isPreviewMode">
+        <label class="upload-btn">
+          <input type="file" accept="image/*" class="hidden" (change)="handleLogoUpload($event)" />
+          Change Logo
+        </label>
+      </div>
+    </div>
+
+    <div class="company-info">
+      <h1 class="text-2xl font-bold">{{companyName}}</h1>
+      <p>{{legalName}}</p>
+      <p>{{email}}</p>
+      <div class="editable-field" [class.preview-mode]="isPreviewMode">
+        <input type="text" [(ngModel)]="companyAddress" placeholder="Add Company Address" class="input-field" [readonly]="isPreviewMode" />
+      </div>
+    </div>
+
+    <div class="invoice-details">
+      <h2 class="text-xl font-semibold">INVOICE</h2>
+      <div class="details-grid">
+        <div>
+          <label>Invoice No:</label>
+          <p>{{invoiceCode}}</p>
+        </div>
+        <div>
+          <label>Issue Date:</label>
+          <p>{{issueDate | date:'mediumDate'}}</p>
+        </div>
+        <div>
+          <label>Due Date:</label>
+          <p>{{dueDate | date:'mediumDate'}}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Client Information -->
+  <div class="client-section">
+    <div class="billing-to">
+      <h3 class="text-lg font-semibold">Bill To:</h3>
+      <div class="client-details">
+        <p class="font-bold">{{fullName}}</p>
+        <p>{{userEmail}}</p>
+        <p>{{phoneNumber}}</p>
+        <div class="editable-field" [class.preview-mode]="isPreviewMode">
+          <input type="text" [(ngModel)]="clientAddress" placeholder="Add Client Address" class="input-field" [readonly]="isPreviewMode" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Items Table -->
+  <div class="items-section">
+    <table class="w-full">
+      <thead>
+      <tr>
+        <th>Description</th>
+        <th>Quantity</th>
+        <th>Unit Price</th>
+        <th>Total</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td>{{description}}</td>
+        <td>{{quantity}}</td>
+        <td>{{unitPrice | currency}}</td>
+        <td>{{totalPayment | currency}}</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Totals Section -->
+  <div class="totals-section">
+    <div class="totals-grid">
+      <div class="subtotal">
+        <span>Subtotal:</span>
+        <span>{{totalPayment | currency}}</span>
+      </div>
+      <div class="tax" [class.preview-mode]="isPreviewMode">
+        <span>Tax (%):</span>
+        <input type="number" [(ngModel)]="taxRate" class="tax-input" min="0" max="100" [readonly]="isPreviewMode" />
+      </div>
+      <div class="total">
+        <span class="font-bold">Total:</span>
+        <span class="font-bold">{{calculateTotal() | currency}}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bank Details -->
+  <div class="bank-details" *ngIf="bankId">
+    <h3 class="text-lg font-semibold">Payment Details</h3>
+    <ng-container *ngIf="getBank(bankId) | async as bank">
+      <div class="bank-info-grid">
+        <div>
+          <label>Bank Name:</label>
+          <p>{{bank.name}}</p>
+        </div>
+        <div>
+          <label>Account Number:</label>
+          <p>{{bank.accountNumber}}</p>
+        </div>
+        <div>
+          <label>IBAN:</label>
+          <p>{{bank.iban}}</p>
+        </div>
+        <div>
+          <label>SWIFT:</label>
+          <p>{{bank.swift}}</p>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+
+  <!-- Additional Fields -->
+  <div class="additional-fields" *ngIf="additionalFields.length > 0">
+    <h3 class="text-lg font-semibold">Additional Information</h3>
+    <div class="fields-grid">
+      <div *ngFor="let field of additionalFields; let i = index" class="field-item">
+        <div class="field-content" [class.preview-mode]="isPreviewMode">
+          <input
+            type="text"
+            [(ngModel)]="field.label"
+            placeholder="Field Label"
+            class="label-input"
+            [readonly]="isPreviewMode"
+          />
+          <ng-container [ngSwitch]="field.type">
+            <input
+              *ngSwitchCase="'text'"
+              type="text"
+              [(ngModel)]="field.value"
+              placeholder="Value"
+              class="value-input"
+              [readonly]="isPreviewMode"
+            />
+            <input
+              *ngSwitchCase="'url'"
+              type="url"
+              [(ngModel)]="field.value"
+              placeholder="URL"
+              class="value-input"
+              [readonly]="isPreviewMode"
+            />
+          </ng-container>
+          <button
+            *ngIf="!isPreviewMode"
+            (click)="removeCustomField(i)"
+            class="remove-field-btn"
+          >
+            Remove
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notes Section -->
+  <div class="notes-section">
+    <h3 class="text-lg font-semibold">Additional Notes</h3>
+    <textarea
+      [(ngModel)]="notes"
+      placeholder="Add notes, terms, conditions, or any additional information..."
+      class="notes-input"
+      [readonly]="isPreviewMode"
+    ></textarea>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="action-buttons" [class.preview-mode]="isPreviewMode">
+    <button class="add-field-btn" *ngIf="!isPreviewMode" (click)="addCustomField()">
+      Add Custom Field
+    </button>
+    <button class="preview-btn" (click)="togglePreview()">
+      {{ isPreviewMode ? 'Edit' : 'Preview' }}
+    </button>
+    <button class="export-btn" *ngIf="isPreviewMode" (click)="exportToPDF()">
+      Export to PDF
+    </button>
+    <button class="export-btn" *ngIf="isPreviewMode" (click)="exportToImage()">
+      Export to Image
+    </button>
+  </div>
+</div>
