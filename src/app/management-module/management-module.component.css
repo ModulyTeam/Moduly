@@ -208,7 +208,10 @@
 .action-buttons select:hover {
   background-color: #45a049;
 }
-
+.action-buttons .pdf-btn {
+  background-color: #c9d80b;
+  color: white;
+}
 .action-buttons .delete-btn {
   background-color: #f44336;
   color: white;

@@ -233,7 +233,13 @@ export class ManagementModuleComponent implements OnInit {
       error => console.error('Error deleting invoice:', error)
     );
   }
-
+  emitPDF(invoiceId: string | undefined) {
+    if (invoiceId) {
+      this.router.navigate([`/emitpdfletteinvoice/${invoiceId}`]);
+    } else {
+      console.error("Invoice ID is undefined");
+    }
+  }
   updateInvoiceStatus(invoiceId: string | undefined, event: Event) {
     const target = event.target as HTMLSelectElement;
     const newStatus = target.value;

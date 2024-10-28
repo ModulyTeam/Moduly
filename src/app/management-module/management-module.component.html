@@ -103,6 +103,8 @@
                 <option value="Cancelled">Cancelled</option>
               </select>
               <button class="delete-btn" (click)="deleteInvoice(invoice?.id)">Delete</button>
+              <button class="pdf-btn" (click)="emitPDF(invoice?.id)">PDF</button>
+
             </td>
           </tr>
         </tbody>
@@ -136,6 +138,7 @@
           <p>Aprende a usar todas las funcionalidades del módulo.</p>
           <button (click)="startTutorial()">Iniciar Tutorial</button>
         </div>
+
       </div>
     </section>
 
