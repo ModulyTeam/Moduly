@@ -140,7 +140,9 @@ export class ApiService {
       map(response => response.banks)
     );
   }
-
+  createBankFromCompany(companyId: string, bankData: Partial<Bank>): Observable<Bank> {
+    return this.http.post<Bank>(`${this.apiUrl}company/${companyId}/banks`, bankData);
+  }
 
 
 }

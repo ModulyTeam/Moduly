@@ -8,4 +8,5 @@ export interface  Bank {
   accountType: string;
   bankAddress: string;
   paymentReference: string;
+  tceaprefference: number;
 }

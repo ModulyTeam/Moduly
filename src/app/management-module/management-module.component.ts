@@ -32,6 +32,8 @@ import {Bank} from "../models/Bank.model";
 export class ManagementModuleComponent implements OnInit {
   moduleId: string | null = null;
   moduleDetails: Module | null = null;
+  showBankModal: boolean = false;
+  bankForm: FormGroup;
   modules: any[] = [
     {
       type: 'tcea-calculator',
@@ -75,7 +77,16 @@ export class ManagementModuleComponent implements OnInit {
       bank: ['', Validators.required] // Campo de banco añadido
 
     });
-
+    this.bankForm = this.formBuilder.group({
+      name: ['', Validators.required],
+      accountNumber: ['', Validators.required],
+      iban: ['', Validators.required],
+      swift: ['', Validators.required],
+      accountHolderName: ['', Validators.required],
+      accountType: ['', Validators.required],
+      bankAddress: ['', Validators.required],
+      paymentReference: ['', Validators.required]
+    });
     // Add currency change listener
     this.invoiceForm.get('currency')?.valueChanges.subscribe(currency => {
       const exchangeRateControl = this.invoiceForm.get('exchangeRate');
@@ -110,7 +121,33 @@ export class ManagementModuleComponent implements OnInit {
     this.loadOtherModules();
   }
   createNewBank() {
-    // Función vacía por ahora
+    this.showBankModal = true; // Mostrar modal
+  }
+  onBankChange(event: Event) {
+    const selectedValue = (event.target as HTMLSelectElement).value;
+    if (selectedValue === 'new') {
+      this.createNewBank();
+      // Reseteamos el valor para evitar que se mantenga seleccionado "new" en el dropdown
+      this.invoiceForm.get('bank')?.setValue('');
+    }
+  }
+
+  closeBankModal() {
+    this.showBankModal = false;
+  }
+
+  submitBankForm() {
+    if (this.bankForm.valid) {
+      const companyId = localStorage.getItem("companyId") || '';
+      this.apiService.createBankFromCompany(companyId, this.bankForm.value).subscribe(
+        (newBank: Bank) => {
+          this.banks.push(newBank); // Añadir nuevo banco a la lista
+          this.closeBankModal(); // Cerrar modal
+          this.bankForm.reset(); // Resetear formulario
+        },
+        error => console.error('Error creating bank:', error)
+      );
+    }
   }
   loadInvoices() {
     if (this.moduleId) {

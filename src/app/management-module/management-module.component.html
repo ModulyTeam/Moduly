@@ -35,12 +35,32 @@
         </select>
         <input formControlName="exchangeRate" type="number" placeholder="Exchange Rate" [disabled]="invoiceForm.get('currency')?.value === 'USD'">
         <input formControlName="tcea" type="number" placeholder="TCEA">
-        <select formControlName="bank" required>
+        <select formControlName="bank" (change)="onBankChange($event)" required>
           <option *ngFor="let bank of banks" [value]="bank.id">{{ bank.name }}</option>
-          <option (click)="createNewBank()">Create a new bank</option>
+          <option value="new">Create a new bank</option>
         </select>
+
         <button type="submit" [disabled]="!invoiceForm.valid">Create Invoice</button>
       </form>
+      <div *ngIf="showBankModal" class="modal-overlay">
+        <div class="modal-content">
+          <h3>Create a New Bank</h3>
+          <form [formGroup]="bankForm" (ngSubmit)="submitBankForm()">
+            <input formControlName="name" placeholder="Bank Name" required>
+            <input formControlName="accountNumber" placeholder="Account Number" >
+            <input formControlName="iban" placeholder="IBAN" >
+            <input formControlName="swift" placeholder="SWIFT" >
+            <input formControlName="accountHolderName" placeholder="Account Holder Name" >
+            <input formControlName="accountType" placeholder="Account Type" >
+            <input formControlName="bankAddress" placeholder="Bank Address" >
+            <input formControlName="paymentReference" placeholder="Payment Reference" >
+            <input formControlName="tceaprefference" placeholder="Payment Reference" >
+
+            <button type="submit" [disabled]="!bankForm.valid">Save Bank</button>
+            <button type="button" (click)="closeBankModal()">Cancel</button>
+          </form>
+        </div>
+      </div>
 
       <table class="invoice-table">
         <thead>
