@@ -177,6 +177,19 @@ export class ManagementModuleComponent implements OnInit {
       }
     }
   }
+  getSelectedBank() {
+    const selectedBankId = this.invoiceForm.get('bank')?.value;
+    console.log(selectedBankId)
+
+    return selectedBankId ? selectedBankId : null; // Retorna el id del banco o null si no está seleccionado
+  }
+  getBankName(bankId: string | undefined): string {
+    const bank = this.banks.find(b => b.id === bankId);
+    console.log(bankId);
+    console.log(this.banks)
+    console.log(bank)
+    return bank ? bank.name : 'This Invoice has no assigned Bank';
+  }
 
   createInvoice() {
     if (this.invoiceForm.valid && this.moduleId) {
@@ -199,15 +212,15 @@ export class ManagementModuleComponent implements OnInit {
         currency: currency,
         exchangeRate: exchangeRate,
         totalPayment: Number(formValue.quantity) * Number(formValue.unitPrice),
-        discountDate: null, // Always set discountDate to null
+        discountDate: null,
+        bankId: this.getSelectedBank() // Aquí obtenemos el bankId seleccionado
       };
 
-      // Add optional fields only if they have a value
       if (formValue.dueDate) {
         invoiceData.dueDate = new Date(formValue.dueDate).toISOString();
       }
       if (formValue.tcea !== null && formValue.tcea !== '') {
-        invoiceData.tcea = Number(formValue.tcea); // Store as percentage
+        invoiceData.tcea = Number(formValue.tcea); // Guardar como porcentaje
       }
 
       this.apiService.createInvoice(invoiceData).subscribe(
@@ -222,6 +235,7 @@ export class ManagementModuleComponent implements OnInit {
       console.error('Form is invalid or moduleId is missing');
     }
   }
+
 
   deleteInvoice(invoiceId: string | undefined) {
     if (!invoiceId) return;

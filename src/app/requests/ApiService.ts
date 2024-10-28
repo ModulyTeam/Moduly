@@ -59,6 +59,7 @@ export class ApiService {
   getCompanyById(companyId: string): Observable<Company> {
     return this.http.get<Company>(`${this.apiUrl}company/${companyId}`);
   }
+
   getUserById(userId: string): Observable<User> {
     return this.http.get<User>(`${this.apiUrl}user/${userId}`);
   }
