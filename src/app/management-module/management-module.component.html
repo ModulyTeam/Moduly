@@ -35,6 +35,10 @@
         </select>
         <input formControlName="exchangeRate" type="number" placeholder="Exchange Rate" [disabled]="invoiceForm.get('currency')?.value === 'USD'">
         <input formControlName="tcea" type="number" placeholder="TCEA">
+        <select formControlName="bank" required>
+          <option *ngFor="let bank of banks" [value]="bank.id">{{ bank.name }}</option>
+          <option (click)="createNewBank()">Create a new bank</option>
+        </select>
         <button type="submit" [disabled]="!invoiceForm.valid">Create Invoice</button>
       </form>
 
@@ -52,6 +56,7 @@
             <th>Currency</th>
             <th>Exchange Rate</th>
             <th>TCEA</th>
+            <th>Bank</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -68,6 +73,7 @@
             <td>{{ invoice.currency }}</td>
             <td>{{ displayExchangeRate(invoice) }}</td>
             <td>{{ ((invoice.tcea ?? 0) * 100)  }}%</td>
+            <td>{{invoice.bankid}}</td>
             <td class="action-buttons">
               <select (change)="updateInvoiceStatus(invoice?.id, $event)">
                 <option value="">Update Status</option>

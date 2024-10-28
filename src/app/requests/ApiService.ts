@@ -10,7 +10,7 @@ import {Module} from "../models/Module.model";
 import { Invoice } from "../models/Invoice.model";
 import {PermissionAssignment} from "../models/PermissionAssignment";
 import {PermissionType} from "../models/PermissionType";
-
+import {Bank} from "../models/Bank.model";
 @Injectable({
   providedIn: 'root'
 })
@@ -134,5 +134,13 @@ export class ApiService {
   updateInvoiceStatus(invoiceId: string, status: string, userId: string): Observable<Invoice> {
     return this.http.put<Invoice>(`${this.apiUrl}invoice/${invoiceId}/status`, { status }, { params: { userId } });
   }
+
+  getBanksFromCompany(companyId: string): Observable<Bank[]> {
+    return this.http.get<{ banks: Bank[] }>(`${this.apiUrl}company/${companyId}`).pipe(
+      map(response => response.banks)
+    );
+  }
+
+
 
 }

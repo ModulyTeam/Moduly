@@ -11,6 +11,7 @@ import introJs from 'intro.js';
 import { currencieslist } from '../../assets/currencies';
 import * as XLSX from 'xlsx';
 import { conversion_rates } from '../requests/exchangerates';
+import {Bank} from "../models/Bank.model";
 
 @Component({
   selector: 'app-management-module',
@@ -45,6 +46,7 @@ export class ManagementModuleComponent implements OnInit {
   invoiceForm: FormGroup;
   currentPage = 1;
   pageSize = 10;
+  banks: Bank[] = [];
 
   otherModules: Module[] = [];
   selectedModuleForImport: string | null = null;
@@ -69,7 +71,9 @@ export class ManagementModuleComponent implements OnInit {
       status: ['OPEN', Validators.required],
       currency: ['USD', Validators.required],
       exchangeRate: [{ value: 1, disabled: true }],
-      tcea: [null, [Validators.min(0), Validators.max(100)]]
+      tcea: [null, [Validators.min(0), Validators.max(100)]],
+      bank: ['', Validators.required] // Campo de banco añadido
+
     });
 
     // Add currency change listener
@@ -93,10 +97,21 @@ export class ManagementModuleComponent implements OnInit {
         this.moduleDetails = module;
       });
     }
+    const companyId = localStorage.getItem('companyId') || '';
+    if (companyId) {
+      this.apiService.getBanksFromCompany(companyId).subscribe(
+        (banks: Bank[]) => {
+          this.banks = banks;
+        },
+        error => console.error('Error loading banks:', error)
+      );
+    }
     this.loadInvoices();
     this.loadOtherModules();
   }
-
+  createNewBank() {
+    // Función vacía por ahora
+  }
   loadInvoices() {
     if (this.moduleId) {
       const userId = this.getCurrentUserId();
