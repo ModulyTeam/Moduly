@@ -11,6 +11,7 @@ import {FinancialHelperComponent} from "./Logic/financial-helper/financial-helpe
 import {ManagementAdminModuleComponent} from "./management-admin-module/management-admin-module.component";
 import {AccountComponent} from "./account/account.component";
 import {InvoicetoletterComponent} from "./invoicetoletter/invoicetoletter.component";
+import {FinancialHelperBanksComponent} from "./Logic/financial-helper-banks/financial-helper-banks.component";
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -22,6 +23,7 @@ export const routes: Routes = [
   { path: 'management-module/:id', component: ManagementModuleComponent, canActivate: [AuthGuard] },
   { path: 'management-admin-module/:id', component: ManagementAdminModuleComponent, canActivate: [AuthGuard] },
   { path: 'financial-helper/:moduleId', component: FinancialHelperComponent, canActivate: [AuthGuard] },
+  { path: 'financial-helper-banks/:moduleId', component: FinancialHelperBanksComponent, canActivate: [AuthGuard] },
   { path: 'emitpdfletteinvoice/:id', component: InvoicetoletterComponent, canActivate: [AuthGuard] },
   { path: 'account', component: AccountComponent, canActivate: [AuthGuard] },
 

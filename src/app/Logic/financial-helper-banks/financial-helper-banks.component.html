@@ -1,0 +1,59 @@
+<div class="financial-helper-container">
+  <header>
+    <h1>Calculadora Financiera de Descuentos hacia bancos</h1>
+  </header>
+
+  <section class="invoice-table">
+    <h2>Facturas</h2>
+    <table>
+      <thead>
+      <tr>
+        <th>Código</th>
+        <th>Descripción</th>
+        <th>Cantidad</th>
+        <th>Precio Unitario</th>
+        <th>Pago Total</th>
+        <th>Fecha de Emisión</th>
+        <th>Fecha de Vencimiento</th>
+        <th>Estado</th>
+        <th>Moneda</th>
+        <th>Tasa de Cambio</th>
+        <th>TCEA</th>
+        <th class="future-value">Valor Futuro</th>
+        <th>Acciones</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let invoice of invoices | slice:(currentPage-1)*pageSize:currentPage*pageSize">
+        <td>{{ invoice.code }}</td>
+        <td>{{ invoice.description }}</td>
+        <td>{{ invoice.quantity }}</td>
+        <td>{{ invoice.unitPrice | currency:invoice.currency }}</td>
+        <td>{{ invoice.totalPayment | currency:invoice.currency }}</td>
+        <td>{{ invoice.issueDate | date }}</td>
+        <td>{{ invoice.dueDate | date }}</td>
+        <td>{{ invoice.status }}</td>
+        <td>{{ invoice.currency }}</td>
+        <td>{{ invoice.exchangeRate }}</td>
+        <td>{{ getTCEAPercentage(invoice) | number:'1.2-2' }}%</td>
+        <td class="future-value">{{ calculateFutureValue(invoice) | currency:invoice.currency }}</td>
+        <td class="action-buttons">
+          <button class="delete-btn" (click)="deleteInvoice(invoice?.id)">Eliminar</button>
+        </td>
+      </tr>
+      </tbody>
+      <tfoot>
+      <tr>
+        <td colspan="4"><strong>Totales:</strong></td>
+        <td>{{ calculateTotalPayment() | currency:'USD':'symbol':'1.2-2' }}</td>
+        <td colspan="6"></td>
+        <td class="future-value">{{ calculateTotalFutureValue() | currency:'USD':'symbol':'1.2-2' }}</td>
+        <td></td>
+      </tr>
+      </tfoot>
+    </table>
+  </section>
+
+
+
+</div>

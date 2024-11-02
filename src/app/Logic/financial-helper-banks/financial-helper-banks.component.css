@@ -1,0 +1,91 @@
+/* Estilos generales */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f0f9ff; /* Fondo celeste claro */
+  color: #333;
+  margin: 0;
+  padding: 20px;
+}
+
+/* Contenedor principal */
+.financial-helper-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Encabezado */
+header h1 {
+  color: #2a9d8f; /* Verde pastel */
+  font-size: 1.8em;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Sección de la tabla de facturas */
+.invoice-table {
+  margin-top: 20px;
+}
+
+.invoice-table h2 {
+  color: #028090; /* Verde más oscuro */
+  font-size: 1.5em;
+  margin-bottom: 15px;
+}
+
+/* Estilos de la tabla */
+.invoice-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95em;
+}
+
+.invoice-table th,
+.invoice-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.invoice-table thead th {
+  background-color: #e0f7fa; /* Celeste pastel */
+  color: #00796b; /* Verde oscuro */
+  font-weight: bold;
+}
+
+/* Filas alternas */
+.invoice-table tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+/* Estilos de columna de acciones */
+.invoice-table .action-buttons {
+  text-align: center;
+}
+
+.invoice-table .delete-btn {
+  background-color: #ff6b6b; /* Rojo suave */
+  border: none;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.invoice-table .delete-btn:hover {
+  background-color: #d43f3f;
+}
+
+/* Totales en el pie de la tabla */
+.invoice-table tfoot {
+  background-color: #f1f8e9; /* Verde pastel */
+  font-weight: bold;
+}
+
+.invoice-table .future-value {
+  color: #00796b; /* Verde oscuro */
+}

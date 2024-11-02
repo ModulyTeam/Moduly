@@ -85,9 +85,10 @@ export class ManagementModuleComponent implements OnInit {
       accountHolderName: ['', Validators.required],
       accountType: ['', Validators.required],
       bankAddress: ['', Validators.required],
-      paymentReference: ['', Validators.required]
+      paymentReference: ['', Validators.required],
+      TCEApreferredRate: [0, Validators.required]
+
     });
-    // Add currency change listener
     this.invoiceForm.get('currency')?.valueChanges.subscribe(currency => {
       const exchangeRateControl = this.invoiceForm.get('exchangeRate');
       if (currency === 'USD') {
@@ -138,17 +139,22 @@ export class ManagementModuleComponent implements OnInit {
 
   submitBankForm() {
     if (this.bankForm.valid) {
+      const bankData = this.bankForm.value;
+      bankData.TCEApreferredRate = bankData.TCEApreferredRate || 0; // Asegurar un valor no nulo
+
       const companyId = localStorage.getItem("companyId") || '';
-      this.apiService.createBankFromCompany(companyId, this.bankForm.value).subscribe(
+      this.apiService.createBankFromCompany(companyId, bankData).subscribe(
         (newBank: Bank) => {
-          this.banks.push(newBank); // Añadir nuevo banco a la lista
-          this.closeBankModal(); // Cerrar modal
-          this.bankForm.reset(); // Resetear formulario
+          this.banks.push(newBank);
+          this.closeBankModal();
+          this.bankForm.reset();
+          this.invoiceForm.get('bank')?.setValue(newBank.id);
         },
         error => console.error('Error creating bank:', error)
       );
     }
   }
+
   loadInvoices() {
     if (this.moduleId) {
       const userId = this.getCurrentUserId();
