@@ -50,7 +50,6 @@ export class FinancialHelperBanksComponent implements OnInit {
 
   async loadBanks() {
     const companyId = localStorage.getItem('companyId') || '';
-    console.log('Loading banks for companyId:', companyId);
 
     try {
       const banks = await this.apiService.getBanksFromCompany(companyId).toPromise();
@@ -61,7 +60,6 @@ export class FinancialHelperBanksComponent implements OnInit {
             this.bankMap.set(bank.id, bank);
           }
         });
-        console.log('Banks loaded and mapped:', this.bankMap);
       }
     } catch (error) {
       console.error('Error loading banks:', error);
@@ -102,11 +100,6 @@ export class FinancialHelperBanksComponent implements OnInit {
 
       if (invoice && invoice.bankId) {
         const bank = this.bankMap.get(invoice.bankId);
-        console.log('Toggle TCEA for invoice:', invoiceId);
-        console.log('New toggle state:', this.useBankTCEA[invoiceId]);
-        console.log('Associated bank:', bank);
-        console.log('Bank TCEA rate:', bank?.tceApreferredRate);
-        console.log('Current effective TCEA:', this.getEffectiveTCEA(invoice));
       }
     }
   }
@@ -118,12 +111,7 @@ export class FinancialHelperBanksComponent implements OnInit {
     }
 
     const bank = this.bankMap.get(invoice.bankId);
-    console.log('Getting bank TCEA for invoice:', invoice.id);
-    console.log('Bank found:', bank);
-
-    // Corregida la capitalización de tceApreferredRate
     const tceaRate = bank?.tceApreferredRate ?? 0;
-    console.log('Bank TCEA rate:', tceaRate);
 
     return tceaRate;
   }
@@ -132,14 +120,11 @@ export class FinancialHelperBanksComponent implements OnInit {
     if (!invoice.id) return invoice.tcea || 0;
 
     const useBank = this.useBankTCEA[invoice.id];
-    console.log('Getting effective TCEA for invoice:', invoice.id);
     console.log('Using bank TCEA:', useBank);
 
     if (useBank) {
       // Obtenemos el TCEA del banco y aseguramos que sea un número
       const bankTCEA = this.getBankTCEA(invoice);
-      console.log('Bank TCEA value:', bankTCEA);
-      // Si el bankTCEA es 0, usamos el TCEA de la factura como fallback
       return bankTCEA || (invoice.tcea || 0);
     }
 
@@ -154,7 +139,6 @@ export class FinancialHelperBanksComponent implements OnInit {
     const dueDate = new Date(invoice.dueDate || '');
     const daysDifference = (dueDate.getTime() - issueDate.getTime()) / (1000 * 3600 * 24);
 
-    // No multiplicamos por 100 aquí ya que TCEApreferredRate ya viene en decimal
     return totalPayment * Math.pow(1 + tcea, daysDifference / 365);
   }
 
@@ -175,8 +159,6 @@ export class FinancialHelperBanksComponent implements OnInit {
 
   getTCEAPercentage(invoice: Invoice): number {
     const effectiveTCEA = this.getEffectiveTCEA(invoice);
-    console.log('getTCEAPercentage for invoice:', invoice.id);
-    console.log('effectiveTCEA:', effectiveTCEA);
     return effectiveTCEA * 100;
   }
 
@@ -199,17 +181,8 @@ export class FinancialHelperBanksComponent implements OnInit {
   }
 
   logInvoiceDetails(invoice: Invoice) {
-    console.group('Invoice Details');
-    console.log('Invoice ID:', invoice.id);
-    console.log('Invoice TCEA:', invoice.tcea);
-    console.log('Bank ID:', invoice.bankId);
-    console.log('Using Bank TCEA:', invoice.id ? this.useBankTCEA[invoice.id] : false);
     if (invoice.bankId) {
       const bank = this.bankMap.get(invoice.bankId);
-      console.log('Associated Bank:', bank);
-      console.log('Bank TCEA Rate:', bank?.tceApreferredRate);
     }
-    console.log('Effective TCEA:', this.getEffectiveTCEA(invoice));
-    console.groupEnd();
   }
 }
