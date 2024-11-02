@@ -4,10 +4,13 @@ import {Bank} from "../../models/Bank.model";
 import {ApiService} from "../../requests/ApiService";
 import {ActivatedRoute} from "@angular/router";
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {CurrencyPipe, DatePipe, DecimalPipe, NgForOf, NgIf, SlicePipe} from "@angular/common";
+import {CurrencyPipe, DatePipe, DecimalPipe, NgForOf, NgIf, PercentPipe, SlicePipe} from "@angular/common";
 import {CalculatorDiscountComponent} from "../calculator-discount/calculator-discount.component";
 import {FixedAmountCalculatorComponent} from "../fixed-amount-calculator/fixed-amount-calculator.component";
 import {FinancialCalculationsService} from "./calculateDiscountedValue";
+import introJs from 'intro.js';
+import { Router } from '@angular/router';
+import {EmitpdfdiscountletterComponent} from "./emitpdfdiscountletter/emitpdfdiscountletter.component";
 
 @Component({
   selector: 'app-financial-helper-banks',
@@ -22,7 +25,9 @@ import {FinancialCalculationsService} from "./calculateDiscountedValue";
     NgForOf,
     SlicePipe,
     ReactiveFormsModule,
-    NgIf
+    NgIf,
+    PercentPipe,
+    EmitpdfdiscountletterComponent
   ],
   templateUrl: './financial-helper-banks.component.html',
   styleUrl: './financial-helper-banks.component.css'
@@ -43,15 +48,34 @@ import {FinancialCalculationsService} from "./calculateDiscountedValue";
     totalDiscounted: number;
     savings: number;
     validInvoices: number;
+    explanation?: string;
+    involvedBanks?: string[];
   } | null = null;
   applyTimeValue = false;
-  showResults = false; // New property to control results visibility
+  useCommercialYear = false;
+  showResults = false;
+
+  // Nuevas propiedades para los ejemplos de fórmulas
+  formulaExamples = {
+    unitPrice: 0,
+    quantity: 0,
+    totalAmount: 0,
+    tcea: 0,
+    daysToTarget: 0,
+    totalDays: 0,
+    discountedValue: 0,
+    savings: 0,
+    daysInYear: 0
+  };
+
+  showLetterGeneratorFlag = false;
 
   constructor(
     private apiService: ApiService,
     private route: ActivatedRoute,
     private formBuilder: FormBuilder,
-    private financialCalcs: FinancialCalculationsService
+    private financialCalcs: FinancialCalculationsService,
+    private router: Router
   ) {
     this.discountForm = this.formBuilder.group({
       targetDate: ['']
@@ -119,6 +143,11 @@ import {FinancialCalculationsService} from "./calculateDiscountedValue";
     console.log('Time value applied:', this.applyTimeValue);
   }
 
+  toggleCommercialYear() {
+    this.useCommercialYear = !this.useCommercialYear;
+    console.log('Commercial year applied:', this.useCommercialYear);
+  }
+
   calculateDiscounts() {
     if (!this.discountForm.valid || this.selectedInvoices.size === 0) {
       console.error('Form is invalid or no invoices selected');
@@ -132,16 +161,75 @@ import {FinancialCalculationsService} from "./calculateDiscountedValue";
       return;
     }
 
+    // Obtener los resultados básicos
     this.calculationResults = this.financialCalcs.calculateTotalSavings(
       this.invoices,
       this.selectedInvoices,
       targetDate,
       this.useBankTCEA,
       this.bankMap,
-      this.applyTimeValue
+      this.applyTimeValue,
+      this.useCommercialYear
     );
 
-    this.showResults = true; // Show results after calculation
+    // Generar explicación y lista de bancos involucrados
+    if (this.calculationResults) {
+      const involvedBanks = new Set<string>();
+      const selectedInvoicesList = this.invoices.filter(inv => inv.id && this.selectedInvoices.has(inv.id));
+
+      selectedInvoicesList.forEach(invoice => {
+        if (invoice.id && this.useBankTCEA[invoice.id] && invoice.bankId) {
+          const bank = this.bankMap.get(invoice.bankId);
+          if (bank?.name) {
+            involvedBanks.add(bank.name);
+          }
+        }
+      });
+
+      // Construir la explicación
+      let explanation = `Se han analizado ${this.calculationResults.validInvoices} facturas válidas con un valor total original de ${this.calculationResults.totalOriginal.toLocaleString('es-PE', {style: 'currency', currency: 'PEN'})}. `;
+
+      if (this.applyTimeValue) {
+        explanation += `Se ha aplicado el valor del dinero en el tiempo ${this.useCommercialYear ? 'utilizando el año comercial (360 días)' : 'utilizando el año calendario (365 días)'}. `;
+      }
+
+      if (involvedBanks.size > 0) {
+        explanation += `Se utilizaron las tasas TCEA preferenciales de los siguientes bancos: ${Array.from(involvedBanks).join(', ')}. `;
+      }
+
+      explanation += `Después de aplicar los descuentos correspondientes, el valor final es de ${this.calculationResults.totalDiscounted.toLocaleString('es-PE', {style: 'currency', currency: 'PEN'})}, `;
+      explanation += `lo que representa un ahorro total de ${this.calculationResults.savings.toLocaleString('es-PE', {style: 'currency', currency: 'PEN'})} `;
+      explanation += `(${((this.calculationResults.savings / this.calculationResults.totalOriginal) * 100).toFixed(2)}% del valor original).`;
+
+      // Agregar la explicación y bancos al resultado
+      this.calculationResults = {
+        ...this.calculationResults,
+        explanation,
+        involvedBanks: Array.from(involvedBanks)
+      };
+    }
+
+    // Actualizar ejemplos de fórmulas con la primera factura seleccionada
+    const selectedInvoice = this.invoices.find(inv => inv.id && this.selectedInvoices.has(inv.id));
+    if (selectedInvoice) {
+      const issueDate = new Date(selectedInvoice.issueDate || '');
+      const dueDate = new Date(selectedInvoice.dueDate || '');
+      const daysInYear = this.useCommercialYear ? 360 : 365;
+
+      this.formulaExamples = {
+        unitPrice: selectedInvoice.unitPrice || 0,
+        quantity: selectedInvoice.quantity || 0,
+        totalAmount: (selectedInvoice.unitPrice || 0) * (selectedInvoice.quantity || 0),
+        tcea: this.getEffectiveTCEA(selectedInvoice),
+        daysToTarget: (targetDate.getTime() - issueDate.getTime()) / (1000 * 3600 * 24),
+        totalDays: (dueDate.getTime() - issueDate.getTime()) / (1000 * 3600 * 24),
+        discountedValue: this.calculationResults.totalDiscounted / this.calculationResults.validInvoices,
+        savings: this.calculationResults.savings,
+        daysInYear: daysInYear
+      };
+    }
+
+    this.showResults = true;
     console.log('Calculation results:', this.calculationResults);
   }
 
@@ -263,6 +351,143 @@ import {FinancialCalculationsService} from "./calculateDiscountedValue";
   logInvoiceDetails(invoice: Invoice) {
     if (invoice.bankId) {
       const bank = this.bankMap.get(invoice.bankId);
+    }
+  }
+
+  startTutorial() {
+    const intro = introJs();
+
+    intro.setOptions({
+      steps: [
+        {
+          title: 'Bienvenido a la Calculadora Financiera',
+          intro: 'Este tutorial te guiará a través de todas las funcionalidades disponibles en la calculadora.'
+        },
+        {
+          element: '.discount-calculator',
+          title: 'Calculadora de Descuentos',
+          intro: 'Esta sección te permite calcular descuentos financieros para las facturas seleccionadas.'
+        },
+        {
+          element: '#targetDate',
+          title: 'Fecha Objetivo',
+          intro: 'Selecciona la fecha para la cual deseas calcular los descuentos. Esta fecha debe estar entre la fecha de emisión y vencimiento de las facturas.'
+        },
+        {
+          element: '.time-value-toggle',
+          title: 'Opciones de Cálculo',
+          intro: 'Aquí puedes activar diferentes opciones para el cálculo:<br><br>' +
+                 '- <b>Valor del Dinero en el Tiempo:</b> Considera el valor temporal del dinero en los cálculos.<br>' +
+                 '- <b>Valor Comercial:</b> Usa año comercial (360 días) en lugar de año calendario (365 días).'
+        },
+        {
+          element: '.calculate-btn',
+          title: 'Calcular Descuentos',
+          intro: 'Presiona este botón para realizar los cálculos una vez hayas seleccionado las facturas y configurado las opciones.'
+        },
+        {
+          element: '.results',
+          title: 'Resultados del Cálculo',
+          intro: 'Aquí se mostrarán los resultados detallados del cálculo, incluyendo valores originales, descontados y ahorros totales.',
+          position: 'top'
+        },
+        {
+          element: '.invoice-table',
+          title: 'Tabla de Facturas',
+          intro: 'Esta tabla muestra todas tus facturas disponibles.'
+        },
+        {
+          element: 'thead tr',
+          title: 'Columnas de la Tabla',
+          intro: 'La tabla incluye información detallada de cada factura: código, descripción, cantidades, fechas, estado y más.'
+        },
+        {
+          element: '.toggle-btn',
+          title: 'Cambiar TCEA',
+          intro: 'Este botón te permite alternar entre usar la TCEA de la factura o la TCEA preferencial del banco asociado.'
+        },
+        {
+          element: '.container',
+          title: 'Fórmulas Matemáticas',
+          intro: 'Esta sección muestra las fórmulas utilizadas en los cálculos. Las fórmulas se actualizarán con valores reales después de realizar un cálculo.'
+        },
+        {
+          element: '.formula:nth-child(1)',
+          title: 'Valor Total de la Factura',
+          intro: 'Muestra cómo se calcula el valor total de una factura.'
+        },
+        {
+          element: '.formula:nth-child(2)',
+          title: 'Valor Descontado',
+          intro: 'Explica cómo se calcula el valor descontado considerando el tiempo.'
+        },
+        {
+          element: '.formula:nth-child(3)',
+          title: 'Descuento Bancario',
+          intro: 'Detalla el cálculo del descuento bancario aplicado.'
+        },
+        {
+          element: '.formula:nth-child(4)',
+          title: 'Ahorros Totales',
+          intro: 'Muestra cómo se calculan los ahorros totales obtenidos.'
+        }
+      ],
+      nextLabel: 'Siguiente >',
+      prevLabel: '< Anterior',
+      skipLabel: 'Saltar',
+      doneLabel: 'Finalizar',
+      showProgress: true,
+      exitOnOverlayClick: false,
+      showBullets: true
+    });
+
+    intro.start();
+  }
+
+  showLetterGenerator() {
+    localStorage.setItem('discountLetterData', JSON.stringify(this.getDiscountLetterData()));
+
+    this.router.navigate(['/emit-pdf-discount-letter']);
+  }
+
+  getDiscountLetterData() {
+    return {
+      totalOriginal: this.calculationResults!.totalOriginal,
+      totalDiscounted: this.calculationResults!.totalDiscounted,
+      savings: this.calculationResults!.savings,
+      validInvoices: this.calculationResults!.validInvoices,
+      targetDate: new Date(this.discountForm.get('targetDate')?.value),
+      involvedBanks: this.calculationResults!.involvedBanks,
+      applyTimeValue: this.applyTimeValue,
+      useCommercialYear: this.useCommercialYear,
+      tcea: this.formulaExamples.tcea,
+      daysToTarget: this.formulaExamples.daysToTarget,
+      totalDays: this.formulaExamples.totalDays
+    };
+  }
+
+  navigateToLetterGenerator() {
+    if (this.calculationResults) {
+      // Preparar los datos para el componente de letra de descuento
+      const letterData = {
+        totalOriginal: this.calculationResults.totalOriginal,
+        totalDiscounted: this.calculationResults.totalDiscounted,
+        savings: this.calculationResults.savings,
+        validInvoices: this.calculationResults.validInvoices,
+        targetDate: new Date(this.discountForm.get('targetDate')?.value),
+        involvedBanks: this.calculationResults.involvedBanks,
+        applyTimeValue: this.applyTimeValue,
+        useCommercialYear: this.useCommercialYear,
+        tcea: this.formulaExamples.tcea,
+        daysToTarget: this.formulaExamples.daysToTarget,
+        totalDays: this.formulaExamples.totalDays
+      };
+
+      // Guardar los datos en localStorage
+      localStorage.setItem('discountLetterData', JSON.stringify(letterData));
+
+      // Navegar al componente de generación de PDF
+      this.router.navigate(['/emit-pdf-discount-letter']);
     }
   }
 }

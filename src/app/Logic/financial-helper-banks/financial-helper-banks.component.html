@@ -6,6 +6,9 @@
   <!-- New Discount Calculator Section -->
   <section class="discount-calculator">
     <h2>Calculadora de Descuentos</h2>
+    <button class="tutorial-btn" (click)="startTutorial()">
+      <i class="fas fa-question-circle"></i> Iniciar Tutorial
+    </button>
     <form [formGroup]="discountForm" (ngSubmit)="calculateDiscounts()">
       <div class="form-group">
         <label for="targetDate">Fecha Objetivo:</label>
@@ -27,6 +30,14 @@
           >
           Aplicar Valor del Dinero en el Tiempo
         </label>
+        <label>
+          <input
+            type="checkbox"
+            [checked]="useCommercialYear"
+            (change)="toggleCommercialYear()"
+          >
+          Aplicar Valor Comercial
+        </label>
       </div>
 
       <button type="submit" class="calculate-btn" [disabled]="!discountForm.valid || selectedInvoices.size === 0">
@@ -36,6 +47,13 @@
 
     <div class="results" *ngIf="calculationResults !== null">
       <h3>Resultados del Cálculo</h3>
+      
+      <!-- Explicación detallada -->
+      <div class="explanation-box">
+        <p class="explanation-text">{{ calculationResults!.explanation }}</p>
+      </div>
+
+      <!-- Resultados numéricos en grid -->
       <div class="results-grid">
         <div class="result-item">
           <span>Valor Original Total:</span>
@@ -54,6 +72,27 @@
           <span>{{ calculationResults!.validInvoices }}</span>
         </div>
       </div>
+
+      <!-- Bancos involucrados -->
+      <div class="involved-banks" *ngIf="calculationResults!.involvedBanks?.length">
+        <h4>Bancos Involucrados:</h4>
+        <ul>
+          <li *ngFor="let bank of calculationResults!.involvedBanks">{{ bank }}</li>
+        </ul>
+      </div>
+
+      <!-- Botón de generación de PDF - Ahora más prominente -->
+      <div class="pdf-actions">
+        <button class="generate-letter-btn" (click)="navigateToLetterGenerator()">
+          <i class="fas fa-file-pdf"></i> Generar Letra de Descuento
+        </button>
+      </div>
+
+      <app-emitpdfdiscountletter
+        *ngIf="showLetterGeneratorFlag"
+        [discountData]="getDiscountLetterData()"
+        (close)="showLetterGeneratorFlag = false">
+      </app-emitpdfdiscountletter>
     </div>
   </section>
 
@@ -125,29 +164,60 @@
   <div class="container">
     <h1>Fórmulas Matemáticas para Cálculos Financieros</h1>
 
-    <div class="formula">
-      <h2>1. Valor Total de la Factura</h2>
-      <p><strong>Fórmula:</strong> <code>TotalAmount = UnitPrice × Quantity</code></p>
-      <p><strong>Descripción:</strong> Se utiliza para calcular el monto total de la factura, multiplicando el precio unitario por la cantidad de productos o servicios adquiridos.</p>
-    </div>
+    <!-- Usando ngIf para alternar entre fórmulas estáticas y dinámicas -->
+    <ng-container *ngIf="!showResults; else dynamicFormulas">
+      <!-- Fórmulas Estáticas -->
+      <div class="formula">
+        <h2>1. Valor Total de la Factura</h2>
+        <p><strong>Fórmula:</strong> <code>TotalAmount = UnitPrice × Quantity</code></p>
+        <p><strong>Descripción:</strong> Se utiliza para calcular el monto total de la factura, multiplicando el precio unitario por la cantidad de productos o servicios adquiridos.</p>
+      </div>
 
-    <div class="formula">
-      <h2>2. Valor Descontado (Aplicando el Tiempo del Dinero)</h2>
-      <p><strong>Fórmula:</strong> <code>DiscountedValue = TotalAmount × (1 + TCEA)^(DaysToTarget / 365)</code></p>
-      <p><strong>Descripción:</strong> Esta fórmula aplica el concepto de valor del dinero en el tiempo, ajustando el monto total de la factura al valor presente considerando la Tasa de Costo Efectivo Anual (TCEA) y el número de días hasta la fecha objetivo.</p>
-    </div>
+      <div class="formula">
+        <h2>2. Valor Descontado (Aplicando el Tiempo del Dinero)</h2>
+        <p><strong>Fórmula:</strong> <code>DiscountedValue = TotalAmount × (1 + TCEA)^(DaysToTarget / 365)</code></p>
+        <p><strong>Descripción:</strong> Esta fórmula aplica el concepto de valor del dinero en el tiempo, ajustando el monto total de la factura al valor presente considerando la Tasa de Costo Efectivo Anual (TCEA) y el número de días hasta la fecha objetivo.</p>
+      </div>
 
-    <div class="formula">
-      <h2>3. Descuento Bancario</h2>
-      <p><strong>Fórmula:</strong> <code>DiscountedValue × (1 - TCEA)^(TotalDays - DaysToTarget / 365)</code></p>
-      <p><strong>Descripción:</strong> Aplica un descuento adicional al valor descontado, basado en la TCEA del banco, ajustando el monto por el tiempo restante hasta la fecha de vencimiento.</p>
-    </div>
+      <div class="formula">
+        <h2>3. Descuento Bancario</h2>
+        <p><strong>Fórmula:</strong> <code>DiscountedValue × (1 - TCEA)^(TotalDays - DaysToTarget / 365)</code></p>
+        <p><strong>Descripción:</strong> Aplica un descuento adicional al valor descontado, basado en la TCEA del banco, ajustando el monto por el tiempo restante hasta la fecha de vencimiento.</p>
+      </div>
 
-    <div class="formula">
-      <h2>4. Ahorros Totales</h2>
-      <p><strong>Fórmula:</strong> <code>Savings = TotalOriginal - TotalDiscounted</code></p>
-      <p><strong>Descripción:</strong> Calcula los ahorros totales restando el valor descontado del monto original, proporcionando una visión clara de los beneficios económicos obtenidos al aplicar los descuentos.</p>
-    </div>
+      <div class="formula">
+        <h2>4. Ahorros Totales</h2>
+        <p><strong>Fórmula:</strong> <code>Savings = TotalOriginal - TotalDiscounted</code></p>
+        <p><strong>Descripción:</strong> Calcula los ahorros totales restando el valor descontado del monto original, proporcionando una visión clara de los beneficios económicos obtenidos al aplicar los descuentos.</p>
+      </div>
+    </ng-container>
+
+    <!-- Template para fórmulas con valores calculados -->
+    <ng-template #dynamicFormulas>
+      <div class="formula">
+        <h2>1. Valor Total de la Factura</h2>
+        <p><strong>Fórmula:</strong> <code>{{ formulaExamples.totalAmount | number:'1.2-2' }} = {{ formulaExamples.unitPrice | number:'1.2-2' }} × {{ formulaExamples.quantity }}</code></p>
+        <p><strong>Descripción:</strong> Se utiliza para calcular el monto total de la factura, multiplicando el precio unitario por la cantidad de productos o servicios adquiridos.</p>
+      </div>
+
+      <div class="formula">
+        <h2>2. Valor Descontado (Aplicando el Tiempo del Dinero)</h2>
+        <p><strong>Fórmula:</strong> <code>DiscountedValue = {{ formulaExamples.totalAmount | number:'1.2-2' }} × (1 + {{ formulaExamples.tcea | percent:'1.2-2' }})^({{ formulaExamples.daysToTarget | number:'1.0-0' }} / {{ formulaExamples.daysInYear }})</code></p>
+        <p><strong>Descripción:</strong> Esta fórmula aplica el concepto de valor del dinero en el tiempo, ajustando el monto total de la factura al valor presente considerando la Tasa de Costo Efectivo Anual (TCEA) y el número de días hasta la fecha objetivo.</p>
+      </div>
+
+      <div class="formula">
+        <h2>3. Descuento Bancario</h2>
+        <p><strong>Fórmula:</strong> <code>{{ formulaExamples.discountedValue | number:'1.2-2' }} × (1 - {{ formulaExamples.tcea | percent:'1.2-2' }})^({{ formulaExamples.totalDays | number:'1.0-0' }} - {{ formulaExamples.daysToTarget | number:'1.0-0' }} / {{ formulaExamples.daysInYear }})</code></p>
+        <p><strong>Descripción:</strong> Aplica un descuento adicional al valor descontado, basado en la TCEA del banco, ajustando el monto por el tiempo restante hasta la fecha de vencimiento.</p>
+      </div>
+
+      <div class="formula">
+        <h2>4. Ahorros Totales</h2>
+        <p><strong>Fórmula:</strong> <code>{{ formulaExamples.savings | number:'1.2-2' }} = {{ formulaExamples.totalAmount | number:'1.2-2' }} - {{ formulaExamples.discountedValue | number:'1.2-2' }}</code></p>
+        <p><strong>Descripción:</strong> Calcula los ahorros totales restando el valor descontado del monto original, proporcionando una visión clara de los beneficios económicos obtenidos al aplicar los descuentos.</p>
+      </div>
+    </ng-template>
   </div>
 
 </div>

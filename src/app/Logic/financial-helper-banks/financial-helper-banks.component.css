@@ -177,8 +177,8 @@ h1 {
   margin-top: 20px;
   padding: 20px;
   background-color: white;
-  border-radius: 4px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .results-grid {
@@ -259,4 +259,77 @@ p {
 
 strong {
   color: #333;
+}
+
+.tutorial-btn {
+  background-color: #4CAF50;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.tutorial-btn:hover {
+  background-color: #45a049;
+}
+
+/* Estilos para mejorar la apariencia del tutorial */
+.introjs-tooltip {
+  min-width: 300px;
+}
+
+.introjs-tooltip-title {
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.introjs-helperLayer {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.introjs-bullets ul li a.active {
+  background: #4CAF50;
+}
+
+.pdf-actions {
+  margin-top: 20px;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  border-top: 1px solid #eee;
+}
+
+.generate-letter-btn {
+  background-color: #e63946;
+  color: white;
+  padding: 15px 30px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.generate-letter-btn:hover {
+  background-color: #d62828;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.generate-letter-btn:active {
+  transform: translateY(0);
+}
+
+.generate-letter-btn i {
+  font-size: 20px;
 }

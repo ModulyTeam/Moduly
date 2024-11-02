@@ -9,32 +9,29 @@ export class FinancialCalculationsService {
     invoice: Invoice,
     targetDate: Date,
     tcea: number,
-    applyTimeValue: boolean = false
+    applyTimeValue: boolean = false,
+    useCommercialYear: boolean = false
   ): number | null {
     const issueDate = new Date(invoice.issueDate || '');
     const dueDate = new Date(invoice.dueDate || '');
     const currentDate = new Date(targetDate);
+    const daysInYear = useCommercialYear ? 360 : 365;
 
-    // Check if invoice has already expired
     if (currentDate > dueDate) {
       return null;
     }
 
     const totalAmount = (invoice.unitPrice || 0) * (invoice.quantity || 0);
-
-    // Calculate days between dates
     const daysToTarget = (currentDate.getTime() - issueDate.getTime()) / (1000 * 3600 * 24);
     const totalDays = (dueDate.getTime() - issueDate.getTime()) / (1000 * 3600 * 24);
 
     let discountedValue = totalAmount;
 
-    // Apply time value of money if requested (using invoice TCEA)
     if (applyTimeValue && invoice.tcea) {
-      discountedValue *= Math.pow(1 + invoice.tcea, daysToTarget / 365);
+      discountedValue *= Math.pow(1 + invoice.tcea, daysToTarget / daysInYear);
     }
 
-    // Apply bank discount
-    discountedValue *= Math.pow(1 - tcea, (totalDays - daysToTarget) / 365);
+    discountedValue *= Math.pow(1 - tcea, (totalDays - daysToTarget) / daysInYear);
 
     return discountedValue;
   }
@@ -45,7 +42,8 @@ export class FinancialCalculationsService {
     targetDate: Date,
     useBankTCEA: { [key: string]: boolean },
     bankMap: Map<string, any>,
-    applyTimeValue: boolean = false
+    applyTimeValue: boolean = false,
+    useCommercialYear: boolean = false
   ): {
     totalOriginal: number;
     totalDiscounted: number;
@@ -62,9 +60,8 @@ export class FinancialCalculationsService {
       }
 
       const originalAmount = (invoice.unitPrice || 0) * (invoice.quantity || 0);
-
-      // Determine which TCEA to use
       let tcea = invoice.tcea || 0;
+      
       if (invoice.id && useBankTCEA[invoice.id] && invoice.bankId) {
         const bank = bankMap.get(invoice.bankId);
         if (bank) {
@@ -76,7 +73,8 @@ export class FinancialCalculationsService {
         invoice,
         targetDate,
         tcea,
-        applyTimeValue
+        applyTimeValue,
+        useCommercialYear
       );
 
       if (discountedValue !== null) {

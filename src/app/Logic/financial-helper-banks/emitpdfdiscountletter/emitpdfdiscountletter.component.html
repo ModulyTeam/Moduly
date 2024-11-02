@@ -1,0 +1,176 @@
+<div class="letter-generator">
+  <!-- Formulario de configuración -->
+  <div class="config-form" *ngIf="!previewMode">
+    <h2>Configuración de la Letra de Descuento</h2>
+    <form [formGroup]="letterForm">
+      <div class="form-section">
+        <h3>Información del Documento</h3>
+        <div class="form-group">
+          <label>Número de Letra:</label>
+          <input type="text" formControlName="letterNumber" placeholder="Ej: LD-2024-001">
+        </div>
+        
+        <div class="form-group">
+          <label>Logo de la Empresa:</label>
+          <input type="file" (change)="onLogoSelected($event)" accept="image/*">
+          <div class="checkbox-group">
+            <input type="checkbox" formControlName="includeLogo" id="includeLogo">
+            <label for="includeLogo">Incluir logo en el documento</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>Información del Emisor</h3>
+        <div class="form-group">
+          <label>Nombre:</label>
+          <input type="text" formControlName="emitterName">
+        </div>
+        <div class="form-group">
+          <label>Cargo:</label>
+          <input type="text" formControlName="emitterPosition">
+        </div>
+        <div class="form-group">
+          <label>Empresa:</label>
+          <input type="text" formControlName="emitterCompany">
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>Información del Destinatario</h3>
+        <div class="form-group">
+          <label>Nombre:</label>
+          <input type="text" formControlName="recipientName">
+        </div>
+        <div class="form-group">
+          <label>Cargo:</label>
+          <input type="text" formControlName="recipientPosition">
+        </div>
+        <div class="form-group">
+          <label>Empresa:</label>
+          <input type="text" formControlName="recipientCompany">
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>Opciones Adicionales</h3>
+        <div class="checkbox-group">
+          <input type="checkbox" formControlName="includeFormulas" id="includeFormulas">
+          <label for="includeFormulas">Incluir fórmulas de cálculo</label>
+        </div>
+        <div class="checkbox-group">
+          <input type="checkbox" formControlName="includeDetails" id="includeDetails">
+          <label for="includeDetails">Incluir detalles de operación</label>
+        </div>
+        <div class="form-group">
+          <label>Notas Adicionales:</label>
+          <textarea formControlName="additionalNotes" rows="3"></textarea>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" (click)="togglePreview()" [disabled]="!letterForm.valid">
+          Vista Previa
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Vista previa del PDF -->
+  <div class="preview-container" *ngIf="previewMode">
+    <div id="pdf-preview" class="pdf-content">
+      <!-- Encabezado -->
+      <div class="letter-header">
+        <img *ngIf="selectedLogo && letterForm.get('includeLogo')?.value" 
+             [src]="selectedLogo" 
+             alt="Logo empresa" 
+             class="company-logo">
+        <div class="letter-info">
+          <h1>Letra de Descuento</h1>
+          <p class="letter-number">{{ letterForm.get('letterNumber')?.value }}</p>
+          <p class="letter-date">{{ discountData.targetDate | date:'longDate' }}</p>
+        </div>
+      </div>
+
+      <!-- Información de emisor y destinatario -->
+      <div class="parties-info">
+        <div class="party-section">
+          <h3>De:</h3>
+          <p>{{ letterForm.get('emitterName')?.value }}</p>
+          <p>{{ letterForm.get('emitterPosition')?.value }}</p>
+          <p>{{ letterForm.get('emitterCompany')?.value }}</p>
+        </div>
+        <div class="party-section">
+          <h3>Para:</h3>
+          <p>{{ letterForm.get('recipientName')?.value }}</p>
+          <p>{{ letterForm.get('recipientPosition')?.value }}</p>
+          <p>{{ letterForm.get('recipientCompany')?.value }}</p>
+        </div>
+      </div>
+
+      <!-- Resumen de la operación -->
+      <div class="operation-summary">
+        <h2>Resumen de la Operación de Descuento</h2>
+        <div class="summary-grid">
+          <div class="summary-item">
+            <span>Valor Original:</span>
+            <span>{{ discountData.totalOriginal | currency:'PEN':'S/ ' }}</span>
+          </div>
+          <div class="summary-item">
+            <span>Valor Descontado:</span>
+            <span>{{ discountData.totalDiscounted | currency:'PEN':'S/ ' }}</span>
+          </div>
+          <div class="summary-item highlight">
+            <span>Ahorro Total:</span>
+            <span>{{ discountData.savings | currency:'PEN':'S/ ' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Detalles de la operación -->
+      <div class="operation-details" *ngIf="letterForm.get('includeDetails')?.value">
+        <h3>Detalles de la Operación</h3>
+        <ul>
+          <li>Facturas procesadas: {{ discountData.validInvoices }}</li>
+          <li>TCEA aplicada: {{ discountData.tcea | percent:'1.2-2' }}</li>
+          <li>Días al objetivo: {{ discountData.daysToTarget }}</li>
+          <li>Método de cálculo: {{ discountData.useCommercialYear ? 'Año Comercial (360 días)' : 'Año Calendario (365 días)' }}</li>
+          <li *ngIf="discountData.involvedBanks?.length">
+            Bancos involucrados: {{ discountData.involvedBanks?.join(', ') }}
+          </li>
+        </ul>
+      </div>
+
+      <!-- Fórmulas aplicadas -->
+      <div class="formulas-section" *ngIf="letterForm.get('includeFormulas')?.value">
+        <h3>Fórmulas Aplicadas</h3>
+        <!-- Aquí van las fórmulas con los valores reales -->
+      </div>
+
+      <!-- Notas adicionales -->
+      <div class="additional-notes" *ngIf="letterForm.get('additionalNotes')?.value">
+        <h3>Notas Adicionales</h3>
+        <p>{{ letterForm.get('additionalNotes')?.value }}</p>
+      </div>
+
+      <!-- Firmas -->
+      <div class="signatures">
+        <div class="signature-line">
+          <span>_____________________</span>
+          <p>{{ letterForm.get('emitterName')?.value }}</p>
+          <p>{{ letterForm.get('emitterPosition')?.value }}</p>
+        </div>
+        <div class="signature-line">
+          <span>_____________________</span>
+          <p>{{ letterForm.get('recipientName')?.value }}</p>
+          <p>{{ letterForm.get('recipientPosition')?.value }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="preview-actions">
+      <button type="button" (click)="togglePreview()">Volver a Editar</button>
+      <button type="button" (click)="generatePDF()">Generar PDF</button>
+    </div>
+  </div>
+</div>
