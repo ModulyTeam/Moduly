@@ -89,3 +89,25 @@ header h1 {
 .invoice-table .future-value {
   color: #00796b; /* Verde oscuro */
 }
+/* Estilos del botón de alternar TCEA */
+.toggle-btn {
+  background-color: #2a9d8f; /* Verde pastel */
+  border: none;
+  color: white; /* Texto blanco */
+  padding: 10px 16px; /* Espaciado interno */
+  border-radius: 5px; /* Bordes redondeados */
+  font-size: 1em; /* Tamaño de fuente */
+  cursor: pointer; /* Cursor de puntero */
+  transition: background-color 0.3s, transform 0.2s; /* Transiciones suaves */
+}
+
+/* Efecto hover para el botón */
+.toggle-btn:hover {
+  background-color: #028090; /* Verde más oscuro al pasar el mouse */
+  transform: scale(1.05); /* Ligero aumento de tamaño */
+}
+
+/* Efecto activo para el botón */
+.toggle-btn:active {
+  transform: scale(0.95); /* Reducción de tamaño al hacer clic */
+}

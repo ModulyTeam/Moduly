@@ -35,9 +35,15 @@
         <td>{{ invoice.status }}</td>
         <td>{{ invoice.currency }}</td>
         <td>{{ invoice.exchangeRate }}</td>
-        <td>{{ getTCEAPercentage(invoice) | number:'1.2-2' }}%</td>
+        <td>
+          {{ getTCEAPercentage(invoice) | number:'1.2-2' }}%
+          <small>({{ getTCEASource(invoice) }})</small>
+        </td>
         <td class="future-value">{{ calculateFutureValue(invoice) | currency:invoice.currency }}</td>
         <td class="action-buttons">
+          <button class="toggle-btn" (click)="toggleTCEA(invoice.id)">
+            {{ invoice.id && useBankTCEA[invoice.id] ? 'Usar TCEA Factura' : 'Usar TCEA Banco' }}
+          </button>
           <button class="delete-btn" (click)="deleteInvoice(invoice?.id)">Eliminar</button>
         </td>
       </tr>
@@ -53,7 +59,4 @@
       </tfoot>
     </table>
   </section>
-
-
-
 </div>
