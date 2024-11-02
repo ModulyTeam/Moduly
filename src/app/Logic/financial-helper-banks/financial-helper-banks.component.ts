@@ -3,10 +3,11 @@ import {Invoice} from "../../models/Invoice.model";
 import {Bank} from "../../models/Bank.model";
 import {ApiService} from "../../requests/ApiService";
 import {ActivatedRoute} from "@angular/router";
-import {FormBuilder, FormsModule} from "@angular/forms";
-import {CurrencyPipe, DatePipe, DecimalPipe, NgForOf, SlicePipe} from "@angular/common";
+import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {CurrencyPipe, DatePipe, DecimalPipe, NgForOf, NgIf, SlicePipe} from "@angular/common";
 import {CalculatorDiscountComponent} from "../calculator-discount/calculator-discount.component";
 import {FixedAmountCalculatorComponent} from "../fixed-amount-calculator/fixed-amount-calculator.component";
+import {FinancialCalculationsService} from "./calculateDiscountedValue";
 
 @Component({
   selector: 'app-financial-helper-banks',
@@ -19,12 +20,14 @@ import {FixedAmountCalculatorComponent} from "../fixed-amount-calculator/fixed-a
     FixedAmountCalculatorComponent,
     FormsModule,
     NgForOf,
-    SlicePipe
+    SlicePipe,
+    ReactiveFormsModule,
+    NgIf
   ],
   templateUrl: './financial-helper-banks.component.html',
   styleUrl: './financial-helper-banks.component.css'
-})
-export class FinancialHelperBanksComponent implements OnInit {
+})export class FinancialHelperBanksComponent implements OnInit {
+  // Existing properties
   invoices: Invoice[] = [];
   moduleId: string | null = null;
   currentPage = 1;
@@ -33,11 +36,38 @@ export class FinancialHelperBanksComponent implements OnInit {
   useBankTCEA: { [key: string]: boolean } = {};
   bankMap: Map<string, Bank> = new Map();
 
+  discountForm: FormGroup;
+  selectedInvoices: Set<string> = new Set();
+  calculationResults: {
+    totalOriginal: number;
+    totalDiscounted: number;
+    savings: number;
+    validInvoices: number;
+  } | null = null;
+  applyTimeValue = false;
+  showResults = false; // New property to control results visibility
+
   constructor(
     private apiService: ApiService,
     private route: ActivatedRoute,
-    private formBuilder: FormBuilder
-  ) {}
+    private formBuilder: FormBuilder,
+    private financialCalcs: FinancialCalculationsService
+  ) {
+    this.discountForm = this.formBuilder.group({
+      targetDate: ['']
+    });
+  }
+  getMinDate(): string {
+    const dates = this.invoices
+      .map(invoice => new Date(invoice.issueDate || ''))
+      .filter(date => !isNaN(date.getTime()));
+
+    if (dates.length > 0) {
+      const minDate = new Date(Math.min(...dates.map(d => d.getTime())));
+      return minDate.toISOString().split('T')[0];
+    }
+    return new Date().toISOString().split('T')[0];
+  }
 
   ngOnInit() {
     this.moduleId = this.route.snapshot.paramMap.get('moduleId');
@@ -46,6 +76,12 @@ export class FinancialHelperBanksComponent implements OnInit {
         this.loadInvoices();
       });
     }
+
+    // Set initial target date to today
+    const today = new Date();
+    this.discountForm.patchValue({
+      targetDate: today.toISOString().split('T')[0]
+    });
   }
 
   async loadBanks() {
@@ -65,6 +101,50 @@ export class FinancialHelperBanksComponent implements OnInit {
       console.error('Error loading banks:', error);
     }
   }
+  toggleInvoiceSelection(invoiceId: string) {
+    if (this.selectedInvoices.has(invoiceId)) {
+      this.selectedInvoices.delete(invoiceId);
+    } else {
+      this.selectedInvoices.add(invoiceId);
+    }
+    console.log('Selected invoices:', this.selectedInvoices);
+  }
+
+  isInvoiceSelected(invoiceId: string): boolean {
+    return this.selectedInvoices.has(invoiceId);
+  }
+
+  toggleTimeValue() {
+    this.applyTimeValue = !this.applyTimeValue;
+    console.log('Time value applied:', this.applyTimeValue);
+  }
+
+  calculateDiscounts() {
+    if (!this.discountForm.valid || this.selectedInvoices.size === 0) {
+      console.error('Form is invalid or no invoices selected');
+      return;
+    }
+
+    const targetDate = new Date(this.discountForm.get('targetDate')?.value);
+
+    if (!targetDate || isNaN(targetDate.getTime())) {
+      console.error('Invalid target date');
+      return;
+    }
+
+    this.calculationResults = this.financialCalcs.calculateTotalSavings(
+      this.invoices,
+      this.selectedInvoices,
+      targetDate,
+      this.useBankTCEA,
+      this.bankMap,
+      this.applyTimeValue
+    );
+
+    this.showResults = true; // Show results after calculation
+    console.log('Calculation results:', this.calculationResults);
+  }
+
 
   loadInvoices() {
     if (this.moduleId) {

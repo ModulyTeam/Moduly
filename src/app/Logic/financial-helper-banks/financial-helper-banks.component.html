@@ -3,11 +3,67 @@
     <h1>Calculadora Financiera de Descuentos hacia bancos</h1>
   </header>
 
+  <!-- New Discount Calculator Section -->
+  <section class="discount-calculator">
+    <h2>Calculadora de Descuentos</h2>
+    <form [formGroup]="discountForm" (ngSubmit)="calculateDiscounts()">
+      <div class="form-group">
+        <label for="targetDate">Fecha Objetivo:</label>
+        <input
+          type="date"
+          id="targetDate"
+          formControlName="targetDate"
+          class="form-control"
+          [min]="getMinDate()"
+        >
+      </div>
+
+      <div class="time-value-toggle">
+        <label>
+          <input
+            type="checkbox"
+            [checked]="applyTimeValue"
+            (change)="toggleTimeValue()"
+          >
+          Aplicar Valor del Dinero en el Tiempo
+        </label>
+      </div>
+
+      <button type="submit" class="calculate-btn" [disabled]="!discountForm.valid || selectedInvoices.size === 0">
+        Calcular Descuentos
+      </button>
+    </form>
+
+    <div class="results" *ngIf="calculationResults !== null">
+      <h3>Resultados del Cálculo</h3>
+      <div class="results-grid">
+        <div class="result-item">
+          <span>Valor Original Total:</span>
+          <span>{{ calculationResults!.totalOriginal | currency:'USD':'symbol':'1.2-2' }}</span>
+        </div>
+        <div class="result-item">
+          <span>Valor Descontado Total:</span>
+          <span>{{ calculationResults!.totalDiscounted | currency:'USD':'symbol':'1.2-2' }}</span>
+        </div>
+        <div class="result-item highlight">
+          <span>Ahorro Total:</span>
+          <span>{{ calculationResults!.savings | currency:'USD':'symbol':'1.2-2' }}</span>
+        </div>
+        <div class="result-item">
+          <span>Facturas Válidas:</span>
+          <span>{{ calculationResults!.validInvoices }}</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Existing Invoice Table Section -->
   <section class="invoice-table">
     <h2>Facturas</h2>
     <table>
       <thead>
       <tr>
+        <th>Seleccionar</th>
         <th>Código</th>
         <th>Descripción</th>
         <th>Cantidad</th>
@@ -25,6 +81,13 @@
       </thead>
       <tbody>
       <tr *ngFor="let invoice of invoices | slice:(currentPage-1)*pageSize:currentPage*pageSize">
+        <td>
+          <input
+            type="checkbox"
+            [checked]="isInvoiceSelected(invoice.id || '')"
+            (change)="toggleInvoiceSelection(invoice.id || '')"
+          >
+        </td>
         <td>{{ invoice.code }}</td>
         <td>{{ invoice.description }}</td>
         <td>{{ invoice.quantity }}</td>
@@ -50,7 +113,7 @@
       </tbody>
       <tfoot>
       <tr>
-        <td colspan="4"><strong>Totales:</strong></td>
+        <td colspan="5"><strong>Totales:</strong></td>
         <td>{{ calculateTotalPayment() | currency:'USD':'symbol':'1.2-2' }}</td>
         <td colspan="6"></td>
         <td class="future-value">{{ calculateTotalFutureValue() | currency:'USD':'symbol':'1.2-2' }}</td>
