@@ -122,4 +122,32 @@
       </tfoot>
     </table>
   </section>
+  <div class="container">
+    <h1>Fórmulas Matemáticas para Cálculos Financieros</h1>
+
+    <div class="formula">
+      <h2>1. Valor Total de la Factura</h2>
+      <p><strong>Fórmula:</strong> <code>TotalAmount = UnitPrice × Quantity</code></p>
+      <p><strong>Descripción:</strong> Se utiliza para calcular el monto total de la factura, multiplicando el precio unitario por la cantidad de productos o servicios adquiridos.</p>
+    </div>
+
+    <div class="formula">
+      <h2>2. Valor Descontado (Aplicando el Tiempo del Dinero)</h2>
+      <p><strong>Fórmula:</strong> <code>DiscountedValue = TotalAmount × (1 + TCEA)^(DaysToTarget / 365)</code></p>
+      <p><strong>Descripción:</strong> Esta fórmula aplica el concepto de valor del dinero en el tiempo, ajustando el monto total de la factura al valor presente considerando la Tasa de Costo Efectivo Anual (TCEA) y el número de días hasta la fecha objetivo.</p>
+    </div>
+
+    <div class="formula">
+      <h2>3. Descuento Bancario</h2>
+      <p><strong>Fórmula:</strong> <code>DiscountedValue × (1 - TCEA)^(TotalDays - DaysToTarget / 365)</code></p>
+      <p><strong>Descripción:</strong> Aplica un descuento adicional al valor descontado, basado en la TCEA del banco, ajustando el monto por el tiempo restante hasta la fecha de vencimiento.</p>
+    </div>
+
+    <div class="formula">
+      <h2>4. Ahorros Totales</h2>
+      <p><strong>Fórmula:</strong> <code>Savings = TotalOriginal - TotalDiscounted</code></p>
+      <p><strong>Descripción:</strong> Calcula los ahorros totales restando el valor descontado del monto original, proporcionando una visión clara de los beneficios económicos obtenidos al aplicar los descuentos.</p>
+    </div>
+  </div>
+
 </div>
