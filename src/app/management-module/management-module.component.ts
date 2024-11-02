@@ -444,7 +444,13 @@ export class ManagementModuleComponent implements OnInit {
 
     introJs().setOptions({ steps: steps }).start();
   }
-
+  navigateToFinancialHelperBank() {
+    if (this.moduleId) {
+      this.router.navigate(['/financial-helper-banks', this.moduleId]);
+    } else {
+      console.error('Module ID is not available');
+    }
+  }
   navigateToFinancialHelper() {
     if (this.moduleId) {
       this.router.navigate(['/financial-helper', this.moduleId]);
